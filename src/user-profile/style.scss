@@ -1,0 +1,452 @@
+.wp-block-roomworks-business-networking-user-profile {
+	--rbn-accent: #2451e0;
+	--rbn-accent-hover: #1c3fb8;
+	--rbn-accent-tint: #eef1fd;
+	--rbn-text: #1a1d29;
+	--rbn-muted: #667085;
+	--rbn-border: #e6e8ee;
+	--rbn-surface: #fff;
+	--rbn-surface-muted: #f7f8fa;
+	--rbn-radius: 12px;
+	--rbn-radius-sm: 8px;
+	--rbn-shadow: 0 1px 2px rgba( 16, 24, 40, 0.04 ), 0 6px 20px -10px rgba( 16, 24, 40, 0.12 );
+
+	color: var( --rbn-text );
+
+	// Shared building blocks - card, button, link, chip. Kept local to this
+	// block's compiled CSS (each block ships its own bundle) rather than a
+	// shared stylesheet, since only this and single-business-profile /
+	// roomworks-business-networking need them.
+	.rbn-card {
+		padding: 1.75rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+	}
+
+	.rbn-card > h2,
+	.rbn-card > h3 {
+		margin-top: 0;
+	}
+
+	.rbn-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.7rem 1.4rem;
+		border: none;
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-accent );
+		color: #fff;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+
+		&:hover,
+		&:focus-visible {
+			background: var( --rbn-accent-hover );
+		}
+	}
+
+	.rbn-button--danger {
+		background: #c2362f;
+
+		&:hover,
+		&:focus-visible {
+			background: #a32b25;
+		}
+	}
+
+	.rbn-link {
+		color: var( --rbn-accent );
+		font-size: 0.9rem;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+
+	// Forms
+
+	.rbn-form p {
+		margin: 0 0 1.25rem;
+	}
+
+	.rbn-form label,
+	.rbn-form legend {
+		display: block;
+		margin-bottom: 0.4rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.rbn-form input[type="text"],
+	.rbn-form input[type="email"],
+	.rbn-form input[type="password"],
+	.rbn-form input[type="url"],
+	.rbn-form input[type="search"],
+	.rbn-form select,
+	.rbn-form textarea {
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+		padding: 0.65rem 0.85rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-surface );
+		color: var( --rbn-text );
+		font-family: inherit;
+		font-size: 0.9375rem;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+		&:focus {
+			outline: none;
+			border-color: var( --rbn-accent );
+			box-shadow: 0 0 0 3px var( --rbn-accent-tint );
+		}
+	}
+
+	.rbn-form textarea {
+		resize: vertical;
+	}
+
+	.rbn-form__checkbox label {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		text-transform: none;
+		font-weight: normal;
+		letter-spacing: normal;
+	}
+
+	.rbn-logo-preview {
+		display: block;
+		margin-bottom: 0.6rem;
+
+		img {
+			display: block;
+			width: 72px;
+			height: 72px;
+			border: 1px solid var( --rbn-border );
+			border-radius: var( --rbn-radius-sm );
+			object-fit: contain;
+			background: var( --rbn-surface-muted );
+		}
+	}
+
+	.rbn-form__grid {
+		display: grid;
+		grid-template-columns: repeat( auto-fit, minmax( 200px, 1fr ) );
+		gap: 0 1.25rem;
+	}
+
+	.rbn-form__field {
+		margin: 0 0 1.25rem;
+		padding: 0;
+		border: none;
+	}
+
+	.rbn-chip-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.rbn-chip {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.45rem 0.9rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: 999px;
+		background: var( --rbn-surface-muted );
+		color: var( --rbn-text );
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+
+		input {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			opacity: 0;
+		}
+
+		&:has( input:checked ) {
+			border-color: var( --rbn-accent );
+			background: var( --rbn-accent-tint );
+			color: var( --rbn-accent );
+		}
+
+		&:has( input:focus-visible ) {
+			outline: 2px solid var( --rbn-accent );
+			outline-offset: 1px;
+		}
+	}
+
+	.rbn-field-note {
+		margin: 0;
+		color: var( --rbn-muted );
+		font-size: 0.875rem;
+		font-style: italic;
+	}
+
+	.rbn-required-marker {
+		color: #c2362f;
+	}
+
+	.rbn-visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect( 0, 0, 0, 0 );
+		white-space: nowrap;
+		border: 0;
+	}
+
+	// Business Type: dropdown + "Other" add-new group
+
+	.rbn-category-add {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+
+		&[hidden] {
+			display: none;
+		}
+
+		input[type="text"] {
+			flex: 1 1 auto;
+			width: auto;
+		}
+	}
+
+	// Tag-input fields (Services)
+
+	.rbn-chip--tag {
+		cursor: default;
+		border-color: var( --rbn-accent );
+		background: var( --rbn-accent-tint );
+		color: var( --rbn-accent );
+	}
+
+	.rbn-chip__remove {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.15rem;
+		height: 1.15rem;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background: transparent;
+		color: inherit;
+		font-size: 1rem;
+		line-height: 1;
+		cursor: pointer;
+
+		&:hover,
+		&:focus-visible {
+			background: rgba( 0, 0, 0, 0.08 );
+			outline: none;
+		}
+	}
+
+	.rbn-tag-add {
+		position: relative;
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.75rem;
+
+		input[type="text"] {
+			flex: 1 1 auto;
+		}
+	}
+
+	.rbn-button--secondary {
+		background: var( --rbn-surface-muted );
+		color: var( --rbn-text );
+		border: 1px solid var( --rbn-border );
+
+		&:hover,
+		&:focus-visible {
+			background: var( --rbn-accent-tint );
+			border-color: var( --rbn-accent );
+			color: var( --rbn-accent );
+		}
+	}
+
+	.rbn-tag-suggestions {
+		position: absolute;
+		z-index: 10;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		max-height: 220px;
+		margin: 0.25rem 0 0;
+		padding: 0.35rem;
+		overflow-y: auto;
+		list-style: none;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+
+		li {
+			margin: 0;
+		}
+
+		button {
+			display: block;
+			width: 100%;
+			padding: 0.5rem 0.6rem;
+			border: none;
+			border-radius: var( --rbn-radius-sm );
+			background: transparent;
+			color: var( --rbn-text );
+			font-size: 0.9rem;
+			text-align: left;
+			cursor: pointer;
+
+			&:hover,
+			&:focus-visible {
+				background: var( --rbn-surface-muted );
+				outline: none;
+			}
+		}
+	}
+
+	// Notices
+
+	.rbn-notice {
+		margin: 0 0 1.25rem;
+		padding: 0.85rem 1.1rem;
+		border: 1px solid #f3c9c9;
+		border-left: 3px solid #c2362f;
+		border-radius: var( --rbn-radius-sm );
+		background: #fdf2f2;
+		color: #8a1f1f;
+		font-size: 0.9rem;
+	}
+
+	.rbn-notice--success {
+		border-color: #c3e6c3;
+		border-left-color: #2f8a3f;
+		background: #f0faf1;
+		color: #1f6b2f;
+	}
+
+	// Auth (logged out)
+
+	.rbn-auth {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+	}
+
+	.rbn-auth__login,
+	.rbn-auth__register {
+		flex: 1 1 300px;
+		min-width: 0;
+	}
+
+	// Dashboard (logged in)
+
+	.rbn-dashboard {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.rbn-profile__header {
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.rbn-profile__header img {
+		flex: 0 0 auto;
+		border-radius: 50%;
+	}
+
+	.rbn-profile__name {
+		margin: 0 0 0.25rem;
+	}
+
+	.rbn-profile__bio {
+		margin: 0;
+		color: var( --rbn-muted );
+	}
+
+	.rbn-profile__business {
+		padding-top: 1.5rem;
+		border-top: 1px solid var( --rbn-border );
+
+		h3 {
+			margin: 0 0 0.5rem;
+			color: var( --rbn-muted );
+			font-size: 0.75rem;
+			font-weight: 700;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+
+	.rbn-status--pending {
+		display: inline-flex;
+		align-items: center;
+		margin-left: 0.5rem;
+		padding: 0.15rem 0.6rem;
+		border-radius: 999px;
+		background: #fdf3e0;
+		color: #8a6d1f;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+
+	.rbn-profile__logout {
+		margin: 0;
+	}
+
+	// Account deletion
+
+	.rbn-delete-account {
+		border-color: #f3c9c9;
+
+		h3 {
+			margin-bottom: 0.75rem;
+			color: #8a1f1f;
+		}
+
+		> .rbn-field-note {
+			margin: 0 0 1.25rem;
+			font-size: 0.9375rem;
+			font-style: normal;
+		}
+	}
+
+	.rbn-delete-account__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1.25rem;
+	}
+}

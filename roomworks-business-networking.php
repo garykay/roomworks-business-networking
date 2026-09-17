@@ -1,0 +1,98 @@
+<?php
+/**
+ * Plugin Name:       Business Networking
+ * Description:       Frontend-first business networking platform for community members.
+ * Version:           0.1.0
+ * Requires at least: 6.8
+ * Requires PHP:      7.4
+ * Author:            The WordPress Contributors
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       roomworks-business-networking
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+define( 'RBN_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-schema.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-capabilities.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-business-category.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-service.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-business.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-repository.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-notices.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-member-approval.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-auth-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-profile-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-account-deletion.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-account-deletion-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-access-control.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-query.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-settings.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-approvals.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-directory.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-services.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-templates.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-stats.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-activator.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-deactivator.php';
+
+register_activation_hook( __FILE__, array( 'RBN_Activator', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'RBN_Deactivator', 'deactivate' ) );
+
+add_action( 'plugins_loaded', array( 'RBN_Schema', 'maybe_upgrade' ) );
+
+add_action( 'init', array( 'RBN_Taxonomy_Business_Category', 'register' ) );
+add_action( 'init', array( 'RBN_Taxonomy_Service', 'register' ) );
+add_action( 'init', array( 'RBN_Post_Type_Business', 'register' ) );
+
+add_action( 'save_post_' . RBN_Post_Type_Business::POST_TYPE, array( 'RBN_Business_Repository', 'enforce_single_business' ), 10, 3 );
+
+add_action( 'init', array( 'RBN_Auth_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Profile_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Business_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
+
+add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
+
+add_filter( 'wp_authenticate_user', array( 'RBN_Member_Approval', 'block_pending_login' ), 10, 2 );
+add_filter( 'manage_users_columns', array( 'RBN_Member_Approval', 'add_column' ) );
+add_filter( 'manage_users_custom_column', array( 'RBN_Member_Approval', 'render_column' ), 10, 3 );
+add_filter( 'user_row_actions', array( 'RBN_Member_Approval', 'add_row_actions' ), 10, 2 );
+add_action( 'admin_action_rbn_approve_member', array( 'RBN_Member_Approval', 'handle_approve' ) );
+add_action( 'admin_action_rbn_reject_member', array( 'RBN_Member_Approval', 'handle_reject' ) );
+
+add_action( 'admin_menu', array( 'RBN_Approvals', 'register_menu' ) );
+add_action( 'admin_action_rbn_approve_business', array( 'RBN_Approvals', 'handle_approve_business' ) );
+add_action( 'admin_action_rbn_reject_business', array( 'RBN_Approvals', 'handle_reject_business' ) );
+add_action( 'admin_action_rbn_cancel_deletion', array( 'RBN_Approvals', 'handle_cancel_deletion' ) );
+
+add_action( 'template_redirect', array( 'RBN_Access_Control', 'restrict_business_directory' ) );
+add_action( 'save_post_page', array( 'RBN_Access_Control', 'flush_login_page_cache' ) );
+
+add_action( 'admin_menu', array( 'RBN_Settings', 'register_menu' ) );
+add_action( 'admin_init', array( 'RBN_Settings', 'register_settings' ) );
+
+add_action( 'rest_api_init', array( 'RBN_REST_Directory', 'register_routes' ) );
+add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );
+add_action( 'rest_api_init', array( 'RBN_REST_Business_Categories', 'register_routes' ) );
+
+/**
+ * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
+ * based on the registered block metadata. Behind the scenes, it registers also all assets so they can be enqueued
+ * through the block editor in the corresponding context.
+ *
+ * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
+ * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
+ */
+function roomworks_business_networking_roomworks_business_networking_block_init() {
+	wp_register_block_types_from_metadata_collection( __DIR__ . '/build', __DIR__ . '/build/blocks-manifest.php' );
+}
+add_action( 'init', 'roomworks_business_networking_roomworks_business_networking_block_init' );

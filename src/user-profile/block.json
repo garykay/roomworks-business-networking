@@ -1,0 +1,20 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "roomworks-business-networking/user-profile",
+	"version": "0.1.0",
+	"title": "Member Profile",
+	"category": "widgets",
+	"icon": "businessman",
+	"description": "Displays a member's profile and their business.",
+	"example": {},
+	"supports": {
+		"html": false
+	},
+	"textdomain": "roomworks-business-networking",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php",
+	"viewScript": "file:./view.js"
+}

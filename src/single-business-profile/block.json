@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "roomworks-business-networking/single-business-profile",
+	"version": "0.1.0",
+	"title": "Single Business Profile",
+	"category": "widgets",
+	"icon": "store",
+	"description": "Shows business type, services, location, contact details, and owner. Place inside a Single Business template in the Site Editor alongside Post Title/Post Content for the name and description.",
+	"example": {},
+	"supports": {
+		"html": false,
+		"multiple": false
+	},
+	"usesContext": [ "postId", "postType" ],
+	"textdomain": "roomworks-business-networking",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

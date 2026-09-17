@@ -1,0 +1,92 @@
+<?php
+/**
+ * Restricts specific front-end pages built around this plugin's blocks to
+ * logged-in visitors - currently just the business directory, which isn't
+ * meant to be publicly browsable.
+ *
+ * A template_redirect check here (rather than a general-purpose content
+ * restriction plugin) keeps the rule versioned with the rest of the
+ * plugin's code and lets it send visitors to this plugin's own front-end
+ * login form instead of wp-login.php, matching the "frontend-first" design
+ * used everywhere else (see RBN_Auth_Forms).
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class RBN_Access_Control {
+
+	/**
+	 * Slug of the page hosting the Business Directory block
+	 * (roomworks-business-networking/roomworks-business-networking).
+	 * Update this if that page is ever renamed/re-slugged.
+	 */
+	const RESTRICTED_PAGE_SLUG = 'business-networking';
+
+	const LOGIN_PAGE_CACHE_KEY = 'rbn_login_page_id';
+
+	public static function restrict_business_directory() {
+		if ( is_user_logged_in() ) {
+			return;
+		}
+
+		if ( ! is_page( self::RESTRICTED_PAGE_SLUG ) ) {
+			return;
+		}
+
+		$requested_url = esc_url_raw( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- unslashed and escaped via esc_url_raw().
+
+		wp_safe_redirect( self::login_url( $requested_url ) );
+		exit;
+	}
+
+	/**
+	 * Finds the page hosting this plugin's own front-end login form (see
+	 * RBN_Templates::auth_forms()) so a logged-out visitor lands somewhere
+	 * consistent with the rest of the site, instead of wp-login.php. Falls
+	 * back to wp-login.php if no such page exists yet.
+	 *
+	 * The lookup result is cached for a few hours (transient, since this
+	 * runs on every logged-out visit to the restricted page and object
+	 * caching alone won't survive between requests on most hosts) rather
+	 * than left to query on every hit.
+	 */
+	private static function login_url( $redirect_to ) {
+		$page_id = get_transient( self::LOGIN_PAGE_CACHE_KEY );
+
+		if ( false === $page_id ) {
+			global $wpdb;
+
+			// $wpdb->prepare() + esc_like() below keep this injection-safe;
+			// a direct query is used (rather than WP_Query) because no core
+			// query arg can search for a specific block's markup inside
+			// post_content.
+			$page_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- prepared below; result is cached in a transient just above.
+				$wpdb->prepare(
+					"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'page' AND post_status = 'publish' AND post_content LIKE %s LIMIT 1",
+					'%' . $wpdb->esc_like( '<!-- wp:roomworks-business-networking/user-profile' ) . '%'
+				)
+			);
+
+			set_transient( self::LOGIN_PAGE_CACHE_KEY, $page_id, 6 * HOUR_IN_SECONDS );
+		}
+
+		if ( $page_id ) {
+			return add_query_arg( 'redirect_to', rawurlencode( $redirect_to ), get_permalink( $page_id ) );
+		}
+
+		return wp_login_url( $redirect_to );
+	}
+
+	/**
+	 * Clears the cached login page lookup whenever any page is saved, so a
+	 * newly published/edited login page is picked up within one save
+	 * rather than staying stale for the rest of the transient's lifetime.
+	 */
+	public static function flush_login_page_cache() {
+		delete_transient( self::LOGIN_PAGE_CACHE_KEY );
+	}
+}
