@@ -16,27 +16,39 @@ class RBN_Stats {
 	/**
 	 * Members whose account isn't pending or rejected - i.e. the same
 	 * "approved" definition RBN_Member_Approval uses everywhere else,
-	 * including legacy accounts with no status meta at all.
+	 * including legacy accounts with no status meta at all - restricted to
+	 * the `subscriber` role that RBN_Auth_Forms assigns on registration, so
+	 * administrators/editors/other staff accounts (which also default to
+	 * "approved" since they never got a status meta) don't inflate this
+	 * public-facing count.
+	 *
+	 * A direct COUNT(DISTINCT ...) query is used rather than
+	 * WP_User_Query::get_total(), which combines a `role` LIKE match with an
+	 * OR'd meta_query across two separate usermeta JOINs - a combination that
+	 * can over-count a user whose row satisfies more than one JOIN branch.
+	 * DISTINCT on the user ID guarantees each member is only ever counted once.
 	 */
 	public static function member_count() {
-		$query = new WP_User_Query(
-			array(
-				'fields'     => 'ID',
-				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					'relation' => 'OR',
-					array(
-						'key'     => RBN_Member_Approval::META_KEY,
-						'compare' => 'NOT EXISTS',
-					),
-					array(
-						'key'   => RBN_Member_Approval::META_KEY,
-						'value' => RBN_Member_Approval::STATUS_APPROVED,
-					),
-				),
-			)
-		);
+		global $wpdb;
 
-		return (int) $query->get_total();
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT( DISTINCT u.ID )
+				FROM {$wpdb->users} u
+				INNER JOIN {$wpdb->usermeta} cap ON cap.user_id = u.ID
+					AND cap.meta_key = %s
+					AND cap.meta_value LIKE %s
+				LEFT JOIN {$wpdb->usermeta} status ON status.user_id = u.ID
+					AND status.meta_key = %s
+				WHERE ( status.user_id IS NULL OR status.meta_value = %s )",
+				$wpdb->get_blog_prefix() . 'capabilities',
+				'%"subscriber"%',
+				RBN_Member_Approval::META_KEY,
+				RBN_Member_Approval::STATUS_APPROVED
+			)
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off aggregate count, no equivalent core API that avoids the JOIN over-count above.
+
+		return (int) $count;
 	}
 
 	/**

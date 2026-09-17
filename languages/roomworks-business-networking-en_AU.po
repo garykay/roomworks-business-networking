@@ -1,0 +1,899 @@
+# Copyright (C) 2026 The WordPress Contributors
+# This file is distributed under the GPL-2.0-or-later.
+#
+# Region override for Australia-deployed sites: only strings that differ
+# from the UK-English source (County terminology) are translated below.
+# Everything else intentionally falls back to the source string.
+msgid ""
+msgstr ""
+"Project-Id-Version: Business Networking 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/roomworks-business-networking\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_AU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-17T13:10:52+00:00\n"
+"PO-Revision-Date: 2026-09-17T13:10:52+00:00\n"
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: roomworks-business-networking\n"
+
+#. Plugin Name of the plugin
+#: roomworks-business-networking.php
+msgid "Business Networking"
+msgstr ""
+
+#. Description of the plugin
+#: roomworks-business-networking.php
+msgid "Frontend-first business networking platform for community members."
+msgstr ""
+
+#. Author of the plugin
+#: roomworks-business-networking.php
+msgid "The WordPress Contributors"
+msgstr ""
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:169
+msgid "Account deletion requested: %s"
+msgstr ""
+
+#. translators: 1: display name, 2: email address, 3: scheduled deletion date/time, 4: admin Users screen URL.
+#: includes/class-rbn-account-deletion.php:174
+msgid ""
+"%1$s (%2$s) has requested their account be deleted.\n"
+"\n"
+"Unless they cancel the request, this will happen automatically on %3$s.\n"
+"\n"
+"%4$s"
+msgstr ""
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:183
+msgid "Account deletion request cancelled: %s"
+msgstr ""
+
+#. translators: 1: display name, 2: email address.
+#: includes/class-rbn-account-deletion.php:188
+msgid "%1$s (%2$s) has cancelled their account deletion request. No action is needed."
+msgstr ""
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:207
+msgid "Account deletion FAILED: %s"
+msgstr ""
+
+#. translators: 1: display name, 2: email address, 3: user ID.
+#: includes/class-rbn-account-deletion.php:212
+msgid ""
+"The scheduled account deletion for %1$s (%2$s, user ID %3$d) did not complete - WordPress refused the delete request.\n"
+"\n"
+"The account and business listing are still active and the deletion request is still marked as pending. Please investigate (e.g. another plugin blocking user deletion) and delete the account manually if needed."
+msgstr ""
+
+#: includes/class-rbn-account-deletion.php:222
+msgid "Your account has been deleted"
+msgstr ""
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:225
+msgid ""
+"Hi %s,\n"
+"\n"
+"As requested, your account and business listing have been permanently deleted.\n"
+"\n"
+"If you didn't request this, please contact us straight away."
+msgstr ""
+
+#: includes/class-rbn-approvals.php:29
+#: includes/class-rbn-approvals.php:30
+#: includes/class-rbn-approvals.php:43
+msgid "Approvals"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:63
+msgid "Pending Member Applications"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:65
+msgid "No member applications are waiting for review."
+msgstr ""
+
+#: includes/class-rbn-approvals.php:71
+#: includes/class-rbn-approvals.php:165
+msgid "Name"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:72
+#: includes/class-rbn-approvals.php:166
+msgid "Email"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:73
+msgid "Registered"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:74
+#: includes/class-rbn-approvals.php:121
+#: includes/class-rbn-approvals.php:169
+msgid "Actions"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:85
+#: includes/class-rbn-approvals.php:134
+#: includes/class-rbn-member-approval.php:144
+msgid "Approve"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:88
+#: includes/class-rbn-approvals.php:137
+#: includes/class-rbn-member-approval.php:163
+msgid "Reject"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:109
+msgid "Pending Business Listings"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:111
+msgid "No business listings are waiting for review."
+msgstr ""
+
+#: includes/class-rbn-approvals.php:117
+#: includes/class-rbn-templates.php:180
+msgid "Business"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:118
+msgid "Owner"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:119
+msgid "Category"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:120
+msgid "Submitted"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:157
+msgid "Pending Account Deletions"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:159
+msgid "No account deletions are pending."
+msgstr ""
+
+#: includes/class-rbn-approvals.php:167
+msgid "Requested"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:168
+msgid "Scheduled for"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:181
+msgid "Cancel deletion"
+msgstr ""
+
+#: includes/class-rbn-approvals.php:223
+#: includes/class-rbn-approvals.php:255
+#: includes/class-rbn-member-approval.php:188
+msgid "Invalid request."
+msgstr ""
+
+#: includes/class-rbn-approvals.php:227
+#: includes/class-rbn-approvals.php:247
+#: includes/class-rbn-member-approval.php:180
+msgid "You are not allowed to do that."
+msgstr ""
+
+#: includes/class-rbn-auth-forms.php:44
+msgid "Leave this field blank"
+msgstr ""
+
+#. translators: %s: new member's display name.
+#: includes/class-rbn-member-approval.php:46
+msgid "New member registration awaiting approval: %s"
+msgstr ""
+
+#. translators: 1: display name, 2: email address, 3: admin Approvals screen URL.
+#: includes/class-rbn-member-approval.php:52
+msgid ""
+"A new member has registered and is awaiting approval.\n"
+"\n"
+"Name: %1$s\n"
+"Email: %2$s\n"
+"\n"
+"Review and approve this member here:\n"
+"%3$s"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:69
+msgid "Your account has been approved"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:70
+msgid "Good news - your account has been approved and you can now log in."
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:72
+msgid "Your account registration"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:73
+msgid "We're sorry, your account registration was not approved."
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:91
+msgid "Your account is awaiting admin approval."
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:95
+msgid "Your registration was not approved."
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:102
+msgid "Account Status"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:112
+msgid "Pending"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:113
+msgid "Approved"
+msgstr ""
+
+#: includes/class-rbn-member-approval.php:114
+msgid "Rejected"
+msgstr ""
+
+#: includes/class-rbn-notices.php:19
+msgid "Please enter your username/email and password."
+msgstr ""
+
+#: includes/class-rbn-notices.php:20
+msgid "We couldn't log you in with those details. Please try again."
+msgstr ""
+
+#: includes/class-rbn-notices.php:21
+#: includes/class-rbn-notices.php:32
+#: includes/class-rbn-notices.php:34
+#: includes/class-rbn-notices.php:37
+#: includes/class-rbn-notices.php:43
+msgid "Your session expired. Please try again."
+msgstr ""
+
+#: includes/class-rbn-notices.php:22
+msgid "Your account is awaiting admin approval. We will email you once it has been approved."
+msgstr ""
+
+#: includes/class-rbn-notices.php:23
+msgid "Your registration was not approved. Please contact us for more information."
+msgstr ""
+
+#: includes/class-rbn-notices.php:24
+msgid "Thanks for registering! Your account is awaiting admin approval - we'll email you once it's approved."
+msgstr ""
+
+#: includes/class-rbn-notices.php:25
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: includes/class-rbn-notices.php:26
+msgid "Please enter a valid email address."
+msgstr ""
+
+#: includes/class-rbn-notices.php:27
+msgid "Please choose a password with at least 8 characters."
+msgstr ""
+
+#: includes/class-rbn-notices.php:28
+msgid "Passwords do not match."
+msgstr ""
+
+#: includes/class-rbn-notices.php:29
+msgid "Please agree to the Terms and Privacy Policy to continue."
+msgstr ""
+
+#: includes/class-rbn-notices.php:30
+msgid "An account already exists with that email address."
+msgstr ""
+
+#: includes/class-rbn-notices.php:31
+msgid "We couldn't create your account. Please try again."
+msgstr ""
+
+#: includes/class-rbn-notices.php:33
+msgid "You are already logged in."
+msgstr ""
+
+#: includes/class-rbn-notices.php:35
+msgid "Please enter your first and last name."
+msgstr ""
+
+#: includes/class-rbn-notices.php:36
+msgid "Your profile has been updated."
+msgstr ""
+
+#: includes/class-rbn-notices.php:38
+msgid "Please fill in all required fields (Website is the only optional field)."
+msgstr ""
+
+#: includes/class-rbn-notices.php:39
+msgid "You don't have permission to do that."
+msgstr ""
+
+#: includes/class-rbn-notices.php:40
+msgid "Please upload a valid logo image (JPG, PNG, GIF or WEBP) under 5MB, or leave that field empty."
+msgstr ""
+
+#: includes/class-rbn-notices.php:41
+msgid "Your business has been submitted for review."
+msgstr ""
+
+#: includes/class-rbn-notices.php:42
+msgid "Your business has been updated."
+msgstr ""
+
+#: includes/class-rbn-notices.php:44
+msgid "Administrator accounts cannot be deleted this way."
+msgstr ""
+
+#: includes/class-rbn-notices.php:45
+msgid "Your account deletion request has been received. Unless you cancel it, your account will be permanently deleted in 24 hours."
+msgstr ""
+
+#: includes/class-rbn-notices.php:46
+msgid "Your account deletion request has been cancelled."
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:20
+msgctxt "post type general name"
+msgid "Businesses"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:21
+msgctxt "post type singular name"
+msgid "Business"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:22
+msgid "Add New Business"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:23
+msgid "Edit Business"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:24
+msgid "New Business"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:25
+msgid "View Business"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:26
+msgid "Search Businesses"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:27
+#: includes/class-rbn-templates.php:689
+#: src/roomworks-business-networking/render.php:44
+msgid "No businesses found."
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:28
+msgid "No businesses found in Trash."
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:29
+msgid "All Businesses"
+msgstr ""
+
+#: includes/class-rbn-post-type-business.php:30
+msgid "Businesses"
+msgstr ""
+
+#: includes/class-rbn-rest-business-categories.php:86
+msgid "Please enter a business type."
+msgstr ""
+
+#: includes/class-rbn-rest-business-categories.php:114
+#: includes/class-rbn-templates.php:472
+msgid "Something went wrong adding that business type."
+msgstr ""
+
+#: includes/class-rbn-rest-services.php:89
+msgid "Please enter a service name."
+msgstr ""
+
+#: includes/class-rbn-rest-services.php:117
+msgid "Something went wrong adding that service."
+msgstr ""
+
+#: includes/class-rbn-settings.php:28
+#: includes/class-rbn-settings.php:274
+msgid "Directory Settings"
+msgstr ""
+
+#: includes/class-rbn-settings.php:29
+msgid "Settings"
+msgstr ""
+
+#: includes/class-rbn-settings.php:49
+msgid "Directory"
+msgstr ""
+
+#: includes/class-rbn-settings.php:56
+msgid "Businesses per page"
+msgstr ""
+
+#: includes/class-rbn-settings.php:64
+msgid "Sort businesses by"
+msgstr ""
+
+#: includes/class-rbn-settings.php:72
+msgid "Notifications"
+msgstr ""
+
+#: includes/class-rbn-settings.php:79
+msgid "Notification email"
+msgstr ""
+
+#: includes/class-rbn-settings.php:87
+msgid "Account deletion grace period"
+msgstr ""
+
+#: includes/class-rbn-settings.php:147
+msgid "Name (A–Z)"
+msgstr ""
+
+#: includes/class-rbn-settings.php:148
+msgid "Newest first"
+msgstr ""
+
+#: includes/class-rbn-settings.php:149
+msgid "Oldest first"
+msgstr ""
+
+#. translators: %d: maximum allowed value.
+#: includes/class-rbn-settings.php:209
+msgid "How many businesses to show per page in the directory. Maximum %d."
+msgstr ""
+
+#: includes/class-rbn-settings.php:228
+msgid "Default order for the directory listing."
+msgstr ""
+
+#: includes/class-rbn-settings.php:244
+msgid "Where new member and account-deletion alerts are sent. Leave blank to use the site admin email above."
+msgstr ""
+
+#: includes/class-rbn-settings.php:261
+msgid "hours"
+msgstr ""
+
+#: includes/class-rbn-settings.php:263
+msgid "How long a member has to cancel an account deletion request before it happens automatically. Only applies to requests made after this is changed."
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:65
+msgctxt "taxonomy general name"
+msgid "Business Types"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:66
+msgctxt "taxonomy singular name"
+msgid "Business Type"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:67
+msgid "Search Business Types"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:68
+#: includes/class-rbn-templates.php:647
+msgid "All Business Types"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:69
+msgid "Edit Business Type"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:70
+msgid "Update Business Type"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:71
+msgid "Add New Business Type"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:72
+msgid "New Business Type Name"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-business-category.php:73
+msgid "Business Types"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:27
+msgctxt "taxonomy general name"
+msgid "Services"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:28
+msgctxt "taxonomy singular name"
+msgid "Service"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:29
+msgid "Search Services"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:30
+#: includes/class-rbn-templates.php:659
+msgid "All Services"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:31
+msgid "Edit Service"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:32
+msgid "Update Service"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:33
+msgid "Add New Service"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:34
+msgid "New Service Name"
+msgstr ""
+
+#: includes/class-rbn-taxonomy-service.php:35
+#: includes/class-rbn-templates.php:393
+#: includes/class-rbn-templates.php:891
+msgid "Services"
+msgstr ""
+
+#: includes/class-rbn-templates.php:62
+#: includes/class-rbn-templates.php:80
+msgid "Log In"
+msgstr ""
+
+#: includes/class-rbn-templates.php:72
+msgid "Username or Email"
+msgstr ""
+
+#: includes/class-rbn-templates.php:76
+#: includes/class-rbn-templates.php:116
+msgid "Password"
+msgstr ""
+
+#: includes/class-rbn-templates.php:83
+msgid "Forgot your password?"
+msgstr ""
+
+#: includes/class-rbn-templates.php:89
+msgid "Create an Account"
+msgstr ""
+
+#: includes/class-rbn-templates.php:100
+#: includes/class-rbn-templates.php:280
+msgid "First Name"
+msgstr ""
+
+#: includes/class-rbn-templates.php:104
+#: includes/class-rbn-templates.php:284
+msgid "Last Name"
+msgstr ""
+
+#: includes/class-rbn-templates.php:108
+#: includes/class-rbn-templates.php:288
+msgid "Display Name"
+msgstr ""
+
+#: includes/class-rbn-templates.php:112
+msgid "Email Address"
+msgstr ""
+
+#: includes/class-rbn-templates.php:120
+msgid "Confirm Password"
+msgstr ""
+
+#: includes/class-rbn-templates.php:126
+msgid "I agree to the Terms and Privacy Policy."
+msgstr ""
+
+#: includes/class-rbn-templates.php:130
+msgid "Create Account"
+msgstr ""
+
+#: includes/class-rbn-templates.php:155
+msgid "Log out"
+msgstr ""
+
+#: includes/class-rbn-templates.php:185
+msgid "Pending review"
+msgstr ""
+
+#: includes/class-rbn-templates.php:189
+msgid "You haven't added a business yet."
+msgstr ""
+
+#: includes/class-rbn-templates.php:224
+msgid "Delete Account"
+msgstr ""
+
+#. translators: %s: scheduled deletion date/time.
+#: includes/class-rbn-templates.php:233
+msgid "Your account is scheduled for deletion on %s. You can cancel this request at any time before then."
+msgstr ""
+
+#: includes/class-rbn-templates.php:242
+msgid "Cancel Deletion Request"
+msgstr ""
+
+#: includes/class-rbn-templates.php:245
+msgid "Are you sure? Your account and business listing will be permanently deleted in 24 hours, unless you cancel before then."
+msgstr ""
+
+#: includes/class-rbn-templates.php:251
+msgid "Yes, Delete My Account"
+msgstr ""
+
+#: includes/class-rbn-templates.php:253
+msgid "Cancel"
+msgstr ""
+
+#: includes/class-rbn-templates.php:256
+msgid "Deleting your account is permanent and also removes your business listing. This cannot be undone once it takes effect."
+msgstr ""
+
+#: includes/class-rbn-templates.php:257
+msgid "Request Account Deletion"
+msgstr ""
+
+#: includes/class-rbn-templates.php:270
+msgid "Edit Profile"
+msgstr ""
+
+#: includes/class-rbn-templates.php:292
+msgid "About You"
+msgstr ""
+
+#: includes/class-rbn-templates.php:296
+msgid "Save Profile"
+msgstr ""
+
+#: includes/class-rbn-templates.php:343
+msgid "Edit Your Business"
+msgstr ""
+
+#: includes/class-rbn-templates.php:344
+msgid "Add Your Business"
+msgstr ""
+
+#: includes/class-rbn-templates.php:350
+msgid "All fields are required except Website."
+msgstr ""
+
+#: includes/class-rbn-templates.php:358
+msgid "Business Name"
+msgstr ""
+
+#: includes/class-rbn-templates.php:363
+msgid "Business Logo"
+msgstr ""
+
+#: includes/class-rbn-templates.php:366
+msgid "Current logo"
+msgstr ""
+
+#: includes/class-rbn-templates.php:370
+msgid "Optional. JPG, PNG, GIF or WEBP, up to 5MB."
+msgstr ""
+
+#: includes/class-rbn-templates.php:377
+msgid "Remove current logo"
+msgstr ""
+
+#: includes/class-rbn-templates.php:387
+msgid "Description"
+msgstr ""
+
+#: includes/class-rbn-templates.php:399
+msgid "Start typing a service…"
+msgstr ""
+
+#: includes/class-rbn-templates.php:400
+msgid "No services are available yet."
+msgstr ""
+
+#: includes/class-rbn-templates.php:407
+msgid "Town / City"
+msgstr ""
+
+#: includes/class-rbn-templates.php:411
+msgid "County / Region"
+msgstr "State / Territory"
+
+#: includes/class-rbn-templates.php:415
+msgid "Postcode"
+msgstr ""
+
+#: includes/class-rbn-templates.php:419
+msgid "Service Area"
+msgstr ""
+
+#: includes/class-rbn-templates.php:423
+msgid "Website"
+msgstr ""
+
+#: includes/class-rbn-templates.php:427
+msgid "Phone"
+msgstr ""
+
+#: includes/class-rbn-templates.php:431
+msgid "Contact Email"
+msgstr ""
+
+#: includes/class-rbn-templates.php:440
+msgid "Save Changes"
+msgstr ""
+
+#: includes/class-rbn-templates.php:441
+msgid "Submit Business"
+msgstr ""
+
+#: includes/class-rbn-templates.php:471
+#: includes/class-rbn-templates.php:550
+msgid "Adding…"
+msgstr ""
+
+#: includes/class-rbn-templates.php:484
+#: includes/class-rbn-templates.php:645
+msgid "Business Type"
+msgstr ""
+
+#: includes/class-rbn-templates.php:486
+msgid "— Select —"
+msgstr ""
+
+#: includes/class-rbn-templates.php:492
+msgid "Other — add a new business type"
+msgstr ""
+
+#: includes/class-rbn-templates.php:496
+msgid "New business type"
+msgstr ""
+
+#: includes/class-rbn-templates.php:501
+msgid "e.g. Painting & Decorating"
+msgstr ""
+
+#: includes/class-rbn-templates.php:503
+#: includes/class-rbn-templates.php:600
+msgid "Add"
+msgstr ""
+
+#. translators: %s: term name.
+#: includes/class-rbn-templates.php:552
+#: includes/class-rbn-templates.php:585
+msgid "Remove %s"
+msgstr ""
+
+#: includes/class-rbn-templates.php:553
+msgid "Something went wrong adding that."
+msgstr ""
+
+#: includes/class-rbn-templates.php:554
+msgid "Please add at least one."
+msgstr ""
+
+#: includes/class-rbn-templates.php:640
+msgid "Search"
+msgstr ""
+
+#: includes/class-rbn-templates.php:657
+msgid "Service"
+msgstr ""
+
+#: includes/class-rbn-templates.php:669
+#: includes/class-rbn-templates.php:902
+msgid "Location"
+msgstr ""
+
+#: includes/class-rbn-templates.php:670
+msgid "Town, county or postcode"
+msgstr "Town, state or postcode"
+
+#: includes/class-rbn-templates.php:674
+msgid "Filter"
+msgstr ""
+
+#: includes/class-rbn-templates.php:676
+#: src/roomworks-business-networking/render.php:46
+msgid "Clear filters"
+msgstr ""
+
+#: includes/class-rbn-templates.php:737
+#: src/roomworks-business-networking/render.php:45
+msgid "View Profile"
+msgstr ""
+
+#: includes/class-rbn-templates.php:752
+msgid "Directory pagination"
+msgstr ""
+
+#: includes/class-rbn-templates.php:874
+msgid "This business is pending review and isn't visible to the public yet."
+msgstr ""
+
+#. translators: %s: service area description.
+#: includes/class-rbn-templates.php:912
+msgid "Service area: %s"
+msgstr ""
+
+#: includes/class-rbn-templates.php:923
+msgid "Contact"
+msgstr ""
+
+#: includes/class-rbn-templates.php:945
+msgid "Listed by"
+msgstr ""
+
+#: src/roomworks-business-networking/render.php:42
+msgid "Loading businesses…"
+msgstr ""
+
+#: src/roomworks-business-networking/render.php:43
+msgid "Something went wrong loading businesses. Please try again."
+msgstr ""
+
+#: src/roomworks-business-networking/edit.js:34
+msgid "Business Directory: lists published businesses with search, category, service and location filters. Results are loaded from the site, not shown here in the editor."
+msgstr ""
+
+#: src/single-business-profile/edit.js:53
+msgid "Single Business Profile: shows the business being viewed. Add this inside a Single Business template (Appearance ▸ Editor ▸ Templates) to see a live preview here."
+msgstr ""
+
+#: src/user-profile/edit.js:34
+msgid "Member Profile: shows the visitor’s own profile when logged in, or login/registration forms when logged out."
+msgstr ""
+
+#: src/roomworks-business-networking/block.json
+msgctxt "block title"
+msgid "Business Directory"
+msgstr ""
+
+#: src/roomworks-business-networking/block.json
+msgctxt "block description"
+msgid "Searchable, filterable directory of approved businesses."
+msgstr ""
+
+#: src/single-business-profile/block.json
+msgctxt "block title"
+msgid "Single Business Profile"
+msgstr ""
+
+#: src/single-business-profile/block.json
+msgctxt "block description"
+msgid "Shows business type, services, location, contact details, and owner. Place inside a Single Business template in the Site Editor alongside Post Title/Post Content for the name and description."
+msgstr ""
+
+#: src/user-profile/block.json
+msgctxt "block title"
+msgid "Member Profile"
+msgstr ""
+
+#: src/user-profile/block.json
+msgctxt "block description"
+msgid "Displays a member's profile and their business."
+msgstr ""

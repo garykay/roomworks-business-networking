@@ -2,13 +2,14 @@
 /**
  * Plugin Name:       Business Networking
  * Description:       Frontend-first business networking platform for community members.
- * Version:           0.1.0
+ * Version:           1.0.0
  * Requires at least: 6.8
  * Requires PHP:      7.4
  * Author:            The WordPress Contributors
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       roomworks-business-networking
+ * Domain Path:       /languages
  *
  * @package RoomworksBusinessNetworking
  */
@@ -18,6 +19,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'RBN_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+/**
+ * This plugin isn't hosted on wp.org, so translations aren't auto-loaded the
+ * way core does for wp.org plugins since WP 4.6 - they need loading
+ * explicitly. Region-specific terminology (e.g. "Postcode" vs "ZIP Code")
+ * is handled the same way as any other translation: each server sets its
+ * own Site Language (Settings > General), and WordPress picks the matching
+ * .mo file from /languages automatically. See /languages/README.md.
+ */
+add_action(
+	'init',
+	function () {
+		load_plugin_textdomain( 'roomworks-business-networking', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	},
+	1
+);
 
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-schema.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-capabilities.php';

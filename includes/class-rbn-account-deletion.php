@@ -113,17 +113,30 @@ class RBN_Account_Deletion {
 		$email        = $user->user_email;
 		$display_name = $user->display_name;
 
-		self::delete_related_data( $user_id );
-
 		if ( is_multisite() ) {
 			require_once ABSPATH . 'wp-admin/includes/ms.php';
-			wpmu_delete_user( $user_id );
+			$deleted = wpmu_delete_user( $user_id );
 		} else {
 			require_once ABSPATH . 'wp-admin/includes/user.php';
 			// No reassign target: this also removes their business listing,
 			// which is the expected outcome of deleting the whole account.
-			wp_delete_user( $user_id );
+			$deleted = wp_delete_user( $user_id );
 		}
+
+		if ( ! $deleted ) {
+			// Leave the request meta and pending state as-is rather than
+			// silently telling the member it's done - an admin needs to
+			// investigate why core's own deletion call refused, and the
+			// member should still see "Cancel Deletion Request" rather than
+			// a false sense that nothing is pending.
+			self::notify_admin_of_failure( $user_id, $email, $display_name );
+			return;
+		}
+
+		// Only clean up our own tracking-table rows once the account itself
+		// is confirmed gone, so a failed deletion doesn't lose data that a
+		// retry would still need.
+		self::delete_related_data( $user_id );
 
 		self::notify_member_of_completion( $email, $display_name );
 	}
@@ -177,6 +190,30 @@ class RBN_Account_Deletion {
 				$user->user_email
 			);
 		}
+
+		wp_mail( RBN_Settings::notification_email(), $subject, $message );
+	}
+
+	/**
+	 * Tells the admin that core's own wp_delete_user()/wpmu_delete_user()
+	 * call returned false instead of assuming - and telling the member -
+	 * that deletion completed. The request is deliberately left pending
+	 * (see process_deletion()) so this can be investigated and retried
+	 * rather than silently losing the account.
+	 */
+	private static function notify_admin_of_failure( $user_id, $email, $display_name ) {
+		$subject = sprintf(
+			/* translators: %s: member's display name. */
+			__( 'Account deletion FAILED: %s', 'roomworks-business-networking' ),
+			$display_name
+		);
+		$message = sprintf(
+			/* translators: 1: display name, 2: email address, 3: user ID. */
+			__( "The scheduled account deletion for %1\$s (%2\$s, user ID %3\$d) did not complete - WordPress refused the delete request.\n\nThe account and business listing are still active and the deletion request is still marked as pending. Please investigate (e.g. another plugin blocking user deletion) and delete the account manually if needed.", 'roomworks-business-networking' ),
+			$display_name,
+			$email,
+			$user_id
+		);
 
 		wp_mail( RBN_Settings::notification_email(), $subject, $message );
 	}
