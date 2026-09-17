@@ -1,4 +1,10 @@
 /**
+ * Editor UI for the Business Directory block.
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+/**
  * Retrieves the translation of text.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
@@ -29,13 +35,13 @@ import './editor.scss';
  */
 export default function Edit() {
 	return (
-		<div { ...useBlockProps() }>
-			<p>
+		< div { ...useBlockProps() } >
+			< p >
 				{ __(
 					'Business Directory: lists published businesses with search, category, service and location filters. Results are loaded from the site, not shown here in the editor.',
 					'roomworks-business-networking'
 				) }
-			</p>
-		</div>
+			< / p >
+		< / div >
 	);
 }

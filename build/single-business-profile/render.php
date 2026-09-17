@@ -17,13 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$post_id = ! empty( $block->context['postId'] ) ? absint( $block->context['postId'] ) : get_the_ID();
+$business_id = ! empty( $block->context['postId'] ) ? absint( $block->context['postId'] ) : get_the_ID();
 
-if ( ! $post_id ) {
+if ( ! $business_id ) {
 	return;
 }
 
-$business = get_post( $post_id );
+$business = get_post( $business_id );
 
 if ( ! $business || RBN_Post_Type_Business::POST_TYPE !== $business->post_type ) {
 	return;

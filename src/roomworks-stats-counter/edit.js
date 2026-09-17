@@ -1,4 +1,10 @@
 /**
+ * Editor UI for the Roomworks Stats Counter block.
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+/**
  * Retrieves the translation of text.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
@@ -49,54 +55,54 @@ export default function Edit( { attributes, setAttributes } ) {
 	} = attributes;
 
 	return (
-		<>
-			<InspectorControls>
-				<PanelBody title={ __( 'Members', 'roomworks-stats-counter' ) }>
-					<TextControl
-						label={ __( 'Label', 'roomworks-stats-counter' ) }
-						value={ membersLabel }
-						onChange={ ( value ) => setAttributes( { membersLabel: value } ) }
-					/>
-					<TextControl
-						label={ __( 'Suffix', 'roomworks-stats-counter' ) }
-						help={ __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
-						value={ membersSuffix }
-						onChange={ ( value ) => setAttributes( { membersSuffix: value } ) }
-					/>
-				</PanelBody>
-				<PanelBody title={ __( 'Businesses Listed', 'roomworks-stats-counter' ) }>
-					<TextControl
-						label={ __( 'Label', 'roomworks-stats-counter' ) }
-						value={ businessesLabel }
-						onChange={ ( value ) => setAttributes( { businessesLabel: value } ) }
-					/>
-					<TextControl
-						label={ __( 'Suffix', 'roomworks-stats-counter' ) }
-						help={ __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
-						value={ businessesSuffix }
-						onChange={ ( value ) => setAttributes( { businessesSuffix: value } ) }
-					/>
-				</PanelBody>
-				<PanelBody title={ __( 'UK Cities', 'roomworks-stats-counter' ) }>
-					<TextControl
-						label={ __( 'Label', 'roomworks-stats-counter' ) }
-						value={ citiesLabel }
-						onChange={ ( value ) => setAttributes( { citiesLabel: value } ) }
-					/>
-					<TextControl
-						label={ __( 'Suffix', 'roomworks-stats-counter' ) }
-						help={ __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
-						value={ citiesSuffix }
-						onChange={ ( value ) => setAttributes( { citiesSuffix: value } ) }
-					/>
-				</PanelBody>
-			</InspectorControls>
-			<div { ...useBlockProps() }>
-				<ServerSideRender
-					block="create-block/roomworks-stats-counter"
-					attributes={ attributes }
-				/>
-			</div>
-		</>
+		< >
+			< InspectorControls >
+				< PanelBody title = { __( 'Members', 'roomworks-stats-counter' ) } >
+					< TextControl
+						label     = { __( 'Label', 'roomworks-stats-counter' ) }
+						value     = { membersLabel }
+						onChange  = { ( value ) => setAttributes( { membersLabel: value } ) }
+					/ >
+					< TextControl
+						label     = { __( 'Suffix', 'roomworks-stats-counter' ) }
+						help      = { __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
+						value     = { membersSuffix }
+						onChange  = { ( value ) => setAttributes( { membersSuffix: value } ) }
+					/ >
+				< / PanelBody >
+				< PanelBody title = { __( 'Businesses Listed', 'roomworks-stats-counter' ) } >
+					< TextControl
+						label     = { __( 'Label', 'roomworks-stats-counter' ) }
+						value     = { businessesLabel }
+						onChange  = { ( value ) => setAttributes( { businessesLabel: value } ) }
+					/ >
+					< TextControl
+						label     = { __( 'Suffix', 'roomworks-stats-counter' ) }
+						help      = { __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
+						value     = { businessesSuffix }
+						onChange  = { ( value ) => setAttributes( { businessesSuffix: value } ) }
+					/ >
+				< / PanelBody >
+				< PanelBody title = { __( 'UK Cities', 'roomworks-stats-counter' ) } >
+					< TextControl
+						label     = { __( 'Label', 'roomworks-stats-counter' ) }
+						value     = { citiesLabel }
+						onChange  = { ( value ) => setAttributes( { citiesLabel: value } ) }
+					/ >
+					< TextControl
+						label     = { __( 'Suffix', 'roomworks-stats-counter' ) }
+						help      = { __( 'Shown straight after the number, e.g. "+".', 'roomworks-stats-counter' ) }
+						value     = { citiesSuffix }
+						onChange  = { ( value ) => setAttributes( { citiesSuffix: value } ) }
+					/ >
+				< / PanelBody >
+			< / InspectorControls >
+			< div { ...useBlockProps() } >
+				< ServerSideRender
+					block         = "create-block/roomworks-stats-counter"
+					attributes    = { attributes }
+				/ >
+			< / div >
+		< / >
 	);
 }

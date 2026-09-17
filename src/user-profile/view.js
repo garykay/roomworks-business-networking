@@ -11,13 +11,18 @@
  * (RBN_REST_Services / RBN_REST_Business_Categories find_or_create_*)
  * return the existing term instead of creating a new row when the name
  * already matches one.
+ *
+ * @package RoomworksBusinessNetworking
  */
 
-document.addEventListener( 'DOMContentLoaded', function () {
-	document.querySelectorAll( '[data-rbn-tag-field]' ).forEach( initTagField );
-	document.querySelectorAll( '[data-rbn-category-field]' ).forEach( initCategoryField );
-	stripNoticeFromUrl();
-} );
+document.addEventListener(
+	'DOMContentLoaded',
+	function () {
+		document.querySelectorAll( '[data-rbn-tag-field]' ).forEach( initTagField );
+		document.querySelectorAll( '[data-rbn-category-field]' ).forEach( initCategoryField );
+		stripNoticeFromUrl();
+	}
+);
 
 /**
  * The success/error banner (e.g. "Your business has been submitted for
@@ -50,14 +55,14 @@ function stripNoticeFromUrl() {
  * Services: search-as-you-type, multi-select chips, create-on-the-fly.
  */
 function initTagField( field ) {
-	const chipsEl = field.querySelector( '[data-rbn-tag-chips]' );
-	const searchEl = field.querySelector( '[data-rbn-tag-search]' );
-	const addButton = field.querySelector( '[data-rbn-tag-add]' );
+	const chipsEl       = field.querySelector( '[data-rbn-tag-chips]' );
+	const searchEl      = field.querySelector( '[data-rbn-tag-search]' );
+	const addButton     = field.querySelector( '[data-rbn-tag-add]' );
 	const suggestionsEl = field.querySelector( '[data-rbn-tag-suggestions]' );
-	const statusEl = field.querySelector( '[data-rbn-tag-status]' );
-	const restUrl = field.getAttribute( 'data-rest-url' );
-	const nonce = field.getAttribute( 'data-rest-nonce' );
-	const inputName = field.getAttribute( 'data-input-name' );
+	const statusEl      = field.querySelector( '[data-rbn-tag-status]' );
+	const restUrl       = field.getAttribute( 'data-rest-url' );
+	const nonce         = field.getAttribute( 'data-rest-nonce' );
+	const inputName     = field.getAttribute( 'data-input-name' );
 
 	if ( ! chipsEl || ! searchEl || ! addButton || ! suggestionsEl || ! restUrl || ! inputName ) {
 		return;
@@ -71,12 +76,14 @@ function initTagField( field ) {
 	}
 
 	const selectedIds = new Set(
-		Array.from( chipsEl.querySelectorAll( '[data-term-id]' ) ).map( function ( chip ) {
-			return chip.getAttribute( 'data-term-id' );
-		} )
+		Array.from( chipsEl.querySelectorAll( '[data-term-id]' ) ).map(
+			function ( chip ) {
+				return chip.getAttribute( 'data-term-id' );
+			}
+		)
 	);
 
-	let searchTimer = null;
+	let searchTimer       = null;
 	let latestSuggestions = [];
 
 	function setStatus( message ) {
@@ -85,8 +92,8 @@ function initTagField( field ) {
 
 	function hideSuggestions() {
 		suggestionsEl.innerHTML = '';
-		suggestionsEl.hidden = true;
-		latestSuggestions = [];
+		suggestionsEl.hidden    = true;
+		latestSuggestions       = [];
 	}
 
 	function addChip( term ) {
@@ -98,23 +105,23 @@ function initTagField( field ) {
 
 		selectedIds.add( id );
 
-		const chip = document.createElement( 'span' );
+		const chip     = document.createElement( 'span' );
 		chip.className = 'rbn-chip rbn-chip--tag';
 		chip.setAttribute( 'data-term-id', id );
 
 		const input = document.createElement( 'input' );
-		input.type = 'hidden';
-		input.name = inputName;
+		input.type  = 'hidden';
+		input.name  = inputName;
 		input.value = id;
 		chip.appendChild( input );
 
-		const label = document.createElement( 'span' );
-		label.className = 'rbn-chip__label';
+		const label       = document.createElement( 'span' );
+		label.className   = 'rbn-chip__label';
 		label.textContent = term.name;
 		chip.appendChild( label );
 
-		const remove = document.createElement( 'button' );
-		remove.type = 'button';
+		const remove     = document.createElement( 'button' );
+		remove.type      = 'button';
 		remove.className = 'rbn-chip__remove';
 		remove.setAttribute( 'data-rbn-tag-remove', '' );
 		remove.setAttribute(
@@ -127,29 +134,34 @@ function initTagField( field ) {
 		chipsEl.appendChild( chip );
 	}
 
-	chipsEl.addEventListener( 'click', function ( event ) {
-		const button = event.target.closest( '[data-rbn-tag-remove]' );
+	chipsEl.addEventListener(
+		'click',
+		function ( event ) {
+			const button = event.target.closest( '[data-rbn-tag-remove]' );
 
-		if ( ! button ) {
-			return;
+			if ( ! button ) {
+				return;
+			}
+
+			const chip = button.closest( '[data-term-id]' );
+
+			if ( ! chip ) {
+				return;
+			}
+
+			selectedIds.delete( chip.getAttribute( 'data-term-id' ) );
+			chip.remove();
 		}
-
-		const chip = button.closest( '[data-term-id]' );
-
-		if ( ! chip ) {
-			return;
-		}
-
-		selectedIds.delete( chip.getAttribute( 'data-term-id' ) );
-		chip.remove();
-	} );
+	);
 
 	function renderSuggestions( terms ) {
-		const available = terms.filter( function ( term ) {
-			return ! selectedIds.has( String( term.id ) );
-		} );
+		const available = terms.filter(
+			function ( term ) {
+				return ! selectedIds.has( String( term.id ) );
+			}
+		);
 
-		latestSuggestions = available;
+		latestSuggestions       = available;
 		suggestionsEl.innerHTML = '';
 
 		if ( ! available.length ) {
@@ -157,21 +169,26 @@ function initTagField( field ) {
 			return;
 		}
 
-		available.forEach( function ( term ) {
-			const li = document.createElement( 'li' );
-			const button = document.createElement( 'button' );
-			button.type = 'button';
-			button.setAttribute( 'role', 'option' );
-			button.textContent = term.name;
-			button.addEventListener( 'click', function () {
-				addChip( term );
-				searchEl.value = '';
-				hideSuggestions();
-				searchEl.focus();
-			} );
-			li.appendChild( button );
-			suggestionsEl.appendChild( li );
-		} );
+		available.forEach(
+			function ( term ) {
+				const li     = document.createElement( 'li' );
+				const button = document.createElement( 'button' );
+				button.type  = 'button';
+				button.setAttribute( 'role', 'option' );
+				button.textContent = term.name;
+				button.addEventListener(
+					'click',
+					function () {
+						addChip( term );
+						searchEl.value = '';
+						hideSuggestions();
+						searchEl.focus();
+					}
+				);
+				li.appendChild( button );
+				suggestionsEl.appendChild( li );
+			}
+		);
 
 		suggestionsEl.hidden = false;
 	}
@@ -181,23 +198,29 @@ function initTagField( field ) {
 		url.searchParams.set( 'search', term );
 
 		fetch( url.toString(), { headers: { Accept: 'application/json' } } )
-			.then( function ( response ) {
-				if ( ! response.ok ) {
-					throw new Error( 'Request failed' );
+			.then(
+				function ( response ) {
+					if ( ! response.ok ) {
+							throw new Error( 'Request failed' );
+					}
+					return response.json();
 				}
-				return response.json();
-			} )
+			)
 			.then( renderSuggestions )
-			.catch( function () {
-				hideSuggestions();
-			} );
+			.catch(
+				function () {
+					hideSuggestions();
+				}
+			);
 	}
 
 	function findExactMatch( name ) {
 		const lower = name.toLowerCase();
-		return latestSuggestions.find( function ( term ) {
-			return term.name.toLowerCase() === lower;
-		} );
+		return latestSuggestions.find(
+			function ( term ) {
+				return term.name.toLowerCase() === lower;
+			}
+		);
 	}
 
 	function addTypedTerm() {
@@ -223,73 +246,101 @@ function initTagField( field ) {
 		addButton.disabled = true;
 		setStatus( i18n.adding || 'Adding…' );
 
-		fetch( restUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
-			},
-			body: JSON.stringify( { name } ),
-		} )
-			.then( function ( response ) {
-				return response.json().then( function ( data ) {
-					if ( ! response.ok ) {
-						throw new Error(
-							data && data.message ? data.message : 'Request failed'
-						);
-					}
-					return data;
-				} );
-			} )
-			.then( function ( term ) {
-				addChip( term );
-				searchEl.value = '';
-				hideSuggestions();
-				setStatus( '' );
-			} )
-			.catch( function ( error ) {
-				setStatus( error.message || i18n.error || 'Something went wrong adding that.' );
-			} )
-			.finally( function () {
-				addButton.disabled = false;
-			} );
+		fetch(
+			restUrl,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify( { name } ),
+			}
+		)
+			.then(
+				function ( response ) {
+					return response.json().then(
+						function ( data ) {
+							if ( ! response.ok ) {
+									throw new Error(
+										data && data.message ? data.message : 'Request failed'
+									);
+							}
+							return data;
+						}
+					);
+				}
+			)
+			.then(
+				function ( term ) {
+					addChip( term );
+					searchEl.value = '';
+					hideSuggestions();
+					setStatus( '' );
+				}
+			)
+			.catch(
+				function ( error ) {
+					setStatus( error.message || i18n.error || 'Something went wrong adding that.' );
+				}
+			)
+			.finally(
+				function () {
+					addButton.disabled = false;
+				}
+			);
 	}
 
-	searchEl.addEventListener( 'input', function () {
-		const term = searchEl.value.trim();
+	searchEl.addEventListener(
+		'input',
+		function () {
+			const term = searchEl.value.trim();
 
-		clearTimeout( searchTimer );
-		setStatus( '' );
+			clearTimeout( searchTimer );
+			setStatus( '' );
 
-		if ( term.length < 2 ) {
-			hideSuggestions();
-			return;
+			if ( term.length < 2 ) {
+				hideSuggestions();
+				return;
+			}
+
+			searchTimer = setTimeout(
+				function () {
+					searchTerms( term );
+				},
+				250
+			);
 		}
+	);
 
-		searchTimer = setTimeout( function () {
-			searchTerms( term );
-		}, 250 );
-	} );
+	searchEl.addEventListener(
+		'keydown',
+		function ( event ) {
+			if ( 'Escape' === event.key ) {
+				hideSuggestions();
+			} else if ( 'Enter' === event.key ) {
+				event.preventDefault();
+				addTypedTerm();
+			}
+		}
+	);
 
-	searchEl.addEventListener( 'keydown', function ( event ) {
-		if ( 'Escape' === event.key ) {
-			hideSuggestions();
-		} else if ( 'Enter' === event.key ) {
+	addButton.addEventListener(
+		'click',
+		function ( event ) {
 			event.preventDefault();
 			addTypedTerm();
 		}
-	} );
+	);
 
-	addButton.addEventListener( 'click', function ( event ) {
-		event.preventDefault();
-		addTypedTerm();
-	} );
-
-	document.addEventListener( 'click', function ( event ) {
-		if ( ! field.contains( event.target ) ) {
-			hideSuggestions();
+	document.addEventListener(
+		'click',
+		function ( event ) {
+			if ( ! field.contains( event.target ) ) {
+				hideSuggestions();
+			}
 		}
-	} );
+	);
 
 	// Chips are hidden inputs added/removed at runtime, so there's no
 	// single persistent field HTML's native `required` can attach to -
@@ -297,13 +348,16 @@ function initTagField( field ) {
 	const form = field.closest( 'form' );
 
 	if ( form && 'true' === field.getAttribute( 'data-required' ) ) {
-		form.addEventListener( 'submit', function ( event ) {
-			if ( 0 === chipsEl.children.length ) {
-				event.preventDefault();
-				setStatus( i18n.required || 'Please add at least one.' );
-				searchEl.focus();
+		form.addEventListener(
+			'submit',
+			function ( event ) {
+				if ( 0 === chipsEl.children.length ) {
+					event.preventDefault();
+					setStatus( i18n.required || 'Please add at least one.' );
+					searchEl.focus();
+				}
 			}
-		} );
+		);
 	}
 }
 
@@ -314,14 +368,14 @@ function initTagField( field ) {
  * typing anything (including services) into the old free-text version.
  */
 function initCategoryField( field ) {
-	const select = field.querySelector( '[data-rbn-category-select]' );
-	const otherOption = field.querySelector( '[data-rbn-other-option]' );
-	const addWrap = field.querySelector( '[data-rbn-category-add]' );
-	const input = field.querySelector( '[data-rbn-category-input]' );
+	const select       = field.querySelector( '[data-rbn-category-select]' );
+	const otherOption  = field.querySelector( '[data-rbn-other-option]' );
+	const addWrap      = field.querySelector( '[data-rbn-category-add]' );
+	const input        = field.querySelector( '[data-rbn-category-input]' );
 	const submitButton = field.querySelector( '[data-rbn-category-submit]' );
-	const statusEl = field.querySelector( '[data-rbn-category-status]' );
-	const restUrl = field.getAttribute( 'data-rest-url' );
-	const nonce = field.getAttribute( 'data-rest-nonce' );
+	const statusEl     = field.querySelector( '[data-rbn-category-status]' );
+	const restUrl      = field.getAttribute( 'data-rest-url' );
+	const nonce        = field.getAttribute( 'data-rest-nonce' );
 
 	if ( ! select || ! otherOption || ! addWrap || ! input || ! submitButton || ! restUrl ) {
 		return;
@@ -340,38 +394,43 @@ function initCategoryField( field ) {
 
 	function showAdd() {
 		addWrap.hidden = false;
-		input.value = '';
+		input.value    = '';
 		input.focus();
 	}
 
 	function hideAdd() {
 		addWrap.hidden = true;
-		input.value = '';
+		input.value    = '';
 		setStatus( '' );
 	}
 
-	select.addEventListener( 'change', function () {
-		if ( '__other__' === select.value ) {
-			showAdd();
-		} else {
-			hideAdd();
+	select.addEventListener(
+		'change',
+		function () {
+			if ( '__other__' === select.value ) {
+				showAdd();
+			} else {
+				hideAdd();
+			}
 		}
-	} );
+	);
 
 	function findOptionByName( name ) {
 		const lower = name.toLowerCase();
-		return Array.from( select.options ).find( function ( option ) {
-			return option !== otherOption && option.text.trim().toLowerCase() === lower;
-		} );
+		return Array.from( select.options ).find(
+			function ( option ) {
+				return option !== otherOption && option.text.trim().toLowerCase() === lower;
+			}
+		);
 	}
 
 	function selectTerm( term ) {
 		let option = select.querySelector( 'option[value="' + term.id + '"]' );
 
 		if ( ! option ) {
-			option = document.createElement( 'option' );
+			option       = document.createElement( 'option' );
 			option.value = String( term.id );
-			option.text = term.name;
+			option.text  = term.name;
 			select.insertBefore( option, otherOption );
 		}
 
@@ -401,45 +460,62 @@ function initCategoryField( field ) {
 		submitButton.disabled = true;
 		setStatus( i18n.adding || 'Adding…' );
 
-		fetch( restUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-WP-Nonce': nonce,
-			},
-			body: JSON.stringify( { name } ),
-		} )
-			.then( function ( response ) {
-				return response.json().then( function ( data ) {
-					if ( ! response.ok ) {
-						throw new Error(
-							data && data.message ? data.message : 'Request failed'
-						);
-					}
-					return data;
-				} );
-			} )
+		fetch(
+			restUrl,
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-WP-Nonce': nonce,
+				},
+				body: JSON.stringify( { name } ),
+			}
+		)
+			.then(
+				function ( response ) {
+					return response.json().then(
+						function ( data ) {
+							if ( ! response.ok ) {
+									throw new Error(
+										data && data.message ? data.message : 'Request failed'
+									);
+							}
+							return data;
+						}
+					);
+				}
+			)
 			.then( selectTerm )
-			.catch( function ( error ) {
-				setStatus( error.message || i18n.error || 'Something went wrong adding that.' );
-			} )
-			.finally( function () {
-				submitButton.disabled = false;
-			} );
+			.catch(
+				function ( error ) {
+					setStatus( error.message || i18n.error || 'Something went wrong adding that.' );
+				}
+			)
+			.finally(
+				function () {
+					submitButton.disabled = false;
+				}
+			);
 	}
 
-	input.addEventListener( 'keydown', function ( event ) {
-		if ( 'Enter' === event.key ) {
+	input.addEventListener(
+		'keydown',
+		function ( event ) {
+			if ( 'Enter' === event.key ) {
+				event.preventDefault();
+				addTypedCategory();
+			} else if ( 'Escape' === event.key ) {
+				select.value = '';
+				hideAdd();
+			}
+		}
+	);
+
+	submitButton.addEventListener(
+		'click',
+		function ( event ) {
 			event.preventDefault();
 			addTypedCategory();
-		} else if ( 'Escape' === event.key ) {
-			select.value = '';
-			hideAdd();
 		}
-	} );
-
-	submitButton.addEventListener( 'click', function ( event ) {
-		event.preventDefault();
-		addTypedCategory();
-	} );
+	);
 }

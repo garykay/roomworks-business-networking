@@ -1,4 +1,10 @@
 /**
+ * Registers the Roomworks Stats Counter block.
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+/**
  * Registers a new block provided a unique name and an object defining its behavior.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
@@ -20,9 +26,14 @@ import metadata from './block.json';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/
  */
-registerBlockType( metadata.name, {
-	/**
-	 * @see ./edit.js
-	 */
-	edit: Edit,
-} );
+registerBlockType(
+	metadata.name,
+	{
+		/**
+		 * The block's editor UI.
+		 *
+		 * @see ./edit.js
+		 */
+		edit: Edit,
+	}
+);

@@ -1,4 +1,10 @@
 /**
+ * Editor UI for the Member Profile block.
+ *
+ * @package RoomworksBusinessNetworking
+ */
+
+/**
  * Retrieves the translation of text.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
@@ -29,13 +35,13 @@ import './editor.scss';
  */
 export default function Edit() {
 	return (
-		<div { ...useBlockProps() }>
-			<p>
+		< div { ...useBlockProps() } >
+			< p >
 				{ __(
 					'Member Profile: shows the visitor’s own profile when logged in, or login/registration forms when logged out.',
 					'roomworks-business-networking'
 				) }
-			</p>
-		</div>
+			< / p >
+		< / div >
 	);
 }
