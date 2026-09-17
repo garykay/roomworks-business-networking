@@ -1,3 +1,60 @@
-# roomworks-business-networking
-# roomworks-business-networking
-# roomworks-business-networking
+# Business Networking
+
+A frontend-first WordPress plugin that runs a member-only business directory and networking platform for the Saffa Network site. Members manage their account and business listing entirely from the public site — wp-admin is used only by administrators, for approving members, managing vocabularies, and reviewing pending listings.
+
+Requires WordPress 6.8+, PHP 7.4+.
+
+## Features
+
+**Member accounts**
+- Front-end registration and login (no wp-admin access needed). New accounts start as `pending` and require admin approval before they can log in.
+- Members can edit their own name, display name, and bio from the front end.
+- Self-service account deletion: a member can request deletion, with a 24-hour delay (via WP-Cron) to cancel before it's actioned.
+
+**Business listings**
+- Each member may have one business listing (custom post type `rbn_business`), enforced via WordPress capabilities plus a server-side safety net.
+- A single front-end form covers name, logo, description, Business Type, Services, location, and contact details. Every field is mandatory except Website and Logo.
+- Submissions are always saved as `pending`; an administrator publishes them via wp-admin.
+- **Business Type**: single-select dropdown of admin-curated categories, plus an "Other" option, backed by a REST endpoint that reuses matching existing terms instead of creating duplicates.
+- **Services**: multi-select type-ahead field with the same find-or-create, duplicate-avoidance behaviour.
+- Optional logo upload (JPG/PNG/GIF/WEBP, up to 5MB), stored as the listing's featured image.
+
+**Directory**
+- Searchable/filterable directory of published businesses (name/description search, Business Type, Service, and location filters). Server-renders the first page and progressively enhances into an async, no-reload experience via REST.
+- The directory page is restricted to logged-in members, with automatic redirect-and-return around the site's own login page.
+
+**Blocks**
+- `Business Directory` — the searchable/filterable directory listing.
+- `Single Business Profile` — for use in a Site Editor "Single Business" template.
+- `Member Profile` — the logged-in member dashboard (profile, business edit, account deletion), or login/registration forms for logged-out visitors.
+- `Roomworks Stats Counter` — live counts of members, listed businesses, and cities covered.
+
+**Admin-side**
+- No custom member-management screens — reuses the existing wp-admin Users screen (status column, Approve/Reject row actions).
+- Business Type and Services vocabularies are managed as ordinary taxonomies in wp-admin.
+- A dedicated Approvals screen for pending business listings and cancelling account-deletion requests.
+
+## Development
+
+```
+npm install
+npm start    # watch/dev build
+npm run build # production build
+```
+
+Uses `@wordpress/scripts`. Block source lives in `src/`; compiled output goes to `build/`. PHP business logic lives in `includes/`.
+
+## Known limitations
+
+See `PROJECT-STATUS.md` for the full, up-to-date list. Highlights:
+
+- Follows and member "service needs" matching are not built (tables exist, unused).
+- No admin UI for pending account-deletion requests beyond the Approvals screen's cancel action — administrators are notified by email.
+- The public REST directory endpoints are unauthenticated by design (only public fields are returned).
+- No `uninstall.php` — deactivating leaves all data intact.
+- No automated tests.
+- No plugin settings screen; the restricted-page slug and default Business Type list are constants in code.
+
+## License
+
+GPL-2.0-or-later
