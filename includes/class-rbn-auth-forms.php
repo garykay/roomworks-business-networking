@@ -167,11 +167,13 @@ class RBN_Auth_Forms {
 			self::redirect_with_notice( 'register_pending_approval' );
 		}
 
-		$first_name = isset( $_POST['rbn_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_first_name'] ) ) : '';
-		$last_name  = isset( $_POST['rbn_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_last_name'] ) ) : '';
-		$email      = isset( $_POST['rbn_email'] ) ? sanitize_email( wp_unslash( $_POST['rbn_email'] ) ) : '';
-		$display    = isset( $_POST['rbn_display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_display_name'] ) ) : '';
-		$agreed     = ! empty( $_POST['rbn_terms'] );
+		$first_name         = isset( $_POST['rbn_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_first_name'] ) ) : '';
+		$last_name          = isset( $_POST['rbn_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_last_name'] ) ) : '';
+		$email              = isset( $_POST['rbn_email'] ) ? sanitize_email( wp_unslash( $_POST['rbn_email'] ) ) : '';
+		$display            = isset( $_POST['rbn_display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_display_name'] ) ) : '';
+		$agreed             = ! empty( $_POST['rbn_terms'] );
+		$origin_country_id  = isset( $_POST['rbn_origin_country_id'] ) ? absint( $_POST['rbn_origin_country_id'] ) : 0;
+		$current_country_id = isset( $_POST['rbn_current_country_id'] ) ? absint( $_POST['rbn_current_country_id'] ) : 0;
 		// Passwords are deliberately not run through sanitize_text_field() -
 		// see the matching comment in handle_login().
 		$password  = isset( $_POST['rbn_password'] ) ? (string) wp_unslash( $_POST['rbn_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -195,6 +197,10 @@ class RBN_Auth_Forms {
 
 		if ( ! $agreed ) {
 			self::redirect_with_notice( 'register_terms_required' );
+		}
+
+		if ( ! RBN_Countries::get_by_id( $origin_country_id ) || ! RBN_Countries::get_by_id( $current_country_id ) ) {
+			self::redirect_with_notice( 'register_invalid_country' );
 		}
 
 		if ( email_exists( $email ) || username_exists( $email ) ) {
@@ -223,6 +229,16 @@ class RBN_Auth_Forms {
 		}
 
 		update_user_meta( $user_id, 'rbn_terms_accepted_at', current_time( 'mysql' ) );
+
+		// Validated against RBN_Countries::get_by_id() above.
+		RBN_Countries::set_origin_country( $user_id, $origin_country_id );
+		RBN_Countries::set_current_country( $user_id, $current_country_id );
+
+		// Ensures a community exists for this origin/destination pair so a
+		// new member is never blocked just because no admin has set up
+		// their specific combination yet - see the method's own docblock
+		// for why this can never create a duplicate.
+		RBN_Communities::get_or_create_for_pair( $origin_country_id, $current_country_id );
 
 		// New accounts require admin approval before they can log in - see
 		// RBN_Member_Approval - so we deliberately do not log the member in

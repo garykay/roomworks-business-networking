@@ -89,6 +89,21 @@ class RBN_Settings {
 			self::PAGE_SLUG,
 			'rbn_settings_notifications'
 		);
+
+		add_settings_section(
+			'rbn_settings_communities',
+			__( 'Communities', 'roomworks-business-networking' ),
+			'__return_false',
+			self::PAGE_SLUG
+		);
+
+		add_settings_field(
+			'require_unique_community_pair',
+			__( 'Origin/destination pairs', 'roomworks-business-networking' ),
+			array( __CLASS__, 'render_require_unique_community_pair_field' ),
+			self::PAGE_SLUG,
+			'rbn_settings_communities'
+		);
 	}
 
 	public static function sanitize( $input ) {
@@ -118,20 +133,28 @@ class RBN_Settings {
 
 		$grace_hours = min( self::MAX_DELETION_GRACE_HOURS, $grace_hours );
 
+		$require_unique_community_pair = ! empty( $input['require_unique_community_pair'] );
+
 		return array(
-			'per_page'             => $per_page,
-			'sort'                 => $sort,
-			'notification_email'   => $notification_email,
-			'deletion_grace_hours' => $grace_hours,
+			'per_page'                      => $per_page,
+			'sort'                          => $sort,
+			'notification_email'            => $notification_email,
+			'deletion_grace_hours'          => $grace_hours,
+			'require_unique_community_pair' => $require_unique_community_pair,
 		);
 	}
 
 	private static function options() {
 		$defaults = array(
-			'per_page'             => RBN_Business_Query::DEFAULT_PER_PAGE,
-			'sort'                 => self::DEFAULT_SORT,
-			'notification_email'   => '',
-			'deletion_grace_hours' => self::DEFAULT_DELETION_GRACE_HOURS,
+			'per_page'                      => RBN_Business_Query::DEFAULT_PER_PAGE,
+			'sort'                          => self::DEFAULT_SORT,
+			'notification_email'            => '',
+			'deletion_grace_hours'          => self::DEFAULT_DELETION_GRACE_HOURS,
+			// On by default: one community per origin/destination pair,
+			// matching the spec's default assumption (Section 6) unless an
+			// admin explicitly opts into multiple (e.g. regional
+			// sub-communities) via this setting.
+			'require_unique_community_pair' => true,
 		);
 		$saved    = get_option( self::OPTION_NAME, array() );
 
@@ -188,6 +211,10 @@ class RBN_Settings {
 
 	public static function deletion_grace_hours() {
 		return self::options()['deletion_grace_hours'];
+	}
+
+	public static function require_unique_community_pair() {
+		return (bool) self::options()['require_unique_community_pair'];
 	}
 
 	public static function render_per_page_field() {
@@ -261,6 +288,24 @@ class RBN_Settings {
 		<?php esc_html_e( 'hours', 'roomworks-business-networking' ); ?>
 		<p class="description">
 			<?php esc_html_e( 'How long a member has to cancel an account deletion request before it happens automatically. Only applies to requests made after this is changed.', 'roomworks-business-networking' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_require_unique_community_pair_field() {
+		$options = self::options();
+		?>
+		<label>
+			<input
+				type="checkbox"
+				name="<?php echo esc_attr( self::OPTION_NAME ); ?>[require_unique_community_pair]"
+				value="1"
+				<?php checked( $options['require_unique_community_pair'] ); ?>
+			/>
+			<?php esc_html_e( 'Require a unique origin/destination pair (e.g. only one "South Africans in the UK" community).', 'roomworks-business-networking' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Turn this off to allow more than one community for the same pair - for example regional sub-communities such as "South Africans in the UK - London".', 'roomworks-business-networking' ); ?>
 		</p>
 		<?php
 	}

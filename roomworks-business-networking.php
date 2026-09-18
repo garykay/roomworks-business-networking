@@ -37,6 +37,11 @@ add_action(
 );
 
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-schema.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-countries.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-countries.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-communities.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-community-memberships.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-community-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-capabilities.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-business-category.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-service.php';
@@ -53,6 +58,7 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-access-control.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-settings.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-approvals.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-communities-admin.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-directory.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-services.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
@@ -70,12 +76,11 @@ add_action( 'init', array( 'RBN_Taxonomy_Business_Category', 'register' ) );
 add_action( 'init', array( 'RBN_Taxonomy_Service', 'register' ) );
 add_action( 'init', array( 'RBN_Post_Type_Business', 'register' ) );
 
-add_action( 'save_post_' . RBN_Post_Type_Business::POST_TYPE, array( 'RBN_Business_Repository', 'enforce_single_business' ), 10, 3 );
-
 add_action( 'init', array( 'RBN_Auth_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Profile_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Business_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
@@ -97,9 +102,13 @@ add_action( 'save_post_page', array( 'RBN_Access_Control', 'flush_login_page_cac
 add_action( 'admin_menu', array( 'RBN_Settings', 'register_menu' ) );
 add_action( 'admin_init', array( 'RBN_Settings', 'register_settings' ) );
 
+add_action( 'admin_menu', array( 'RBN_Communities_Admin', 'register_menu' ) );
+add_action( 'admin_init', array( 'RBN_Communities_Admin', 'maybe_handle_request' ) );
+
 add_action( 'rest_api_init', array( 'RBN_REST_Directory', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Business_Categories', 'register_routes' ) );
+add_action( 'rest_api_init', array( 'RBN_REST_Countries', 'register_routes' ) );
 
 /**
  * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)

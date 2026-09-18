@@ -50,28 +50,28 @@ import './editor.scss';
  */
 export default function Edit( { context } ) {
 	const blockProps = useBlockProps();
-	const postId     = context ? .postId;
+	const postId     = context?.postId;
 
-	if ( ! postId || 'rbn_business' !== context ? .postType ) {
+	if ( ! postId || 'rbn_business' !== context?.postType ) {
 		return (
-			< div { ...blockProps } >
-				< p >
+			<div { ...blockProps }>
+				<p>
 					{ __(
 						'Single Business Profile: shows the business being viewed. Add this inside a Single Business template (Appearance ▸ Editor ▸ Templates) to see a live preview here.',
 						'roomworks-business-networking'
 					) }
-				< / p >
-			< / div >
+				</p>
+			</div>
 		);
 	}
 
 	return (
-		< div { ...blockProps } >
-			< ServerSideRender
-				block      = "roomworks-business-networking/single-business-profile"
-				attributes = { {} }
-				context    = { context }
-			/ >
-		< / div >
+		<div { ...blockProps }>
+			<ServerSideRender
+				block={ 'roomworks-business-networking/single-business-profile' }
+				attributes={ {} }
+				context={ context }
+			/>
+		</div>
 	);
 }

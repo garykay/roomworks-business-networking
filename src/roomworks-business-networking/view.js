@@ -35,6 +35,7 @@ document.addEventListener(
 				const paginationEl  = root.querySelector( '[data-rbn-pagination]' );
 				const filterActions = root.querySelector( '[data-rbn-filter-actions]' );
 				const restUrl       = root.getAttribute( 'data-rest-url' );
+				const restNonce     = root.getAttribute( 'data-rest-nonce' );
 
 				if ( ! form || ! resultsEl || ! paginationEl || ! restUrl ) {
 						return;
@@ -298,7 +299,12 @@ document.addEventListener(
 
 					statusEl.textContent = i18n.loading || 'Loading businesses…';
 
-					fetch( url.toString(), { headers: { Accept: 'application/json' } } )
+					const headers = { Accept: 'application/json' };
+					if ( restNonce ) {
+						headers[ 'X-WP-Nonce' ] = restNonce;
+					}
+
+					fetch( url.toString(), { headers } )
 						.then(
 							function ( response ) {
 								if ( ! response.ok ) {
