@@ -554,4 +554,154 @@
 		align-items: center;
 		gap: 1.25rem;
 	}
+
+	// Favourites tab - reuses RBN_Templates::business_card() (same markup
+	// the directory block renders), so this is the same grid/card CSS as
+	// roomworks-business-networking/style.scss's .rbn-directory__grid /
+	// .rbn-business-card* - kept as its own copy rather than a shared
+	// stylesheet, per this file's own "Shared building blocks" comment
+	// near the top: each block ships its own compiled CSS bundle.
+
+	.rbn-directory__grid {
+		display: grid;
+		grid-template-columns: repeat( auto-fill, minmax( 240px, 1fr ) );
+		gap: 1.25rem;
+		margin-top: 1rem;
+	}
+
+	.rbn-business-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.rbn-business-card__logo {
+		width: 100%;
+		height: 120px;
+		object-fit: cover;
+	}
+
+	.rbn-business-card__logo--placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var( --rbn-surface-muted );
+
+		.rbn-icon {
+			width: 36px;
+			height: 36px;
+			color: #c2c6cd;
+		}
+	}
+
+	.rbn-business-card__body {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		padding: 1.1rem;
+	}
+
+	.rbn-business-card__category {
+		margin: 0 0 0.4rem;
+		color: var( --rbn-accent );
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.rbn-business-card__name {
+		margin: 0 0 0.4rem;
+		font-size: 1.0625rem;
+
+		a {
+			color: var( --rbn-text );
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				color: var( --rbn-accent );
+			}
+		}
+	}
+
+	.rbn-business-card__excerpt {
+		margin: 0 0 0.6rem;
+		color: var( --rbn-muted );
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.rbn-business-card__location {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.4rem;
+		margin: 0 0 0.6rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+	}
+
+	.rbn-business-card__services {
+		margin: 0 0 0.85rem;
+		color: var( --rbn-muted );
+		font-size: 0.8rem;
+	}
+
+	.rbn-business-card__link {
+		margin: auto 0 0;
+
+		a {
+			color: var( --rbn-accent );
+			font-size: 0.875rem;
+			font-weight: 600;
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.rbn-business-follow-form {
+		position: absolute;
+		top: 0.65rem;
+		right: 0.65rem;
+		z-index: 1;
+	}
+
+	.rbn-business-follow-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		border: none;
+		border-radius: 999px;
+		background: rgba( 255, 255, 255, 0.92 );
+		box-shadow: var( --rbn-shadow );
+		color: var( --rbn-muted );
+		cursor: pointer;
+
+		.rbn-icon {
+			width: 16px;
+			height: 16px;
+			color: inherit;
+		}
+
+		&:hover,
+		&:focus-visible {
+			color: #e0245e;
+		}
+	}
+
+	.rbn-business-follow-btn--following {
+		color: #e0245e;
+
+		.rbn-icon {
+			fill: currentColor;
+		}
+	}
 }

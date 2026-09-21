@@ -154,6 +154,12 @@ class RBN_Account_Deletion {
 		$wpdb->delete( RBN_Schema::follows_table(), array( 'follower_id' => $user_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( RBN_Schema::follows_table(), array( 'followed_id' => $user_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->delete( RBN_Schema::member_needs_table(), array( 'user_id' => $user_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		// The other side - other members' follows of THIS user's businesses
+		// - is cleaned up separately, by RBN_Business_Follows::
+		// cleanup_on_business_deleted() hooked to before_delete_post, which
+		// fires for each business wp_delete_user() removes below.
+		RBN_Business_Follows::delete_all_for_user( $user_id );
 	}
 
 	private static function notify_admin( $user_id, $event ) {

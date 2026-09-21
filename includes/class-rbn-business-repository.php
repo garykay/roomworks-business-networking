@@ -70,4 +70,28 @@ class RBN_Business_Repository {
 
 		return $business;
 	}
+
+	/**
+	 * A specific business, regardless of who owns it, but only if it's
+	 * actually published - used by RBN_Business_Follow_Forms, where "can
+	 * this be followed" means "is this publicly visible", not "does the
+	 * current user own it" (the opposite check from get_by_id_for_user()
+	 * above). Returns null for a non-existent business, the wrong post
+	 * type, or anything not published (pending/draft/trashed).
+	 */
+	public static function get_published( $business_id ) {
+		$business_id = absint( $business_id );
+
+		if ( ! $business_id ) {
+			return null;
+		}
+
+		$business = get_post( $business_id );
+
+		if ( ! $business || RBN_Post_Type_Business::POST_TYPE !== $business->post_type || 'publish' !== $business->post_status ) {
+			return null;
+		}
+
+		return $business;
+	}
 }

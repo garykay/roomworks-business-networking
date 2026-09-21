@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Schema {
 
 	const DB_VERSION_OPTION = 'rbn_db_version';
-	const DB_VERSION        = '1.2.0';
+	const DB_VERSION        = '1.3.0';
 
 	/**
 	 * Creates (or updates) the plugin's custom tables.
@@ -110,11 +110,31 @@ class RBN_Schema {
 			KEY status (status)
 		) {$charset_collate};";
 
+		// A member following a business - see RBN_Business_Follows. Kept as
+		// its own table rather than reusing $sql_follows above: that table's
+		// follower_id/followed_id are both WordPress user IDs (a future
+		// member-to-member follow feature - see its own docblock), and
+		// pointing followed_id at a business post ID instead would silently
+		// break RBN_Account_Deletion's existing followed_id = user_id
+		// cleanup as well as conflating two different entity types under
+		// one ambiguous column.
+		$business_follows_table = self::business_follows_table();
+		$sql_business_follows   = "CREATE TABLE {$business_follows_table} (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			user_id BIGINT UNSIGNED NOT NULL,
+			business_id BIGINT UNSIGNED NOT NULL,
+			created_at DATETIME NOT NULL,
+			PRIMARY KEY  (id),
+			UNIQUE KEY user_business (user_id, business_id),
+			KEY business_id (business_id)
+		) {$charset_collate};";
+
 		dbDelta( $sql_follows );
 		dbDelta( $sql_needs );
 		dbDelta( $sql_countries );
 		dbDelta( $sql_communities );
 		dbDelta( $sql_memberships );
+		dbDelta( $sql_business_follows );
 
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
 	}
@@ -165,5 +185,10 @@ class RBN_Schema {
 	public static function community_memberships_table() {
 		global $wpdb;
 		return $wpdb->prefix . 'rbn_community_memberships';
+	}
+
+	public static function business_follows_table() {
+		global $wpdb;
+		return $wpdb->prefix . 'rbn_business_follows';
 	}
 }

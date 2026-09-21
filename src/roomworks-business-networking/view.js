@@ -23,6 +23,12 @@ const PIN_ICON_SVG =
 	'<path d="M12 21s7-7.5 7-12a7 7 0 0 0-14 0c0 4.5 7 12 7 12Z"></path>' +
 	'</svg>';
 
+// Mirrors RBN_Templates::icon( 'heart' ).
+const HEART_ICON_SVG =
+	'<svg class="rbn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+	'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>' +
+	'</svg>';
+
 document.addEventListener(
 	'DOMContentLoaded',
 	function () {
@@ -36,6 +42,9 @@ document.addEventListener(
 				const filterActions = root.querySelector( '[data-rbn-filter-actions]' );
 				const restUrl       = root.getAttribute( 'data-rest-url' );
 				const restNonce     = root.getAttribute( 'data-rest-nonce' );
+				const followRedirectUrl = root.getAttribute( 'data-follow-redirect-url' ) || '';
+				const followNonce       = root.getAttribute( 'data-follow-nonce' ) || '';
+				const unfollowNonce     = root.getAttribute( 'data-unfollow-nonce' ) || '';
 
 				if ( ! form || ! resultsEl || ! paginationEl || ! restUrl ) {
 						return;
@@ -91,9 +100,70 @@ document.addEventListener(
 					}
 				}
 
+				/**
+				 * Mirrors RBN_Templates::business_follow_form() - a plain
+				 * POST form, not a fetch()-based toggle, so submitting it
+				 * does a normal full-page redirect back to
+				 * followRedirectUrl (RBN_Business_Follow_Forms handles the
+				 * actual follow/unfollow). Nothing here needs to update
+				 * the button's own state on click - the redirect already
+				 * re-renders the page with the new state.
+				 */
+				function createFollowForm( item ) {
+					if ( item.is_own || ! followRedirectUrl ) {
+						return null;
+					}
+
+					const isFollowing = Boolean( item.is_following );
+					const action      = isFollowing ? 'rbn_unfollow_business' : 'rbn_follow_business';
+					const nonce       = isFollowing ? unfollowNonce : followNonce;
+
+					if ( ! nonce ) {
+						return null;
+					}
+
+					const form     = document.createElement( 'form' );
+					form.className = 'rbn-business-follow-form';
+					form.method    = 'post';
+					form.action    = followRedirectUrl;
+
+					[
+						[ 'rbn_form_action', action ],
+						[ 'rbn_business_id', String( item.id ) ],
+						[ 'rbn_redirect_to', followRedirectUrl ],
+						[ 'rbn_business_follow_nonce', nonce ],
+					].forEach(
+						function ( pair ) {
+							const input = document.createElement( 'input' );
+							input.type  = 'hidden';
+							input.name  = pair[ 0 ];
+							input.value = pair[ 1 ];
+							form.appendChild( input );
+						}
+					);
+
+					const button     = document.createElement( 'button' );
+					button.type      = 'submit';
+					button.className = 'rbn-business-follow-btn' + ( isFollowing ? ' rbn-business-follow-btn--following' : '' );
+					button.setAttribute( 'aria-pressed', isFollowing ? 'true' : 'false' );
+					button.setAttribute(
+						'aria-label',
+						isFollowing ? ( i18n.unfollow || 'Unfollow this business' ) : ( i18n.follow || 'Follow this business' )
+					);
+					button.innerHTML = HEART_ICON_SVG;
+					form.appendChild( button );
+
+					return form;
+				}
+
 				function createCard( item ) {
 					const card     = document.createElement( 'article' );
 					card.className = 'rbn-business-card rbn-card';
+
+					const followForm = createFollowForm( item );
+					if ( followForm ) {
+						card.appendChild( followForm );
+					}
 
 					if ( item.logo ) {
 						const img     = document.createElement( 'img' );

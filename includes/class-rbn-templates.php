@@ -171,6 +171,10 @@ class RBN_Templates {
 				'label'   => __( 'Businesses', 'roomworks-business-networking' ),
 				'content' => self::businesses_section( $businesses, $editing_business, $current_user, $current_url, $notice_code ),
 			),
+			'favourites'  => array(
+				'label'   => __( 'Favourites', 'roomworks-business-networking' ),
+				'content' => self::favourites_section( $current_user, $current_url ),
+			),
 			'requests'    => array(
 				'label'   => __( 'Requests', 'roomworks-business-networking' ),
 				'content' => self::jobs_section( $jobs, $editing_job, $current_user, $current_url, $notice_code ),
@@ -211,12 +215,31 @@ class RBN_Templates {
 		// - nothing to "land on".
 		$confirming_deletion = ! empty( $_GET['rbn_confirm_deletion'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as account_deletion_section()'s own identical check.
 
+		// A follow/unfollow notice is also technically "section business"
+		// under RBN_Notices::section()'s generic prefix match (business_
+		// followed/unfollowed/follow_*), which would otherwise land back
+		// on "Businesses" instead of "Favourites" - checked before the
+		// generic map below, not folded into it. Listed explicitly rather
+		// than prefix-matched: "business_followed"/"business_unfollowed"
+		// don't share a clean common prefix with each other or with the
+		// business_follow_* error codes.
+		$follow_notice_codes = array(
+			'business_followed',
+			'business_unfollowed',
+			'business_follow_invalid_request',
+			'business_follow_not_found',
+			'business_follow_own_business',
+		);
+		$is_follow_notice    = in_array( $notice_code, $follow_notice_codes, true );
+
 		if ( $editing_business_id ) {
 			$active_tab = 'businesses';
 		} elseif ( $editing_job_id ) {
 			$active_tab = 'requests';
 		} elseif ( $confirming_deletion ) {
 			$active_tab = 'account';
+		} elseif ( $is_follow_notice ) {
+			$active_tab = 'favourites';
 		} else {
 			$section_to_tab = array(
 				'profile'          => 'profile',
@@ -507,6 +530,53 @@ class RBN_Templates {
 	}
 
 	/**
+	 * The follow/unfollow heart button - used on both a directory/
+	 * favourites business card and the single business profile page. Same
+	 * plain-POST, no-JS-required pattern as community_action_form() above,
+	 * not a fetch()-based toggle, so it works identically everywhere it's
+	 * placed without needing a REST endpoint or any JS at all (the
+	 * directory's async re-render in view.js only needs to reproduce this
+	 * markup, not any click-handling logic of its own).
+	 *
+	 * Renders nothing for a logged-out visitor (the single business
+	 * profile page is reachable while logged out - see its own docblock)
+	 * or for the business's own owner, matching
+	 * RBN_Business_Follow_Forms::handle_follow()'s own server-side rule.
+	 */
+	private static function business_follow_form( $business_id, $is_following, $is_own, $redirect_to, $show_label = false ) {
+		if ( ! is_user_logged_in() || $is_own ) {
+			return '';
+		}
+
+		$action = $is_following ? RBN_Business_Follow_Forms::UNFOLLOW_ACTION : RBN_Business_Follow_Forms::FOLLOW_ACTION;
+		$label  = $is_following
+			? __( 'Unfollow this business', 'roomworks-business-networking' )
+			: __( 'Follow this business', 'roomworks-business-networking' );
+
+		ob_start();
+		?>
+		<form class="rbn-business-follow-form" method="post" action="<?php echo esc_url( $redirect_to ); ?>">
+			<?php wp_nonce_field( $action, 'rbn_business_follow_nonce' ); ?>
+			<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( $action ); ?>" />
+			<input type="hidden" name="rbn_business_id" value="<?php echo esc_attr( $business_id ); ?>" />
+			<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $redirect_to ); ?>" />
+			<button
+				type="submit"
+				class="rbn-business-follow-btn<?php echo $is_following ? ' rbn-business-follow-btn--following' : ''; ?>"
+				aria-pressed="<?php echo $is_following ? 'true' : 'false'; ?>"
+				aria-label="<?php echo esc_attr( $label ); ?>"
+			>
+				<?php echo self::icon( 'heart' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static trusted markup, see icon(). ?>
+				<?php if ( $show_label ) : ?>
+					<span><?php echo $is_following ? esc_html__( 'Following', 'roomworks-business-networking' ) : esc_html__( 'Follow', 'roomworks-business-networking' ); ?></span>
+				<?php endif; ?>
+			</button>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * A country <select>, populated from RBN_Countries::get_all(). A plain
 	 * native select rather than a type-ahead (unlike Services/Business
 	 * Type): with ~195 options a native select is still fast to use (type
@@ -617,6 +687,44 @@ class RBN_Templates {
 			<?php endif; ?>
 		</section>
 		<?php echo self::business_form( $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The "Favourites" tab - every business the member currently follows
+	 * (RBN_Business_Follows), reusing business_card() so a favourited
+	 * business looks and behaves exactly like it does in the directory,
+	 * including its own unfollow control - no separate markup to keep in
+	 * sync. A business that's since been unpublished simply isn't in
+	 * $followed_businesses any more (see
+	 * RBN_Business_Follows::get_followed_businesses_for_user()'s docblock),
+	 * not shown here as a broken/ghost entry.
+	 */
+	private static function favourites_section( $current_user, $current_url ) {
+		$followed_businesses = RBN_Business_Follows::get_followed_businesses_for_user( $current_user->ID );
+
+		ob_start();
+		?>
+		<section class="rbn-favourites rbn-card">
+			<h3><?php esc_html_e( 'Favourites', 'roomworks-business-networking' ); ?></h3>
+			<?php if ( empty( $followed_businesses ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "You haven't followed any businesses yet - look for the heart button on a business's profile or in the directory.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<div class="rbn-directory__grid">
+					<?php foreach ( $followed_businesses as $business ) : ?>
+						<?php
+						// Always following, by construction - this list IS
+						// the follow relationship, so no batch lookup is
+						// needed the way results() needs one for a mixed
+						// set of businesses.
+						$item = RBN_Business_Query::normalize( $business, array( $business->ID => true ), $current_user->ID );
+						echo self::business_card( $item, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within.
+						?>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+		</section>
 		<?php
 		return ob_get_clean();
 	}
@@ -1290,7 +1398,7 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	public static function directory_results( $results ) {
+	public static function directory_results( $results, $current_url = '' ) {
 		ob_start();
 
 		if ( empty( $results['items'] ) ) {
@@ -1301,7 +1409,7 @@ class RBN_Templates {
 			?>
 			<div class="rbn-directory__grid">
 				<?php foreach ( $results['items'] as $item ) : ?>
-					<?php echo self::business_card( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+					<?php echo self::business_card( $item, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 				<?php endforeach; ?>
 			</div>
 			<?php
@@ -1310,10 +1418,22 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	private static function business_card( $item ) {
+	/**
+	 * $current_url is where the follow/unfollow form (if rendered at all -
+	 * see business_follow_form()) redirects back to, so acting on a card
+	 * lands back on this same filtered/paginated directory view rather
+	 * than some other page. Left empty for a context that never needs the
+	 * follow control (there isn't one currently, but keeps this method
+	 * usable without it).
+	 */
+	private static function business_card( $item, $current_url = '' ) {
 		ob_start();
 		?>
 		<article class="rbn-business-card rbn-card">
+			<?php if ( $current_url ) : ?>
+				<?php echo self::business_follow_form( $item['id'], $item['is_following'], $item['is_own'], $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+			<?php endif; ?>
+
 			<?php if ( $item['logo'] ) : ?>
 				<img class="rbn-business-card__logo" src="<?php echo esc_url( $item['logo'] ); ?>" alt="" loading="lazy" />
 			<?php else : ?>
@@ -1612,6 +1732,7 @@ class RBN_Templates {
 			'mail'   => '<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path>',
 			'radius' => '<circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle>',
 			'image'  => '<rect x="2.5" y="4.5" width="19" height="15" rx="1.5"></rect><circle cx="8" cy="9.7" r="1.6" fill="currentColor"></circle><path d="M3.6 17.5 8 11.8l2.6 2.7L15.2 9l5.2 8.5H3.6Z" fill="currentColor"></path>',
+			'heart'  => '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>',
 		);
 
 		if ( ! isset( $icons[ $name ] ) ) {
@@ -1626,7 +1747,7 @@ class RBN_Templates {
 	 * core blocks (Post Title, Post Featured Image, Post Content): business
 	 * type, all services, full location, contact details, owning member.
 	 */
-	public static function business_profile( WP_Post $business ) {
+	public static function business_profile( WP_Post $business, $current_url = '', $notice_code = '' ) {
 		$categories = get_the_terms( $business, RBN_Taxonomy_Business_Category::TAXONOMY );
 		$services   = get_the_terms( $business, RBN_Taxonomy_Service::TAXONOMY );
 
@@ -1641,14 +1762,28 @@ class RBN_Templates {
 		$owner    = get_userdata( $business->post_author );
 		$location = trim( implode( ', ', array_filter( array( $town_city, $county_region, $postcode ) ) ) );
 
+		$current_user_id = get_current_user_id();
+		$is_own           = $current_user_id && $current_user_id === (int) $business->post_author;
+		$is_following      = $current_user_id && RBN_Business_Follows::is_following( $current_user_id, $business->ID );
+
 		ob_start();
 		?>
 		<article <?php post_class( 'rbn-business-profile' ); ?>>
+
+			<?php if ( $notice_code ) : ?>
+				<?php echo self::notice( $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+			<?php endif; ?>
 
 			<?php if ( 'publish' !== $business->post_status && current_user_can( 'edit_post', $business->ID ) ) : ?>
 				<p class="rbn-notice rbn-notice--error" role="status">
 					<?php esc_html_e( "This business is pending review and isn't visible to the public yet.", 'roomworks-business-networking' ); ?>
 				</p>
+			<?php endif; ?>
+
+			<?php if ( $current_url ) : ?>
+				<div class="rbn-business-profile__follow">
+					<?php echo self::business_follow_form( $business->ID, $is_following, $is_own, $current_url, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+				</div>
 			<?php endif; ?>
 
 			<?php if ( has_post_thumbnail( $business ) ) : ?>

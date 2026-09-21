@@ -47,6 +47,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-business-category.php
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-taxonomy-service.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-business.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-repository.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follows.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follow-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-notices.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-member-approval.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-auth-forms.php';
@@ -91,6 +93,9 @@ add_action( 'init', array( 'RBN_Business_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Job_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Business_Follow_Forms', 'handle_request' ) );
+
+add_action( 'before_delete_post', array( 'RBN_Business_Follows', 'cleanup_on_business_deleted' ) );
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 

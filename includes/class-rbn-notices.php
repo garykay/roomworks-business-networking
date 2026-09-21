@@ -58,6 +58,11 @@ class RBN_Notices {
 			'job_not_permitted'                 => array( 'error', __( "You don't have permission to do that.", 'roomworks-business-networking' ) ),
 			'job_saved'                         => array( 'success', __( 'Your request has been posted.', 'roomworks-business-networking' ) ),
 			'job_updated'                       => array( 'success', __( 'Your request has been updated.', 'roomworks-business-networking' ) ),
+			'business_follow_invalid_request'  => array( 'error', __( 'Your session expired. Please try again.', 'roomworks-business-networking' ) ),
+			'business_follow_not_found'        => array( 'error', __( "That business isn't available to follow.", 'roomworks-business-networking' ) ),
+			'business_follow_own_business'     => array( 'error', __( "You can't follow your own business.", 'roomworks-business-networking' ) ),
+			'business_followed'                => array( 'success', __( "You're now following this business.", 'roomworks-business-networking' ) ),
+			'business_unfollowed'              => array( 'success', __( 'You have unfollowed this business.', 'roomworks-business-networking' ) ),
 		);
 	}
 
