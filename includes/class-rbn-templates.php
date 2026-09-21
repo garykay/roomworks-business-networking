@@ -112,6 +112,8 @@ class RBN_Templates {
 						<label for="rbn-register-email"><?php esc_html_e( 'Email Address', 'roomworks-business-networking' ); ?></label>
 						<input type="email" id="rbn-register-email" name="rbn_email" autocomplete="email" required />
 					</p>
+					<?php echo self::country_field( 'rbn-register-origin-country', 'rbn_origin_country_id', __( 'Country of Origin', 'roomworks-business-networking' ), 0 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within country_field(). ?>
+					<?php echo self::country_field( 'rbn-register-current-country', 'rbn_current_country_id', __( 'Country You Currently Live In', 'roomworks-business-networking' ), 0 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 					<p>
 						<label for="rbn-register-password"><?php esc_html_e( 'Password', 'roomworks-business-networking' ); ?></label>
 						<input type="password" id="rbn-register-password" name="rbn_password" autocomplete="new-password" required />
@@ -141,14 +143,24 @@ class RBN_Templates {
 	 * and the business create/edit form.
 	 */
 	public static function member_dashboard( $current_user, $current_url, $notice_code ) {
-		$business = RBN_Business_Repository::get_for_user( $current_user->ID );
+		$businesses = RBN_Business_Repository::get_all_for_user( $current_user->ID );
+
+		// Which business (if any) the form below is editing - read directly
+		// here rather than passed in, same as account_deletion_section()'s
+		// rbn_confirm_deletion below. Read-only: only chooses which
+		// business's data pre-fills the form, never a state change, so no
+		// nonce applies - get_by_id_for_user() re-verifies ownership
+		// regardless of what this value claims.
+		$editing_business_id = isset( $_GET['rbn_edit_business'] ) ? absint( $_GET['rbn_edit_business'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$editing_business     = $editing_business_id ? RBN_Business_Repository::get_by_id_for_user( $editing_business_id, $current_user->ID ) : null;
 
 		ob_start();
 		?>
 		<div class="rbn-dashboard">
-			<?php echo self::profile_summary( $current_user, $business ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+			<?php echo self::profile_summary( $current_user, $businesses ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 			<?php echo self::profile_edit_form( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php echo self::business_form( $business, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo self::communities_section( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo self::businesses_section( $businesses, $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php echo self::account_deletion_section( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 			<p class="rbn-profile__logout">
@@ -159,7 +171,7 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	private static function profile_summary( $current_user, $business ) {
+	private static function profile_summary( $current_user, array $businesses ) {
 		$bio = get_user_meta( $current_user->ID, 'description', true );
 
 		ob_start();
@@ -177,14 +189,18 @@ class RBN_Templates {
 			</div>
 
 			<div class="rbn-profile__business">
-				<h3><?php esc_html_e( 'Business', 'roomworks-business-networking' ); ?></h3>
-				<?php if ( $business ) : ?>
-					<p>
-						<?php echo esc_html( wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) ); ?>
-						<?php if ( 'pending' === $business->post_status ) : ?>
-							<span class="rbn-status rbn-status--pending"><?php esc_html_e( 'Pending review', 'roomworks-business-networking' ); ?></span>
-						<?php endif; ?>
-					</p>
+				<h3><?php esc_html_e( 'Businesses', 'roomworks-business-networking' ); ?></h3>
+				<?php if ( $businesses ) : ?>
+					<ul class="rbn-profile__business-list">
+						<?php foreach ( $businesses as $business ) : ?>
+							<li>
+								<?php echo esc_html( wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) ); ?>
+								<?php if ( 'pending' === $business->post_status ) : ?>
+									<span class="rbn-status rbn-status--pending"><?php esc_html_e( 'Pending review', 'roomworks-business-networking' ); ?></span>
+								<?php endif; ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
 				<?php else : ?>
 					<p class="rbn-field-note"><?php esc_html_e( "You haven't added a business yet.", 'roomworks-business-networking' ); ?></p>
 				<?php endif; ?>
@@ -262,7 +278,9 @@ class RBN_Templates {
 	}
 
 	private static function profile_edit_form( $current_user, $current_url, $notice_code ) {
-		$bio = get_user_meta( $current_user->ID, 'description', true );
+		$bio                = get_user_meta( $current_user->ID, 'description', true );
+		$origin_country_id  = RBN_Countries::get_origin_country_id( $current_user->ID );
+		$current_country_id = RBN_Countries::get_current_country_id( $current_user->ID );
 
 		ob_start();
 		?>
@@ -292,6 +310,8 @@ class RBN_Templates {
 					<label for="rbn-profile-bio"><?php esc_html_e( 'About You', 'roomworks-business-networking' ); ?></label>
 					<textarea id="rbn-profile-bio" name="rbn_bio" rows="4"><?php echo esc_textarea( $bio ); ?></textarea>
 				</p>
+				<?php echo self::country_field( 'rbn-profile-origin-country', 'rbn_origin_country_id', __( 'Country of Origin', 'roomworks-business-networking' ), $origin_country_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within country_field(). ?>
+				<?php echo self::country_field( 'rbn-profile-current-country', 'rbn_current_country_id', __( 'Country You Currently Live In', 'roomworks-business-networking' ), $current_country_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<p>
 					<button type="submit" class="rbn-button"><?php esc_html_e( 'Save Profile', 'roomworks-business-networking' ); ?></button>
 				</p>
@@ -301,7 +321,222 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	private static function business_form( $business, $current_url, $notice_code ) {
+	/**
+	 * "My Communities" (joined, with a Leave button) plus "Available
+	 * Communities" (active communities whose destination country matches
+	 * the member's current country, not yet joined, with a Join button).
+	 * Nothing shown for "available" if the member hasn't set a current
+	 * country yet on the form above - there's nothing valid to offer.
+	 */
+	private static function communities_section( $current_user, $current_url, $notice_code ) {
+		$user_id             = $current_user->ID;
+		$current_country_id  = RBN_Countries::get_current_country_id( $user_id );
+		$joined              = RBN_Community_Memberships::get_communities_for_user( $user_id );
+		// wp_list_pluck() returns raw values, which for a $wpdb->get_results()
+		// row are strings - cast to int so the strict in_array() comparison
+		// below (correctly) matches against $community->id, which is also
+		// cast to int.
+		$joined_ids          = array_map( 'intval', wp_list_pluck( $joined, 'id' ) );
+
+		$available = $current_country_id ? RBN_Communities::get_for_destination_country( $current_country_id ) : array();
+		$available = array_values(
+			array_filter(
+				$available,
+				static function ( $community ) use ( $joined_ids ) {
+					return ! in_array( (int) $community->id, $joined_ids, true );
+				}
+			)
+		);
+
+		ob_start();
+		?>
+		<section class="rbn-communities rbn-card">
+			<h3><?php esc_html_e( 'Communities', 'roomworks-business-networking' ); ?></h3>
+
+			<?php echo self::notice_for_section( $notice_code, 'community' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+			<h4><?php esc_html_e( 'My Communities', 'roomworks-business-networking' ); ?></h4>
+			<?php if ( empty( $joined ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "You haven't joined any communities yet.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<ul class="rbn-community-list">
+					<?php foreach ( $joined as $community ) : ?>
+						<li>
+							<?php echo esc_html( $community->name ); ?>
+							<?php echo self::community_action_form( $community->id, RBN_Community_Forms::LEAVE_ACTION, __( 'Leave', 'roomworks-business-networking' ), $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+
+			<h4><?php esc_html_e( 'Available Communities', 'roomworks-business-networking' ); ?></h4>
+			<?php if ( ! $current_country_id ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( 'Set the country you currently live in above to see communities you can join.', 'roomworks-business-networking' ); ?></p>
+			<?php elseif ( empty( $available ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( 'No communities are available in your current country yet.', 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<ul class="rbn-community-list">
+					<?php foreach ( $available as $community ) : ?>
+						<li>
+							<?php echo esc_html( $community->name ); ?>
+							<?php echo self::community_action_form( $community->id, RBN_Community_Forms::JOIN_ACTION, __( 'Join', 'roomworks-business-networking' ), $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	private static function community_action_form( $community_id, $action, $label, $current_url ) {
+		ob_start();
+		?>
+		<form class="rbn-community-list__form" method="post" action="<?php echo esc_url( $current_url ); ?>">
+			<?php wp_nonce_field( $action, 'rbn_community_action_nonce' ); ?>
+			<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( $action ); ?>" />
+			<input type="hidden" name="rbn_community_id" value="<?php echo esc_attr( $community_id ); ?>" />
+			<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
+			<button type="submit" class="rbn-button rbn-button--secondary"><?php echo esc_html( $label ); ?></button>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * A country <select>, populated from RBN_Countries::get_all(). A plain
+	 * native select rather than a type-ahead (unlike Services/Business
+	 * Type): with ~195 options a native select is still fast to use (type
+	 * to jump, works without JS) and needed nowhere near as urgently as an
+	 * async picker would for the much larger business-category vocabulary.
+	 * RBN_REST_Countries already exists for a future JS-enhanced version of
+	 * this field without needing new backend work.
+	 */
+	private static function country_field( $id, $name, $label, $selected_id ) {
+		ob_start();
+		?>
+		<p>
+			<label for="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $label ); ?></label>
+			<select id="<?php echo esc_attr( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" required>
+				<option value=""><?php esc_html_e( '— Select —', 'roomworks-business-networking' ); ?></option>
+				<?php foreach ( RBN_Countries::get_all() as $country ) : ?>
+					<option value="<?php echo esc_attr( $country->id ); ?>" <?php selected( $selected_id, $country->id ); ?>>
+						<?php echo esc_html( $country->name ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The business's Community field. Options are always the member's own
+	 * joined communities - never every community - so a member can't
+	 * assign their business to one they don't belong to; the save handler
+	 * (RBN_Business_Forms) re-checks this server-side regardless, since a
+	 * required attribute never stops a crafted request. If the business
+	 * already has a community that the member has since left, it's still
+	 * included as an option (selected) so saving the form can't silently
+	 * change it to something else.
+	 */
+	private static function business_community_field( array $joined_communities, $current_community_id ) {
+		$options = $joined_communities;
+
+		if ( $current_community_id && ! in_array( $current_community_id, wp_list_pluck( $options, 'id' ), true ) ) {
+			$current = RBN_Communities::get_by_id( $current_community_id );
+
+			if ( $current ) {
+				$options[] = $current;
+			}
+		}
+
+		// Only reachable when editing an existing business whose owner has
+		// no joined communities at all (including one it was never
+		// assigned to) - e.g. legacy data from before communities existed.
+		// No select is rendered - nothing valid to submit - so the save
+		// handler leaves rbn_community_id exactly as it was.
+		if ( empty( $options ) ) {
+			ob_start();
+			?>
+			<p class="rbn-field-note"><?php esc_html_e( "This business isn't assigned to a community yet - join one above, then edit this business again to assign it.", 'roomworks-business-networking' ); ?></p>
+			<?php
+			return ob_get_clean();
+		}
+
+		ob_start();
+		?>
+		<p>
+			<label for="rbn-business-community"><?php esc_html_e( 'Community', 'roomworks-business-networking' ); ?></label>
+			<select id="rbn-business-community" name="rbn_community_id" required>
+				<?php foreach ( $options as $community ) : ?>
+					<option value="<?php echo esc_attr( $community->id ); ?>" <?php selected( $current_community_id, $community->id ); ?>>
+						<?php echo esc_html( $community->name ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+			<span class="rbn-field-note"><?php esc_html_e( 'Which community this business belongs to.', 'roomworks-business-networking' ); ?></span>
+		</p>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * "My Businesses" list (each with an Edit link jumping to the form
+	 * below, pre-filled for that one) plus the add/edit form itself. A
+	 * member may own several businesses - see RBN_Business_Repository -
+	 * so unlike the profile/community sections there's a list here rather
+	 * than a single implicit record.
+	 */
+	private static function businesses_section( array $businesses, $editing_business, $current_user, $current_url, $notice_code ) {
+		ob_start();
+		?>
+		<section class="rbn-my-businesses rbn-card">
+			<h3><?php esc_html_e( 'My Businesses', 'roomworks-business-networking' ); ?></h3>
+			<?php if ( empty( $businesses ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "You haven't added a business yet - use the form below to add one.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<ul class="rbn-my-businesses__list">
+					<?php foreach ( $businesses as $business ) : ?>
+						<?php $community = RBN_Communities::get_by_id( get_post_meta( $business->ID, 'rbn_community_id', true ) ); ?>
+						<li>
+							<span class="rbn-my-businesses__name"><?php echo esc_html( wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) ); ?></span>
+							<?php if ( 'pending' === $business->post_status ) : ?>
+								<span class="rbn-status rbn-status--pending"><?php esc_html_e( 'Pending review', 'roomworks-business-networking' ); ?></span>
+							<?php endif; ?>
+							<?php if ( $community ) : ?>
+								<span class="rbn-field-note"><?php echo esc_html( $community->name ); ?></span>
+							<?php endif; ?>
+							<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_business', $business->ID, $current_url ) . '#rbn-business-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</section>
+		<?php echo self::business_form( $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php
+		return ob_get_clean();
+	}
+
+	private static function business_form( $business, $current_user, $current_url, $notice_code ) {
+		$joined_communities   = RBN_Community_Memberships::get_communities_for_user( $current_user->ID );
+		$current_community_id = $business ? absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) : 0;
+
+		// A new business can't be created without a community to belong to
+		// (spec Section 12) - an existing one can still be edited even if
+		// the member has since left every community, so they're never
+		// locked out of their own already-saved data.
+		if ( ! $business && empty( $joined_communities ) ) {
+			ob_start();
+			?>
+			<section class="rbn-edit-business rbn-card" id="rbn-business-form">
+				<h3><?php esc_html_e( 'Add a Business', 'roomworks-business-networking' ); ?></h3>
+				<p class="rbn-field-note"><?php esc_html_e( 'Join a community above before adding a business - every business belongs to one.', 'roomworks-business-networking' ); ?></p>
+			</section>
+			<?php
+			return ob_get_clean();
+		}
+
 		$name          = $business ? wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) : '';
 		$description   = $business ? $business->post_content : '';
 		$selected_categories = $business ? wp_get_post_terms( $business->ID, RBN_Taxonomy_Business_Category::TAXONOMY ) : array();
@@ -336,12 +571,13 @@ class RBN_Templates {
 
 		ob_start();
 		?>
-		<section class="rbn-edit-business rbn-card">
+		<section class="rbn-edit-business rbn-card" id="rbn-business-form">
 			<h3>
 				<?php
 				echo $business
-					? esc_html__( 'Edit Your Business', 'roomworks-business-networking' )
-					: esc_html__( 'Add Your Business', 'roomworks-business-networking' );
+					/* translators: %s: business name. */
+					? esc_html( sprintf( __( 'Edit %s', 'roomworks-business-networking' ), $name ) )
+					: esc_html__( 'Add a Business', 'roomworks-business-networking' );
 				?>
 			</h3>
 
@@ -352,7 +588,10 @@ class RBN_Templates {
 			<form class="rbn-form" method="post" action="<?php echo esc_url( $current_url ); ?>" enctype="multipart/form-data">
 				<?php wp_nonce_field( 'rbn_save_business', 'rbn_business_nonce' ); ?>
 				<input type="hidden" name="rbn_form_action" value="rbn_save_business" />
+				<input type="hidden" name="rbn_business_id" value="<?php echo esc_attr( $business ? $business->ID : 0 ); ?>" />
 				<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
+
+				<?php echo self::business_community_field( $joined_communities, $current_community_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 
 				<p>
 					<label for="rbn-business-name"><?php esc_html_e( 'Business Name', 'roomworks-business-networking' ); ?></label>

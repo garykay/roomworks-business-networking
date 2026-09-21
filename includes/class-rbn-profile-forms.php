@@ -1,8 +1,9 @@
 <?php
 /**
  * Handles a logged-in member updating their own profile (name, display
- * name, bio). Always acts on get_current_user_id() - never a client-
- * supplied user ID - so a member can only ever edit themselves.
+ * name, bio, origin/current country). Always acts on
+ * get_current_user_id() - never a client-supplied user ID - so a member
+ * can only ever edit themselves.
  *
  * @package RoomworksBusinessNetworking
  */
@@ -30,13 +31,19 @@ class RBN_Profile_Forms {
 			self::redirect_with_notice( 'profile_invalid_request' );
 		}
 
-		$first_name = isset( $_POST['rbn_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_first_name'] ) ) : '';
-		$last_name  = isset( $_POST['rbn_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_last_name'] ) ) : '';
-		$display    = isset( $_POST['rbn_display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_display_name'] ) ) : '';
-		$bio        = isset( $_POST['rbn_bio'] ) ? sanitize_textarea_field( wp_unslash( $_POST['rbn_bio'] ) ) : '';
+		$first_name         = isset( $_POST['rbn_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_first_name'] ) ) : '';
+		$last_name          = isset( $_POST['rbn_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_last_name'] ) ) : '';
+		$display            = isset( $_POST['rbn_display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_display_name'] ) ) : '';
+		$bio                = isset( $_POST['rbn_bio'] ) ? sanitize_textarea_field( wp_unslash( $_POST['rbn_bio'] ) ) : '';
+		$origin_country_id  = isset( $_POST['rbn_origin_country_id'] ) ? absint( $_POST['rbn_origin_country_id'] ) : 0;
+		$current_country_id = isset( $_POST['rbn_current_country_id'] ) ? absint( $_POST['rbn_current_country_id'] ) : 0;
 
 		if ( '' === $first_name || '' === $last_name ) {
 			self::redirect_with_notice( 'profile_missing_fields' );
+		}
+
+		if ( ! RBN_Countries::get_by_id( $origin_country_id ) || ! RBN_Countries::get_by_id( $current_country_id ) ) {
+			self::redirect_with_notice( 'profile_invalid_country' );
 		}
 
 		if ( '' === $display ) {
@@ -56,6 +63,20 @@ class RBN_Profile_Forms {
 		);
 
 		update_user_meta( $user_id, 'description', $bio );
+
+		// Validated against RBN_Countries::get_by_id() above, so these
+		// set_*_country() calls cannot fail here - still checked because
+		// set_*_country() is the single place that enforces "only a real
+		// country ID is ever stored", not just this one call site.
+		RBN_Countries::set_origin_country( $user_id, $origin_country_id );
+		RBN_Countries::set_current_country( $user_id, $current_country_id );
+
+		// Ensures a community exists for this origin/destination pair so a
+		// member changing their current country is never left with an
+		// empty "Available Communities" list just because no admin has set
+		// up their new combination yet - see the method's own docblock for
+		// why this can never create a duplicate.
+		RBN_Communities::get_or_create_for_pair( $origin_country_id, $current_country_id );
 
 		self::redirect_with_notice( 'profile_updated' );
 	}

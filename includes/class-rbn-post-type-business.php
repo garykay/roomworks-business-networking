@@ -102,5 +102,27 @@ class RBN_Post_Type_Business {
 				)
 			);
 		}
+
+		// Which community (see RBN_Communities) this business belongs to -
+		// the scalability spec's Section 12 requirement that a business be
+		// associated with a community, used by RBN_Business_Query to scope
+		// the directory to the viewer's own current country. Not shown in
+		// the public API response fields above with the rest: which
+		// community a business belongs to isn't private, but there's no
+		// current reader for it outside this plugin's own PHP, so it's kept
+		// out of the public REST shape until something needs it there.
+		register_post_meta(
+			self::POST_TYPE,
+			'rbn_community_id',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'show_in_rest'      => false,
+				'sanitize_callback' => 'absint',
+				'auth_callback'     => function ( $allowed, $meta_key, $post_id ) {
+					return current_user_can( 'edit_post', $post_id );
+				},
+			)
+		);
 	}
 }

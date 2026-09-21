@@ -1,10 +1,13 @@
 <?php
 /**
- * Handles a logged-in member creating or updating their own business.
- *
- * Ownership is never taken from the client: the record to update is always
- * looked up via RBN_Business_Repository::get_for_user( get_current_user_id() ),
- * so no post ID needs to (or should) be trusted from the request.
+ * Handles a logged-in member creating a new business, or updating one of
+ * their own. A member may own more than one business, so which business is
+ * being edited (if any) comes from a submitted rbn_business_id - but that
+ * ID is never trusted on its own: RBN_Business_Repository::get_by_id_for_user()
+ * re-verifies it actually belongs to the logged-in user before anything is
+ * read from or written to it, exactly the same "never trust a client-
+ * supplied ID" rule this class always followed when there was only ever
+ * one business to look up.
  *
  * @package RoomworksBusinessNetworking
  */
@@ -30,6 +33,35 @@ class RBN_Business_Forms {
 
 		if ( ! $nonce || ! wp_verify_nonce( $nonce, self::ACTION ) ) {
 			self::redirect_with_notice( 'business_invalid_request' );
+		}
+
+		$user_id     = get_current_user_id();
+		$business_id = isset( $_POST['rbn_business_id'] ) ? absint( $_POST['rbn_business_id'] ) : 0;
+		$business    = $business_id ? RBN_Business_Repository::get_by_id_for_user( $business_id, $user_id ) : null;
+
+		// A submitted ID that doesn't resolve to one of the user's own
+		// businesses is always rejected outright, rather than silently
+		// falling back to "create a new one" - that would let a stale or
+		// tampered ID (e.g. another member's business) quietly succeed as
+		// something the submitter never intended.
+		if ( $business_id && ! $business ) {
+			self::redirect_with_notice( 'business_not_permitted' );
+		}
+
+		$community_submitted = isset( $_POST['rbn_community_id'] );
+		$community_id        = $community_submitted ? absint( $_POST['rbn_community_id'] ) : 0;
+
+		// A new business always needs a community. An existing one only
+		// needs to validate a submitted value - the form omits the field
+		// entirely (see RBN_Templates::business_community_field()) when the
+		// owner has no communities to choose from, in which case the
+		// existing value (however it got there) is left untouched.
+		$community_id_is_valid = $community_submitted
+			? ( $community_id && ( RBN_Community_Memberships::is_member( $user_id, $community_id ) || ( $business && $community_id === absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) ) ) )
+			: (bool) $business;
+
+		if ( ! $community_id_is_valid ) {
+			self::redirect_with_notice( 'business_invalid_community' );
 		}
 
 		$name          = isset( $_POST['rbn_business_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_business_name'] ) ) : '';
@@ -73,9 +105,6 @@ class RBN_Business_Forms {
 			self::redirect_with_notice( 'business_logo_invalid' );
 		}
 
-		$user_id  = get_current_user_id();
-		$business = RBN_Business_Repository::get_for_user( $user_id );
-
 		if ( $business ) {
 			if ( ! current_user_can( 'edit_post', $business->ID ) ) {
 				self::redirect_with_notice( 'business_not_permitted' );
@@ -115,6 +144,10 @@ class RBN_Business_Forms {
 		// $category_id and $valid_service_ids were already validated above.
 		wp_set_object_terms( $post_id, array( $category_id ), RBN_Taxonomy_Business_Category::TAXONOMY, false );
 		wp_set_object_terms( $post_id, $valid_service_ids, RBN_Taxonomy_Service::TAXONOMY, false );
+
+		if ( $community_submitted ) {
+			update_post_meta( $post_id, 'rbn_community_id', $community_id );
+		}
 
 		update_post_meta( $post_id, 'rbn_town_city', $town_city );
 		update_post_meta( $post_id, 'rbn_county_region', $county_region );

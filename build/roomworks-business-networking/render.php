@@ -40,6 +40,18 @@ $current_path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ), PHP_
 $current_url  = esc_url_raw( home_url( $current_path ? $current_path : '/' ) );
 $rest_url     = esc_url_raw( rest_url( 'roomworks-business-networking/v1/businesses' ) );
 
+// The REST endpoint itself stays open to logged-out requests (unchanged -
+// see class docblock on RBN_REST_Directory), but results are now scoped to
+// the current viewer's own country (RBN_Business_Query::community_scope_clause()),
+// which needs to know who's asking. Cookie-based REST auth only applies
+// when a matching nonce is sent - without one, a logged-in member's async
+// filter/pagination fetches would be treated as a logged-out visitor and
+// silently see empty results. Always embedded, same as the nonce already
+// used for the Business Type/Services fields' REST calls - harmless for a
+// logged-out visitor, since wp_verify_nonce() just fails for them the same
+// way a missing header does.
+$rest_nonce = wp_create_nonce( 'wp_rest' );
+
 $i18n = array(
 	'loading'      => __( 'Loading businesses…', 'roomworks-business-networking' ),
 	'error'        => __( 'Something went wrong loading businesses. Please try again.', 'roomworks-business-networking' ),
@@ -51,6 +63,7 @@ $i18n = array(
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'rbn-directory' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core function; already returns safe, pre-escaped attribute markup. ?>
 	data-rbn-directory
 	data-rest-url="<?php echo esc_attr( $rest_url ); ?>"
+	data-rest-nonce="<?php echo esc_attr( $rest_nonce ); ?>"
 	data-i18n="<?php echo esc_attr( wp_json_encode( $i18n ) ); ?>"
 >
 	<?php echo RBN_Templates::directory_filters( $filter_options, $filters, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>

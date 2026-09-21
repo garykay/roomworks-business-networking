@@ -1,7 +1,10 @@
 <?php
 /**
- * Data access for the member/business relationship, and enforcement of the
- * "one member = one business" rule.
+ * Data access for the member/business relationship. A member may own more
+ * than one business (e.g. two unrelated companies) - nothing here caps
+ * that. A business belongs to exactly one community (its rbn_community_id
+ * meta, set on the business form), which is what gives each listing its
+ * own context, not "the member's one business" the way this used to work.
  *
  * @package RoomworksBusinessNetworking
  */
@@ -13,63 +16,58 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Business_Repository {
 
 	/**
-	 * The set of statuses that count as "this user already has a business" -
-	 * everything except trash, so a trashed business frees the user up to
-	 * create a new one.
+	 * The set of statuses that count as "this user owns this business" -
+	 * everything except trash.
 	 */
 	const OWNERSHIP_STATUSES = array( 'publish', 'pending', 'draft', 'future', 'private' );
 
-	public static function get_for_user( $user_id ) {
-		$business_ids = get_posts(
+	/**
+	 * Every business owned by a user, any ownership status, ordered by
+	 * name - used for the "My Businesses" list on the dashboard.
+	 */
+	public static function get_all_for_user( $user_id ) {
+		return get_posts(
 			array(
 				'post_type'      => RBN_Post_Type_Business::POST_TYPE,
 				'post_status'    => self::OWNERSHIP_STATUSES,
 				'author'         => $user_id,
-				'posts_per_page' => 1,
-				'orderby'        => 'ID',
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
 				'order'          => 'ASC',
-				'fields'         => 'ids',
 			)
 		);
-
-		return $business_ids ? get_post( $business_ids[0] ) : null;
-	}
-
-	public static function user_has_business( $user_id, $exclude_post_id = 0 ) {
-		$business_ids = get_posts(
-			array(
-				'post_type'      => RBN_Post_Type_Business::POST_TYPE,
-				'post_status'    => self::OWNERSHIP_STATUSES,
-				'author'         => $user_id,
-				'posts_per_page' => 1,
-				'fields'         => 'ids',
-				'exclude'        => $exclude_post_id ? array( $exclude_post_id ) : array(),
-			)
-		);
-
-		return ! empty( $business_ids );
 	}
 
 	/**
-	 * WordPress has no native way to enforce a unique-per-author constraint
-	 * on a post type. The application's own creation path (built in a later
-	 * phase) will check user_has_business() before ever calling
-	 * wp_insert_post(), but this hook is a server-side safety net that
-	 * catches a second business however it was created - e.g. directly in
-	 * wp-admin - by trashing it immediately rather than leaving two live
-	 * businesses for the same member.
+	 * A specific business, but only if it's actually owned by $user_id -
+	 * the edit form now targets one business among possibly several by ID
+	 * (see RBN_Business_Forms), so a request's business ID must always be
+	 * re-verified server-side against the logged-in user rather than
+	 * trusted - a member could otherwise submit any other member's post ID.
+	 * Returns null for a non-existent business, someone else's business,
+	 * the wrong post type, or a trashed one.
 	 */
-	public static function enforce_single_business( $post_id, $post, $update ) {
-		if ( $update || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
-			return;
+	public static function get_by_id_for_user( $business_id, $user_id ) {
+		$business_id = absint( $business_id );
+
+		if ( ! $business_id ) {
+			return null;
 		}
 
-		if ( ! self::user_has_business( $post->post_author, $post_id ) ) {
-			return;
+		$business = get_post( $business_id );
+
+		if ( ! $business || RBN_Post_Type_Business::POST_TYPE !== $business->post_type ) {
+			return null;
 		}
 
-		remove_action( 'save_post_' . RBN_Post_Type_Business::POST_TYPE, array( __CLASS__, 'enforce_single_business' ), 10 );
-		wp_trash_post( $post_id );
-		add_action( 'save_post_' . RBN_Post_Type_Business::POST_TYPE, array( __CLASS__, 'enforce_single_business' ), 10, 3 );
+		if ( absint( $user_id ) !== (int) $business->post_author ) {
+			return null;
+		}
+
+		if ( ! in_array( $business->post_status, self::OWNERSHIP_STATUSES, true ) ) {
+			return null;
+		}
+
+		return $business;
 	}
 }

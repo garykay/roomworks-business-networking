@@ -11,6 +11,8 @@
  *     $block (WP_Block): The block instance.
  *
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
+ *
+ * @package RoomworksBusinessNetworking
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

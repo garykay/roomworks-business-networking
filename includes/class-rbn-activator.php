@@ -20,6 +20,7 @@ class RBN_Activator {
 		RBN_Post_Type_Business::register();
 
 		RBN_Taxonomy_Business_Category::seed_defaults();
+		RBN_Countries::seed_defaults();
 
 		flush_rewrite_rules();
 	}
