@@ -10,6 +10,16 @@
  * picking a business type that doesn't exist yet doesn't require full
  * taxonomy-management access.
  *
+ * Also attached to rbn_job (the notice board) - a job listing there is a
+ * member requesting a trade/service be done (e.g. "need a new boiler
+ * installed"), so the same trade vocabulary businesses use to say what they
+ * offer is exactly what a request needs to say what it's asking for -
+ * letting a business filter the notice board for requests matching their
+ * own trade for free, with no separate vocabulary to maintain. The
+ * assign_terms capability below (edit_rbn_businesses) still covers this:
+ * every member/subscriber already holds it at the role level regardless of
+ * whether they own a business - see RBN_Capabilities::MEMBER_CAPS.
+ *
  * @package RoomworksBusinessNetworking
  */
 
@@ -75,7 +85,7 @@ class RBN_Taxonomy_Business_Category {
 
 		register_taxonomy(
 			self::TAXONOMY,
-			array( RBN_Post_Type_Business::POST_TYPE ),
+			array( RBN_Post_Type_Business::POST_TYPE, RBN_Post_Type_Job::POST_TYPE ),
 			array(
 				'labels'            => $labels,
 				'hierarchical'      => true,

@@ -1,8 +1,8 @@
 <?php
 /**
  * Restricts specific front-end pages built around this plugin's blocks to
- * logged-in visitors - currently just the business directory, which isn't
- * meant to be publicly browsable.
+ * logged-in visitors - the business directory and the notice board, neither
+ * of which is meant to be publicly browsable.
  *
  * A template_redirect check here (rather than a general-purpose content
  * restriction plugin) keeps the rule versioned with the rest of the
@@ -20,20 +20,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Access_Control {
 
 	/**
-	 * Slug of the page hosting the Business Directory block
-	 * (roomworks-business-networking/roomworks-business-networking).
-	 * Update this if that page is ever renamed/re-slugged.
+	 * Slugs of the pages hosting this plugin's members-only blocks - the
+	 * Business Directory and the Community Notice Board. Update this if
+	 * either page is ever renamed/re-slugged.
 	 */
-	const RESTRICTED_PAGE_SLUG = 'business-networking';
+	const RESTRICTED_PAGE_SLUGS = array( 'business-networking', 'notice-board' );
 
 	const LOGIN_PAGE_CACHE_KEY = 'rbn_login_page_id';
 
-	public static function restrict_business_directory() {
+	/**
+	 * Redirects a logged-out visitor away from any of RESTRICTED_PAGE_SLUGS
+	 * to this plugin's own front-end login form, sending them back to the
+	 * page they wanted once they log in.
+	 */
+	public static function restrict_members_only_pages() {
 		if ( is_user_logged_in() ) {
 			return;
 		}
 
-		if ( ! is_page( self::RESTRICTED_PAGE_SLUG ) ) {
+		if ( ! is_page( self::RESTRICTED_PAGE_SLUGS ) ) {
 			return;
 		}
 
@@ -83,8 +88,8 @@ class RBN_Access_Control {
 
 	/**
 	 * Clears the cached login page lookup whenever any page is saved, so a
-	 * newly published/edited login page is picked up within one save
-	 * rather than staying stale for the rest of the transient's lifetime.
+	 * newly published/edited login page is picked up within one save rather
+	 * than staying stale for the rest of the transient's lifetime.
 	 */
 	public static function flush_login_page_cache() {
 		delete_transient( self::LOGIN_PAGE_CACHE_KEY );

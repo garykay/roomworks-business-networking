@@ -21,6 +21,93 @@ class RBN_Countries {
 	const CACHE_KEY_ALL = 'all';
 
 	/**
+	 * Currency symbol for a country's currency, keyed by ISO 3166-1 alpha-2
+	 * code - not a complete ISO 4217 mapping for all ~195 seeded countries,
+	 * just the ones most likely to come up here (major economies plus the
+	 * origin/destination countries a diaspora network like this one
+	 * realistically spans). A country missing from this list simply gets no
+	 * symbol prefixed - see currency_symbol() - rather than guessing wrong.
+	 */
+	const CURRENCY_SYMBOLS = array(
+		'GB' => '£',
+		'US' => '$',
+		'ZA' => 'R',
+		'NG' => '₦',
+		'IN' => '₹',
+		'PK' => '₨',
+		'KE' => 'KSh',
+		'GH' => 'GH₵',
+		'ZW' => 'Z$',
+		'UG' => 'USh',
+		'TZ' => 'TSh',
+		'ZM' => 'ZK',
+		'MW' => 'MK',
+		'MZ' => 'MT',
+		'NA' => 'N$',
+		'BW' => 'P',
+		'LS' => 'L',
+		'SZ' => 'L',
+		'RW' => 'FRw',
+		'ET' => 'Br',
+		'EG' => 'E£',
+		'MA' => 'DH',
+		'TN' => 'DT',
+		'DZ' => 'DA',
+		'AU' => 'A$',
+		'NZ' => 'NZ$',
+		'CA' => 'C$',
+		'IE' => '€',
+		'DE' => '€',
+		'FR' => '€',
+		'ES' => '€',
+		'IT' => '€',
+		'NL' => '€',
+		'BE' => '€',
+		'PT' => '€',
+		'AT' => '€',
+		'GR' => '€',
+		'FI' => '€',
+		'PL' => 'zł',
+		'SE' => 'kr',
+		'NO' => 'kr',
+		'DK' => 'kr',
+		'CH' => 'CHF',
+		'CZ' => 'Kč',
+		'HU' => 'Ft',
+		'RO' => 'lei',
+		'RU' => '₽',
+		'TR' => '₺',
+		'AE' => 'AED',
+		'SA' => 'SR',
+		'QA' => 'QR',
+		'KW' => 'KD',
+		'BH' => 'BD',
+		'OM' => 'OR',
+		'IL' => '₪',
+		'BR' => 'R$',
+		'MX' => 'Mex$',
+		'AR' => 'AR$',
+		'CL' => 'CL$',
+		'CO' => 'COL$',
+		'PE' => 'S/',
+		'JP' => '¥',
+		'CN' => '¥',
+		'KR' => '₩',
+		'HK' => 'HK$',
+		'SG' => 'S$',
+		'MY' => 'RM',
+		'TH' => '฿',
+		'VN' => '₫',
+		'PH' => '₱',
+		'ID' => 'Rp',
+		'BD' => '৳',
+		'LK' => 'Rs',
+		'NP' => 'Rs',
+		'JM' => 'J$',
+		'TT' => 'TT$',
+	);
+
+	/**
 	 * Starter vocabulary of ISO 3166-1 countries/territories, seeded on
 	 * activation - administrators can add, rename or deactivate entries
 	 * afterwards via wp-admin (e.g. Kosovo and other territories without a
@@ -311,6 +398,21 @@ class RBN_Countries {
 		}
 
 		return null;
+	}
+
+	/**
+	 * The currency symbol for a country, or '' if the country doesn't exist
+	 * or isn't in CURRENCY_SYMBOLS - callers show the bare, unprefixed value
+	 * in that case rather than guessing at a symbol.
+	 */
+	public static function currency_symbol( $country_id ) {
+		$country = self::get_by_id( $country_id );
+
+		if ( ! $country || ! isset( self::CURRENCY_SYMBOLS[ $country->iso_code ] ) ) {
+			return '';
+		}
+
+		return self::CURRENCY_SYMBOLS[ $country->iso_code ];
 	}
 
 	/**

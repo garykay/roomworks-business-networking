@@ -52,6 +52,12 @@ class RBN_Notices {
 			'community_wrong_country'          => array( 'error', __( 'You can only join communities in the country you currently live in.', 'roomworks-business-networking' ) ),
 			'community_joined'                 => array( 'success', __( "You've joined this community.", 'roomworks-business-networking' ) ),
 			'community_left'                   => array( 'success', __( 'You have left this community.', 'roomworks-business-networking' ) ),
+			'job_invalid_request'               => array( 'error', __( 'Your session expired. Please try again.', 'roomworks-business-networking' ) ),
+			'job_invalid_community'             => array( 'error', __( 'Join a community in your current country before posting a request.', 'roomworks-business-networking' ) ),
+			'job_missing_fields'                => array( 'error', __( 'Please fill in all required fields (Budget and Closing Date are optional).', 'roomworks-business-networking' ) ),
+			'job_not_permitted'                 => array( 'error', __( "You don't have permission to do that.", 'roomworks-business-networking' ) ),
+			'job_saved'                         => array( 'success', __( 'Your request has been posted.', 'roomworks-business-networking' ) ),
+			'job_updated'                       => array( 'success', __( 'Your request has been updated.', 'roomworks-business-networking' ) ),
 		);
 	}
 
@@ -70,7 +76,7 @@ class RBN_Notices {
 	 * (login_, register_, profile_, business_, account_deletion_).
 	 */
 	public static function section( $code ) {
-		foreach ( array( 'login', 'register', 'profile', 'business', 'account_deletion', 'community' ) as $section ) {
+		foreach ( array( 'login', 'register', 'profile', 'business', 'account_deletion', 'community', 'job' ) as $section ) {
 			if ( 0 === strpos( (string) $code, $section . '_' ) ) {
 				return $section;
 			}

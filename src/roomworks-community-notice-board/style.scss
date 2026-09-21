@@ -1,0 +1,451 @@
+.wp-block-roomworks-business-networking-roomworks-community-notice-board {
+	--rbn-accent: #2451e0;
+	--rbn-accent-hover: #1c3fb8;
+	--rbn-accent-tint: #eef1fd;
+	--rbn-text: #1a1d29;
+	--rbn-muted: #667085;
+	--rbn-border: #e6e8ee;
+	--rbn-surface: #fff;
+	--rbn-radius: 12px;
+	--rbn-radius-sm: 8px;
+	--rbn-shadow: 0 1px 2px rgba( 16, 24, 40, 0.04 ), 0 6px 20px -10px rgba( 16, 24, 40, 0.12 );
+	--rbn-shadow-hover: 0 4px 8px rgba( 16, 24, 40, 0.06 ), 0 16px 32px -12px rgba( 16, 24, 40, 0.18 );
+
+	color: var( --rbn-text );
+
+	.rbn-icon {
+		flex: 0 0 auto;
+		width: 1em;
+		height: 1em;
+		color: var( --rbn-accent );
+	}
+
+	.rbn-card {
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+	}
+
+	// Filters
+
+	.rbn-directory__filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 1.25rem;
+		margin-bottom: 2rem;
+		padding: 1.5rem;
+
+		p {
+			flex: 1 1 180px;
+			margin: 0;
+		}
+	}
+
+	.rbn-directory__filters label {
+		display: block;
+		margin-bottom: 0.4rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.rbn-directory__filters input,
+	.rbn-directory__filters select {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 0.65rem 0.85rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-surface );
+		color: var( --rbn-text );
+		font-family: inherit;
+		font-size: 0.9375rem;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+		&:focus {
+			outline: none;
+			border-color: var( --rbn-accent );
+			box-shadow: 0 0 0 3px var( --rbn-accent-tint );
+		}
+	}
+
+	// Resets each browser's own native <select> chrome in favour of one
+	// consistent custom arrow everywhere - same reasoning as the business
+	// directory's own copy of this rule.
+	.rbn-directory__filters select {
+		appearance: none;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		padding-right: 2.25rem;
+		background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E" );
+		background-repeat: no-repeat;
+		background-position: right 0.75rem center;
+		background-size: 1rem;
+	}
+
+	.rbn-directory__filter-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex: 0 0 auto;
+	}
+
+	.rbn-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.7rem 1.4rem;
+		border: none;
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-accent );
+		color: #fff;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+
+		&:hover,
+		&:focus-visible {
+			background: var( --rbn-accent-hover );
+		}
+	}
+
+	.rbn-link {
+		color: var( --rbn-accent );
+		font-size: 0.9rem;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+
+	.rbn-directory__status:empty {
+		display: none;
+	}
+
+	.rbn-directory__empty {
+		padding: 2.5rem;
+		border: 1px dashed var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		color: var( --rbn-muted );
+		font-style: italic;
+		text-align: center;
+	}
+
+	// Results grid
+
+	.rbn-directory__grid {
+		display: grid;
+		grid-template-columns: repeat( auto-fill, minmax( 260px, 1fr ) );
+		gap: 1.5rem;
+	}
+
+	.rbn-job-card {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		transition: box-shadow 0.15s ease, transform 0.15s ease;
+
+		&:hover {
+			box-shadow: var( --rbn-shadow-hover );
+			transform: translateY( -2px );
+		}
+	}
+
+	.rbn-job-card__body {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		padding: 1.25rem;
+	}
+
+	.rbn-job-card__category {
+		margin: 0 0 0.5rem;
+		color: var( --rbn-accent );
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.rbn-job-card__title {
+		margin: 0 0 0.5rem;
+		font-size: 1.125rem;
+
+		a {
+			color: var( --rbn-text );
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				color: var( --rbn-accent );
+			}
+		}
+	}
+
+	.rbn-job-card__urgency {
+		margin: 0 0 0.5rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+		font-weight: 600;
+	}
+
+	.rbn-job-card__excerpt {
+		margin: 0 0 0.75rem;
+		color: var( --rbn-muted );
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+
+	.rbn-job-card__location {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.4rem;
+		margin: 0 0 0.5rem;
+		color: var( --rbn-muted );
+		font-size: 0.875rem;
+	}
+
+	.rbn-job-card__budget {
+		margin: 0 0 0.5rem;
+		color: var( --rbn-text );
+		font-size: 0.875rem;
+		font-weight: 600;
+	}
+
+	.rbn-job-card__closing {
+		margin: 0 0 1rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+	}
+
+	.rbn-job-card__link {
+		margin: auto 0 0;
+
+		a {
+			color: var( --rbn-accent );
+			font-size: 0.9rem;
+			font-weight: 600;
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	// Pagination
+
+	.rbn-pagination {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem;
+		margin-top: 2.5rem;
+	}
+
+	.rbn-pagination a,
+	.rbn-pagination__current {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2.25rem;
+		height: 2.25rem;
+		padding: 0 0.5rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius-sm );
+		color: var( --rbn-text );
+		font-size: 0.875rem;
+		text-decoration: none;
+	}
+
+	.rbn-pagination a:hover,
+	.rbn-pagination a:focus-visible {
+		border-color: var( --rbn-accent );
+		color: var( --rbn-accent );
+	}
+
+	.rbn-pagination__current {
+		border-color: var( --rbn-accent );
+		background: var( --rbn-accent );
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.rbn-pagination__ellipsis {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2.25rem;
+		height: 2.25rem;
+		color: var( --rbn-text );
+		font-size: 0.875rem;
+	}
+}
+
+// Single job page (RBN_Templates::job_profile(), appended via the_content -
+// see RBN_Post_Type_Job::append_details_to_content()). Deliberately NOT
+// nested under the block wrapper selector above: there's no dedicated
+// block/Site-Editor template for the single job page to carry that wrapper
+// class (see append_details_to_content()'s docblock for why), so this
+// stylesheet is reused there via RBN_Post_Type_Job::enqueue_profile_style()
+// and needs its own top-level, unscoped selector - same visual language as
+// .rbn-business-profile in single-business-profile/style.scss, adapted.
+.rbn-job-profile {
+	--rbn-accent: #2451e0;
+	--rbn-accent-tint: #eef1fd;
+	--rbn-text: #1a1d29;
+	--rbn-muted: #667085;
+	--rbn-border: #e6e8ee;
+	--rbn-surface: #fff;
+	--rbn-radius: 12px;
+	--rbn-shadow: 0 1px 2px rgba( 16, 24, 40, 0.04 ), 0 6px 20px -10px rgba( 16, 24, 40, 0.12 );
+
+	color: var( --rbn-text );
+
+	.rbn-icon {
+		flex: 0 0 auto;
+		width: 1.05em;
+		height: 1.05em;
+		margin-top: 0.15em;
+		color: var( --rbn-accent );
+	}
+
+	.rbn-job-profile__badges {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0 0 1.75rem;
+	}
+
+	.rbn-job-profile__badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.35rem 0.85rem;
+		border-radius: 999px;
+		background: var( --rbn-accent-tint );
+		color: var( --rbn-accent );
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.rbn-job-profile__grid {
+		display: grid;
+		grid-template-columns: repeat( auto-fit, minmax( 230px, 1fr ) );
+		gap: 1.25rem;
+		margin: 0 0 1.75rem;
+	}
+
+	.rbn-job-profile__card {
+		padding: 1.5rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+	}
+
+	.rbn-job-profile__card-title {
+		margin: 0 0 1rem;
+		color: var( --rbn-muted );
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.rbn-job-profile__row-label {
+		margin: 0 0 0.2rem;
+		color: var( --rbn-muted );
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.rbn-job-profile__row {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.6rem;
+		margin: 0 0 0.6rem;
+		line-height: 1.45;
+		word-break: break-word;
+	}
+
+	.rbn-job-profile__row:last-child {
+		margin-bottom: 0;
+	}
+
+	.rbn-job-profile__row--muted {
+		color: var( --rbn-muted );
+		font-size: 0.9em;
+	}
+
+	a.rbn-job-profile__row {
+		color: var( --rbn-text );
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			color: var( --rbn-accent );
+			text-decoration: underline;
+		}
+	}
+
+	.rbn-job-profile__contact-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+
+		li {
+			margin: 0 0 0.6rem;
+		}
+
+		li:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	.rbn-job-profile__owner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var( --rbn-border );
+	}
+
+	.rbn-job-profile__owner img {
+		border-radius: 50%;
+	}
+
+	.rbn-job-profile__owner-label {
+		display: block;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+	}
+
+	.rbn-job-profile__owner-name {
+		display: block;
+		font-weight: 600;
+	}
+
+	.rbn-notice {
+		margin: 0 0 1.75rem;
+		padding: 0.85rem 1.1rem;
+		border: 1px solid #f3c9c9;
+		border-left: 3px solid #c2362f;
+		border-radius: 8px;
+		background: #fdf2f2;
+		color: #8a1f1f;
+		font-size: 0.9rem;
+	}
+}

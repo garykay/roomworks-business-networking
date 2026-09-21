@@ -62,6 +62,11 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-communities-admin.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-directory.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-services.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-job.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-repository.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-query.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-jobs.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-templates.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-stats.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-activator.php';
@@ -71,16 +76,21 @@ register_activation_hook( __FILE__, array( 'RBN_Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'RBN_Deactivator', 'deactivate' ) );
 
 add_action( 'plugins_loaded', array( 'RBN_Schema', 'maybe_upgrade' ) );
+add_action( 'plugins_loaded', array( 'RBN_Capabilities', 'maybe_upgrade' ) );
 
 add_action( 'init', array( 'RBN_Taxonomy_Business_Category', 'register' ) );
 add_action( 'init', array( 'RBN_Taxonomy_Service', 'register' ) );
 add_action( 'init', array( 'RBN_Post_Type_Business', 'register' ) );
+add_action( 'init', array( 'RBN_Post_Type_Job', 'register' ) );
+add_filter( 'the_content', array( 'RBN_Post_Type_Job', 'append_details_to_content' ) );
+add_action( 'wp_enqueue_scripts', array( 'RBN_Post_Type_Job', 'enqueue_profile_style' ) );
 
 add_action( 'init', array( 'RBN_Auth_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Profile_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Business_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Job_Forms', 'handle_request' ) );
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
@@ -96,7 +106,7 @@ add_action( 'admin_action_rbn_approve_business', array( 'RBN_Approvals', 'handle
 add_action( 'admin_action_rbn_reject_business', array( 'RBN_Approvals', 'handle_reject_business' ) );
 add_action( 'admin_action_rbn_cancel_deletion', array( 'RBN_Approvals', 'handle_cancel_deletion' ) );
 
-add_action( 'template_redirect', array( 'RBN_Access_Control', 'restrict_business_directory' ) );
+add_action( 'template_redirect', array( 'RBN_Access_Control', 'restrict_members_only_pages' ) );
 add_action( 'save_post_page', array( 'RBN_Access_Control', 'flush_login_page_cache' ) );
 
 add_action( 'admin_menu', array( 'RBN_Settings', 'register_menu' ) );
@@ -109,6 +119,7 @@ add_action( 'rest_api_init', array( 'RBN_REST_Directory', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Business_Categories', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Countries', 'register_routes' ) );
+add_action( 'rest_api_init', array( 'RBN_REST_Jobs', 'register_routes' ) );
 
 /**
  * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
