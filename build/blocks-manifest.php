@@ -45,6 +45,32 @@ return array(
 		'render' => 'file:./render.php',
 		'viewScript' => 'file:./view.js'
 	),
+	'roomworks-single-post-author-business-profile' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'roomworks-business-networking/single-post-author-business-profile',
+		'version' => '1.0.0',
+		'title' => 'Post Author\'s Business Profile',
+		'category' => 'widgets',
+		'icon' => 'store',
+		'description' => 'Shows the business profile of the post\'s author, if they have a published business. Place inside a Single Post template alongside Post Title/Post Content.',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'html' => false,
+			'multiple' => false
+		),
+		'usesContext' => array(
+			'postId',
+			'postType'
+		),
+		'textdomain' => 'roomworks-business-networking',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php'
+	),
 	'roomworks-stats-counter' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,
