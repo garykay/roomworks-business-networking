@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Schema {
 
 	const DB_VERSION_OPTION = 'rbn_db_version';
-	const DB_VERSION        = '1.3.0';
+	const DB_VERSION        = '1.4.0';
 
 	/**
 	 * Creates (or updates) the plugin's custom tables.
@@ -58,6 +58,8 @@ class RBN_Schema {
 			iso_code CHAR(2) NOT NULL,
 			iso3_code CHAR(3) NOT NULL,
 			flag_code CHAR(2) NOT NULL,
+			demonym_singular VARCHAR(191) NOT NULL DEFAULT '',
+			demonym_plural VARCHAR(191) NOT NULL DEFAULT '',
 			status VARCHAR(20) NOT NULL DEFAULT 'active',
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME NOT NULL,
@@ -156,6 +158,7 @@ class RBN_Schema {
 	public static function maybe_upgrade() {
 		if ( get_option( self::DB_VERSION_OPTION ) !== self::DB_VERSION ) {
 			self::install();
+			RBN_Countries::seed_defaults();
 		}
 
 		RBN_Countries::maybe_seed();

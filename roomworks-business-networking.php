@@ -61,6 +61,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-settings.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-approvals.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-communities-admin.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-countries-admin.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-country-shortcodes.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-directory.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-services.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
@@ -119,6 +121,11 @@ add_action( 'admin_init', array( 'RBN_Settings', 'register_settings' ) );
 
 add_action( 'admin_menu', array( 'RBN_Communities_Admin', 'register_menu' ) );
 add_action( 'admin_init', array( 'RBN_Communities_Admin', 'maybe_handle_request' ) );
+
+add_action( 'admin_menu', array( 'RBN_Countries_Admin', 'register_menu' ) );
+add_action( 'admin_init', array( 'RBN_Countries_Admin', 'maybe_handle_request' ) );
+
+add_action( 'init', array( 'RBN_Country_Shortcodes', 'register' ) );
 
 add_action( 'rest_api_init', array( 'RBN_REST_Directory', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );

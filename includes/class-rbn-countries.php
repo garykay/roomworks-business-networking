@@ -316,10 +316,225 @@ class RBN_Countries {
 	);
 
 	/**
+	 * Default demonyms (noun form, e.g. "South African"/"South Africans", not
+	 * the adjective) for DEFAULT_COUNTRIES, keyed by ISO 3166-1 alpha-2 code
+	 * rather than positionally - see seed_defaults(). Format:
+	 * iso_code => array( singular, plural ).
+	 *
+	 * A handful of these are genuinely ambiguous or contested (e.g. Botswana:
+	 * "Motswana"/"Batswana" is the traditional form, "Botswanan" is common in
+	 * English-language media) - admins can correct any entry from the
+	 * Countries admin screen (RBN_Countries_Admin) without a code change, per
+	 * the scalability spec's "do not hard-code countries" rule.
+	 */
+	const DEFAULT_DEMONYMS = array(
+		'AF' => array( 'Afghan', 'Afghans' ),
+		'AL' => array( 'Albanian', 'Albanians' ),
+		'DZ' => array( 'Algerian', 'Algerians' ),
+		'AD' => array( 'Andorran', 'Andorrans' ),
+		'AO' => array( 'Angolan', 'Angolans' ),
+		'AG' => array( 'Antiguan', 'Antiguans' ),
+		'AR' => array( 'Argentinian', 'Argentinians' ),
+		'AM' => array( 'Armenian', 'Armenians' ),
+		'AU' => array( 'Australian', 'Australians' ),
+		'AT' => array( 'Austrian', 'Austrians' ),
+		'AZ' => array( 'Azerbaijani', 'Azerbaijanis' ),
+		'BS' => array( 'Bahamian', 'Bahamians' ),
+		'BH' => array( 'Bahraini', 'Bahrainis' ),
+		'BD' => array( 'Bangladeshi', 'Bangladeshis' ),
+		'BB' => array( 'Barbadian', 'Barbadians' ),
+		'BY' => array( 'Belarusian', 'Belarusians' ),
+		'BE' => array( 'Belgian', 'Belgians' ),
+		'BZ' => array( 'Belizean', 'Belizeans' ),
+		'BJ' => array( 'Beninese', 'Beninese' ),
+		'BT' => array( 'Bhutanese', 'Bhutanese' ),
+		'BO' => array( 'Bolivian', 'Bolivians' ),
+		'BA' => array( 'Bosnian', 'Bosnians' ),
+		'BW' => array( 'Motswana', 'Batswana' ),
+		'BR' => array( 'Brazilian', 'Brazilians' ),
+		'BN' => array( 'Bruneian', 'Bruneians' ),
+		'BG' => array( 'Bulgarian', 'Bulgarians' ),
+		'BF' => array( 'Burkinabe', 'Burkinabe' ),
+		'BI' => array( 'Burundian', 'Burundians' ),
+		'CV' => array( 'Cabo Verdean', 'Cabo Verdeans' ),
+		'KH' => array( 'Cambodian', 'Cambodians' ),
+		'CM' => array( 'Cameroonian', 'Cameroonians' ),
+		'CA' => array( 'Canadian', 'Canadians' ),
+		'CF' => array( 'Central African', 'Central Africans' ),
+		'TD' => array( 'Chadian', 'Chadians' ),
+		'CL' => array( 'Chilean', 'Chileans' ),
+		'CN' => array( 'Chinese', 'Chinese' ),
+		'CO' => array( 'Colombian', 'Colombians' ),
+		'KM' => array( 'Comoran', 'Comorans' ),
+		'CG' => array( 'Congolese', 'Congolese' ),
+		'CD' => array( 'Congolese', 'Congolese' ),
+		'CR' => array( 'Costa Rican', 'Costa Ricans' ),
+		'HR' => array( 'Croatian', 'Croatians' ),
+		'CU' => array( 'Cuban', 'Cubans' ),
+		'CY' => array( 'Cypriot', 'Cypriots' ),
+		'CZ' => array( 'Czech', 'Czechs' ),
+		'DK' => array( 'Dane', 'Danes' ),
+		'DJ' => array( 'Djiboutian', 'Djiboutians' ),
+		'DM' => array( 'Dominican', 'Dominicans' ),
+		'DO' => array( 'Dominican', 'Dominicans' ),
+		'EC' => array( 'Ecuadorian', 'Ecuadorians' ),
+		'EG' => array( 'Egyptian', 'Egyptians' ),
+		'SV' => array( 'Salvadoran', 'Salvadorans' ),
+		'GQ' => array( 'Equatorial Guinean', 'Equatorial Guineans' ),
+		'ER' => array( 'Eritrean', 'Eritreans' ),
+		'EE' => array( 'Estonian', 'Estonians' ),
+		'SZ' => array( 'Swazi', 'Swazis' ),
+		'ET' => array( 'Ethiopian', 'Ethiopians' ),
+		'FJ' => array( 'Fijian', 'Fijians' ),
+		'FI' => array( 'Finn', 'Finns' ),
+		'FR' => array( 'French', 'French' ),
+		'GA' => array( 'Gabonese', 'Gabonese' ),
+		'GM' => array( 'Gambian', 'Gambians' ),
+		'GE' => array( 'Georgian', 'Georgians' ),
+		'DE' => array( 'German', 'Germans' ),
+		'GH' => array( 'Ghanaian', 'Ghanaians' ),
+		'GR' => array( 'Greek', 'Greeks' ),
+		'GD' => array( 'Grenadian', 'Grenadians' ),
+		'GT' => array( 'Guatemalan', 'Guatemalans' ),
+		'GN' => array( 'Guinean', 'Guineans' ),
+		'GW' => array( 'Bissau-Guinean', 'Bissau-Guineans' ),
+		'GY' => array( 'Guyanese', 'Guyanese' ),
+		'HT' => array( 'Haitian', 'Haitians' ),
+		'HN' => array( 'Honduran', 'Hondurans' ),
+		'HK' => array( 'Hong Konger', 'Hong Kongers' ),
+		'HU' => array( 'Hungarian', 'Hungarians' ),
+		'IS' => array( 'Icelander', 'Icelanders' ),
+		'IN' => array( 'Indian', 'Indians' ),
+		'ID' => array( 'Indonesian', 'Indonesians' ),
+		'IR' => array( 'Iranian', 'Iranians' ),
+		'IQ' => array( 'Iraqi', 'Iraqis' ),
+		'IE' => array( 'Irish', 'Irish' ),
+		'IL' => array( 'Israeli', 'Israelis' ),
+		'IT' => array( 'Italian', 'Italians' ),
+		'JM' => array( 'Jamaican', 'Jamaicans' ),
+		'JP' => array( 'Japanese', 'Japanese' ),
+		'JO' => array( 'Jordanian', 'Jordanians' ),
+		'KZ' => array( 'Kazakh', 'Kazakhs' ),
+		'KE' => array( 'Kenyan', 'Kenyans' ),
+		'KI' => array( 'I-Kiribati', 'I-Kiribati' ),
+		'KW' => array( 'Kuwaiti', 'Kuwaitis' ),
+		'KG' => array( 'Kyrgyz', 'Kyrgyz' ),
+		'LA' => array( 'Lao', 'Lao' ),
+		'LV' => array( 'Latvian', 'Latvians' ),
+		'LB' => array( 'Lebanese', 'Lebanese' ),
+		'LS' => array( 'Mosotho', 'Basotho' ),
+		'LR' => array( 'Liberian', 'Liberians' ),
+		'LY' => array( 'Libyan', 'Libyans' ),
+		'LI' => array( 'Liechtensteiner', 'Liechtensteiners' ),
+		'LT' => array( 'Lithuanian', 'Lithuanians' ),
+		'LU' => array( 'Luxembourger', 'Luxembourgers' ),
+		'MO' => array( 'Macanese', 'Macanese' ),
+		'MG' => array( 'Malagasy', 'Malagasy' ),
+		'MW' => array( 'Malawian', 'Malawians' ),
+		'MY' => array( 'Malaysian', 'Malaysians' ),
+		'MV' => array( 'Maldivian', 'Maldivians' ),
+		'ML' => array( 'Malian', 'Malians' ),
+		'MT' => array( 'Maltese', 'Maltese' ),
+		'MH' => array( 'Marshallese', 'Marshallese' ),
+		'MR' => array( 'Mauritanian', 'Mauritanians' ),
+		'MU' => array( 'Mauritian', 'Mauritians' ),
+		'MX' => array( 'Mexican', 'Mexicans' ),
+		'FM' => array( 'Micronesian', 'Micronesians' ),
+		'MD' => array( 'Moldovan', 'Moldovans' ),
+		'MC' => array( 'Monegasque', 'Monegasques' ),
+		'MN' => array( 'Mongolian', 'Mongolians' ),
+		'ME' => array( 'Montenegrin', 'Montenegrins' ),
+		'MA' => array( 'Moroccan', 'Moroccans' ),
+		'MZ' => array( 'Mozambican', 'Mozambicans' ),
+		'MM' => array( 'Burmese', 'Burmese' ),
+		'NA' => array( 'Namibian', 'Namibians' ),
+		'NR' => array( 'Nauruan', 'Nauruans' ),
+		'NP' => array( 'Nepali', 'Nepalis' ),
+		'NL' => array( 'Dutch', 'Dutch' ),
+		'NZ' => array( 'New Zealander', 'New Zealanders' ),
+		'NI' => array( 'Nicaraguan', 'Nicaraguans' ),
+		'NE' => array( 'Nigerien', 'Nigeriens' ),
+		'NG' => array( 'Nigerian', 'Nigerians' ),
+		'KP' => array( 'North Korean', 'North Koreans' ),
+		'MK' => array( 'Macedonian', 'Macedonians' ),
+		'NO' => array( 'Norwegian', 'Norwegians' ),
+		'OM' => array( 'Omani', 'Omanis' ),
+		'PK' => array( 'Pakistani', 'Pakistanis' ),
+		'PW' => array( 'Palauan', 'Palauans' ),
+		'PS' => array( 'Palestinian', 'Palestinians' ),
+		'PA' => array( 'Panamanian', 'Panamanians' ),
+		'PG' => array( 'Papua New Guinean', 'Papua New Guineans' ),
+		'PY' => array( 'Paraguayan', 'Paraguayans' ),
+		'PE' => array( 'Peruvian', 'Peruvians' ),
+		'PH' => array( 'Filipino', 'Filipinos' ),
+		'PL' => array( 'Pole', 'Poles' ),
+		'PT' => array( 'Portuguese', 'Portuguese' ),
+		'QA' => array( 'Qatari', 'Qataris' ),
+		'RO' => array( 'Romanian', 'Romanians' ),
+		'RU' => array( 'Russian', 'Russians' ),
+		'RW' => array( 'Rwandan', 'Rwandans' ),
+		'KN' => array( 'Kittitian', 'Kittitians' ),
+		'LC' => array( 'Saint Lucian', 'Saint Lucians' ),
+		'VC' => array( 'Vincentian', 'Vincentians' ),
+		'WS' => array( 'Samoan', 'Samoans' ),
+		'SM' => array( 'Sammarinese', 'Sammarinese' ),
+		'ST' => array( 'Sao Tomean', 'Sao Tomeans' ),
+		'SA' => array( 'Saudi', 'Saudis' ),
+		'SN' => array( 'Senegalese', 'Senegalese' ),
+		'RS' => array( 'Serbian', 'Serbians' ),
+		'SC' => array( 'Seychellois', 'Seychellois' ),
+		'SL' => array( 'Sierra Leonean', 'Sierra Leoneans' ),
+		'SG' => array( 'Singaporean', 'Singaporeans' ),
+		'SK' => array( 'Slovak', 'Slovaks' ),
+		'SI' => array( 'Slovenian', 'Slovenians' ),
+		'SB' => array( 'Solomon Islander', 'Solomon Islanders' ),
+		'SO' => array( 'Somali', 'Somalis' ),
+		'ZA' => array( 'South African', 'South Africans' ),
+		'KR' => array( 'South Korean', 'South Koreans' ),
+		'SS' => array( 'South Sudanese', 'South Sudanese' ),
+		'ES' => array( 'Spaniard', 'Spaniards' ),
+		'LK' => array( 'Sri Lankan', 'Sri Lankans' ),
+		'SD' => array( 'Sudanese', 'Sudanese' ),
+		'SR' => array( 'Surinamese', 'Surinamese' ),
+		'SE' => array( 'Swede', 'Swedes' ),
+		'CH' => array( 'Swiss', 'Swiss' ),
+		'SY' => array( 'Syrian', 'Syrians' ),
+		'TW' => array( 'Taiwanese', 'Taiwanese' ),
+		'TJ' => array( 'Tajik', 'Tajiks' ),
+		'TZ' => array( 'Tanzanian', 'Tanzanians' ),
+		'TH' => array( 'Thai', 'Thais' ),
+		'TL' => array( 'Timorese', 'Timorese' ),
+		'TG' => array( 'Togolese', 'Togolese' ),
+		'TO' => array( 'Tongan', 'Tongans' ),
+		'TT' => array( 'Trinidadian', 'Trinidadians' ),
+		'TN' => array( 'Tunisian', 'Tunisians' ),
+		'TR' => array( 'Turk', 'Turks' ),
+		'TM' => array( 'Turkmen', 'Turkmens' ),
+		'TV' => array( 'Tuvaluan', 'Tuvaluans' ),
+		'UG' => array( 'Ugandan', 'Ugandans' ),
+		'UA' => array( 'Ukrainian', 'Ukrainians' ),
+		'AE' => array( 'Emirati', 'Emiratis' ),
+		'GB' => array( 'Briton', 'Britons' ),
+		'US' => array( 'American', 'Americans' ),
+		'UY' => array( 'Uruguayan', 'Uruguayans' ),
+		'UZ' => array( 'Uzbek', 'Uzbeks' ),
+		'VU' => array( 'Ni-Vanuatu', 'Ni-Vanuatu' ),
+		'VA' => array( 'Vatican', 'Vatican' ),
+		'VE' => array( 'Venezuelan', 'Venezuelans' ),
+		'VN' => array( 'Vietnamese', 'Vietnamese' ),
+		'YE' => array( 'Yemeni', 'Yemenis' ),
+		'ZM' => array( 'Zambian', 'Zambians' ),
+		'ZW' => array( 'Zimbabwean', 'Zimbabweans' ),
+	);
+
+	/**
 	 * Inserts the default country list, skipping any ISO code that already
 	 * exists, so this can be called on every activation without creating
 	 * duplicates or clobbering an admin's edits (e.g. a renamed or
-	 * deactivated entry).
+	 * deactivated entry). Also backfills demonyms for rows that already exist
+	 * but have none set yet (e.g. a country seeded before DEFAULT_DEMONYMS
+	 * was introduced) - only ever fills a blank, never overwrites an admin's
+	 * own edit.
 	 */
 	public static function seed_defaults() {
 		global $wpdb;
@@ -330,24 +545,38 @@ class RBN_Countries {
 		foreach ( self::DEFAULT_COUNTRIES as $country ) {
 			list( $name, $iso_code, $iso3_code ) = $country;
 
-			$exists = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$table} WHERE iso_code = %s", $iso_code ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off seed on activation, not a request-path query.
+			$demonym          = isset( self::DEFAULT_DEMONYMS[ $iso_code ] ) ? self::DEFAULT_DEMONYMS[ $iso_code ] : array( '', '' );
+			$demonym_singular = $demonym[0];
+			$demonym_plural   = $demonym[1];
 
-			if ( $exists ) {
+			$existing_id = $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$table} WHERE iso_code = %s", $iso_code ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off seed on activation, not a request-path query.
+
+			if ( $existing_id ) {
+				$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+					$wpdb->prepare(
+						"UPDATE {$table} SET demonym_singular = %s, demonym_plural = %s WHERE id = %d AND demonym_singular = '' AND demonym_plural = ''",
+						$demonym_singular,
+						$demonym_plural,
+						$existing_id
+					)
+				);
 				continue;
 			}
 
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$table,
 				array(
-					'name'       => $name,
-					'iso_code'   => $iso_code,
-					'iso3_code'  => $iso3_code,
-					'flag_code'  => $iso_code,
-					'status'     => 'active',
-					'created_at' => $now,
-					'updated_at' => $now,
+					'name'              => $name,
+					'iso_code'          => $iso_code,
+					'iso3_code'         => $iso3_code,
+					'flag_code'         => $iso_code,
+					'demonym_singular'  => $demonym_singular,
+					'demonym_plural'    => $demonym_plural,
+					'status'            => 'active',
+					'created_at'        => $now,
+					'updated_at'        => $now,
 				),
-				array( '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+				array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 			);
 		}
 
@@ -370,7 +599,7 @@ class RBN_Countries {
 		global $wpdb;
 
 		$table   = RBN_Schema::countries_table();
-		$results = $wpdb->get_results( "SELECT id, name, iso_code, iso3_code, flag_code FROM {$table} WHERE status = 'active' ORDER BY name ASC" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- cached just below.
+		$results = $wpdb->get_results( "SELECT id, name, iso_code, iso3_code, flag_code, demonym_singular, demonym_plural FROM {$table} WHERE status = 'active' ORDER BY name ASC" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- cached just below.
 
 		$countries = $results ? $results : array();
 
@@ -413,6 +642,60 @@ class RBN_Countries {
 		}
 
 		return self::CURRENCY_SYMBOLS[ $country->iso_code ];
+	}
+
+	/**
+	 * The demonym (noun form - "South African"/"South Africans", not the
+	 * adjective) for a country, e.g. for RBN_Demonym_Shortcode. Falls back to
+	 * the plain country name when nothing is configured, rather than
+	 * outputting an empty string - a missing demonym should degrade to
+	 * something still readable, not disappear from the page.
+	 *
+	 * @param int  $country_id
+	 * @param bool $plural
+	 * @return string
+	 */
+	public static function demonym( $country_id, $plural = false ) {
+		$country = self::get_by_id( $country_id );
+
+		if ( ! $country ) {
+			return '';
+		}
+
+		$demonym = $plural ? $country->demonym_plural : $country->demonym_singular;
+
+		return $demonym ? $demonym : $country->name;
+	}
+
+	/**
+	 * Updates a country's demonyms from the admin screen (RBN_Countries_Admin)
+	 * - the only place these are ever edited; seed_defaults() only fills a
+	 * blank, never overwrites what's saved here.
+	 *
+	 * @return bool True if the country exists and was updated.
+	 */
+	public static function update_demonyms( $country_id, $demonym_singular, $demonym_plural ) {
+		if ( ! self::get_by_id( $country_id ) ) {
+			return false;
+		}
+
+		global $wpdb;
+
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			RBN_Schema::countries_table(),
+			array(
+				'demonym_singular' => $demonym_singular,
+				'demonym_plural'   => $demonym_plural,
+				'updated_at'       => current_time( 'mysql' ),
+			),
+			array( 'id' => absint( $country_id ) ),
+			array( '%s', '%s', '%s' ),
+			array( '%d' )
+		);
+
+		self::flush_cache();
+
+		return true;
 	}
 
 	/**
