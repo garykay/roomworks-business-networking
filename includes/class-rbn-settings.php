@@ -104,6 +104,29 @@ class RBN_Settings {
 			self::PAGE_SLUG,
 			'rbn_settings_communities'
 		);
+
+		add_settings_section(
+			'rbn_settings_branding',
+			__( 'Branding', 'roomworks-business-networking' ),
+			'__return_false',
+			self::PAGE_SLUG
+		);
+
+		add_settings_field(
+			'network_origin_country_id',
+			__( 'Network origin country', 'roomworks-business-networking' ),
+			array( __CLASS__, 'render_network_origin_country_field' ),
+			self::PAGE_SLUG,
+			'rbn_settings_branding'
+		);
+
+		add_settings_field(
+			'default_destination_country_id',
+			__( 'Default destination country', 'roomworks-business-networking' ),
+			array( __CLASS__, 'render_default_destination_country_field' ),
+			self::PAGE_SLUG,
+			'rbn_settings_branding'
+		);
 	}
 
 	public static function sanitize( $input ) {
@@ -135,12 +158,26 @@ class RBN_Settings {
 
 		$require_unique_community_pair = ! empty( $input['require_unique_community_pair'] );
 
+		$network_origin_country_id = isset( $input['network_origin_country_id'] ) ? absint( $input['network_origin_country_id'] ) : 0;
+
+		if ( $network_origin_country_id && ! RBN_Countries::get_by_id( $network_origin_country_id ) ) {
+			$network_origin_country_id = 0;
+		}
+
+		$default_destination_country_id = isset( $input['default_destination_country_id'] ) ? absint( $input['default_destination_country_id'] ) : 0;
+
+		if ( $default_destination_country_id && ! RBN_Countries::get_by_id( $default_destination_country_id ) ) {
+			$default_destination_country_id = 0;
+		}
+
 		return array(
-			'per_page'                      => $per_page,
-			'sort'                          => $sort,
-			'notification_email'            => $notification_email,
-			'deletion_grace_hours'          => $grace_hours,
-			'require_unique_community_pair' => $require_unique_community_pair,
+			'per_page'                        => $per_page,
+			'sort'                            => $sort,
+			'notification_email'              => $notification_email,
+			'deletion_grace_hours'            => $grace_hours,
+			'require_unique_community_pair'   => $require_unique_community_pair,
+			'network_origin_country_id'       => $network_origin_country_id,
+			'default_destination_country_id'  => $default_destination_country_id,
 		);
 	}
 
@@ -155,6 +192,17 @@ class RBN_Settings {
 			// admin explicitly opts into multiple (e.g. regional
 			// sub-communities) via this setting.
 			'require_unique_community_pair' => true,
+			// 0 = none configured. Deliberately no hard-coded country
+			// default here (see the scalability spec's "do not hard-code
+			// countries" rule) - each deployment of this plugin sets its own
+			// via this screen, e.g. South Africa for a SAFFA-style network.
+			'network_origin_country_id'      => 0,
+			// The [rbn_country source="viewer_current"] fallback for a
+			// logged-out visitor, or a logged-in one who hasn't set "Country
+			// You Currently Live In" - unlike origin, a diaspora network
+			// spans many destinations by design, so there's no sensible
+			// hard-coded default; each deployment picks its own here too.
+			'default_destination_country_id' => 0,
 		);
 		$saved    = get_option( self::OPTION_NAME, array() );
 
@@ -215,6 +263,24 @@ class RBN_Settings {
 
 	public static function require_unique_community_pair() {
 		return (bool) self::options()['require_unique_community_pair'];
+	}
+
+	/**
+	 * The country whose demonym RBN_Demonym_Shortcode falls back to when a
+	 * shortcode call doesn't specify a country attribute - "which country
+	 * does this deployment of the plugin represent", e.g. South Africa for a
+	 * SAFFA-style network. 0 if not yet configured.
+	 */
+	public static function network_origin_country_id() {
+		return self::options()['network_origin_country_id'];
+	}
+
+	/**
+	 * The [rbn_country source="viewer_current"] (and demonym equivalent)
+	 * fallback - see the docblock on default_destination_country_id above.
+	 */
+	public static function default_destination_country_id() {
+		return self::options()['default_destination_country_id'];
 	}
 
 	public static function render_per_page_field() {
@@ -306,6 +372,55 @@ class RBN_Settings {
 		</label>
 		<p class="description">
 			<?php esc_html_e( 'Turn this off to allow more than one community for the same pair - for example regional sub-communities such as "South Africans in the UK - London".', 'roomworks-business-networking' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_network_origin_country_field() {
+		$options    = self::options();
+		$countries  = RBN_Countries::get_all();
+		$countries_url = admin_url( 'edit.php?post_type=' . RBN_Post_Type_Business::POST_TYPE . '&page=' . RBN_Countries_Admin::PAGE_SLUG );
+		?>
+		<select name="<?php echo esc_attr( self::OPTION_NAME ); ?>[network_origin_country_id]">
+			<option value="0"><?php esc_html_e( '— None —', 'roomworks-business-networking' ); ?></option>
+			<?php foreach ( $countries as $country ) : ?>
+				<option value="<?php echo esc_attr( $country->id ); ?>" <?php selected( $options['network_origin_country_id'], $country->id ); ?>>
+					<?php echo esc_html( $country->name ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description">
+			<?php
+			printf(
+				/* translators: %s: URL of the Countries admin screen. */
+				wp_kses(
+					__( 'Which country this network is for - the default for <code>[rbn_demonym]</code> and <code>[rbn_country]</code> when neither a <code>country</code> attribute nor <code>source="viewer_origin"</code>/<code>source="viewer_current"</code> is used (e.g. "Built by South Africans, for South Africans"). Edit demonyms on the <a href="%s">Countries</a> screen.', 'roomworks-business-networking' ),
+					array(
+						'code' => array(),
+						'a'    => array( 'href' => array() ),
+					)
+				),
+				esc_url( $countries_url )
+			);
+			?>
+		</p>
+		<?php
+	}
+
+	public static function render_default_destination_country_field() {
+		$options   = self::options();
+		$countries = RBN_Countries::get_all();
+		?>
+		<select name="<?php echo esc_attr( self::OPTION_NAME ); ?>[default_destination_country_id]">
+			<option value="0"><?php esc_html_e( '— None —', 'roomworks-business-networking' ); ?></option>
+			<?php foreach ( $countries as $country ) : ?>
+				<option value="<?php echo esc_attr( $country->id ); ?>" <?php selected( $options['default_destination_country_id'], $country->id ); ?>>
+					<?php echo esc_html( $country->name ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'The fallback for [rbn_demonym source="viewer_current"] / [rbn_country source="viewer_current"] - shown to a logged-out visitor, or a member who hasn\'t set "Country You Currently Live In" on their profile. Once a member sets that field, they see their own country instead.', 'roomworks-business-networking' ); ?>
 		</p>
 		<?php
 	}

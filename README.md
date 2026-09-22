@@ -34,6 +34,44 @@ Requires WordPress 6.8+, PHP 7.4+.
 - Business Type and Services vocabularies are managed as ordinary taxonomies in wp-admin.
 - A dedicated Approvals screen for pending business listings and cancelling account-deletion requests.
 
+## Shortcodes
+
+Drop a country name or demonym into existing copy (a Heading/Paragraph block, or anywhere else `do_shortcode()` runs) so it stays correct without hand-editing every occurrence.
+
+**`[rbn_demonym]`** — the noun-form demonym for a country, e.g. "South African" / "South Africans" (not the adjective).
+**`[rbn_country]`** — the plain country name, e.g. "United Kingdom".
+
+Both resolve *which* country the same way:
+
+| Attribute | Effect |
+|---|---|
+| `country="ZA"` or `country="27"` | Explicit override — an ISO 3166-1 alpha-2 code or a country ID. Takes priority over `source`. |
+| `source="network"` (default) | The **Network Origin Country** setting (Businesses → Settings → Branding) — which country this deployment represents, e.g. South Africa for a SAFFA-style network. |
+| `source="viewer_origin"` | The logged-in viewer's own **Country of Origin** profile field, falling back to `network` when logged out or not set. |
+| `source="viewer_current"` | The logged-in viewer's own **Country You Currently Live In** profile field, falling back to the **Default Destination Country** setting (same Branding section) when logged out or not set. |
+
+`[rbn_demonym]` also takes `plural="1"` (default `"0"`, i.e. singular). Both take `case="upper"`, `"lower"`, or `"title"` (default: as stored).
+
+Demonyms are seeded for all ~195 countries and can be corrected or filled in from the Countries screen (Businesses → Countries), which also has a "Restore Missing Defaults" action.
+
+Examples:
+```
+Built by [rbn_demonym plural="1"], for [rbn_demonym plural="1"]
+→ Built by South Africans, for South Africans
+
+ABOUT [rbn_demonym case="upper"] NETWORK
+→ ABOUT SOUTH AFRICAN NETWORK
+
+...business owners across the [rbn_country source="viewer_current"] come together...
+→ ...across the United Kingdom... (or the viewer's own country, once they've set it)
+
+Fellow [rbn_demonym source="viewer_origin" plural="1"]
+→ Fellow South Africans (for a member whose Country of Origin is South Africa)
+
+[rbn_demonym country="NG" plural="1"] and [rbn_country country="GB"]
+→ Nigerians and United Kingdom
+```
+
 ## Development
 
 ```

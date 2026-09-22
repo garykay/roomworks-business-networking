@@ -72,6 +72,32 @@ class RBN_Business_Repository {
 	}
 
 	/**
+	 * Every published business owned by a user, ordered by name - unlike
+	 * get_all_for_user() above, this is meant for public-facing display
+	 * (e.g. the single-post-author-business-profile block, shown to
+	 * anonymous visitors reading someone else's post), so pending/draft/
+	 * private businesses are deliberately excluded.
+	 */
+	public static function get_published_for_user( $user_id ) {
+		$user_id = absint( $user_id );
+
+		if ( ! $user_id ) {
+			return array();
+		}
+
+		return get_posts(
+			array(
+				'post_type'      => RBN_Post_Type_Business::POST_TYPE,
+				'post_status'    => 'publish',
+				'author'         => $user_id,
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+			)
+		);
+	}
+
+	/**
 	 * A specific business, regardless of who owns it, but only if it's
 	 * actually published - used by RBN_Business_Follow_Forms, where "can
 	 * this be followed" means "is this publicly visible", not "does the

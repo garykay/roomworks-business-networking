@@ -61,6 +61,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-settings.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-approvals.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-communities-admin.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-countries-admin.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-country-shortcodes.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-directory.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-services.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
@@ -69,6 +71,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-repository.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-jobs.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-authors.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-author-business-profile-toggle.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-templates.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-stats.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-activator.php';
@@ -97,6 +101,12 @@ add_action( 'init', array( 'RBN_Business_Follow_Forms', 'handle_request' ) );
 
 add_action( 'before_delete_post', array( 'RBN_Business_Follows', 'cleanup_on_business_deleted' ) );
 
+add_filter( 'wp_dropdown_users_args', array( 'RBN_Post_Authors', 'filter_dropdown_users_args' ) );
+add_filter( 'rest_user_query', array( 'RBN_Post_Authors', 'filter_rest_user_query' ), 10, 2 );
+
+add_action( 'init', array( 'RBN_Author_Business_Profile_Toggle', 'register_meta' ) );
+add_action( 'enqueue_block_editor_assets', array( 'RBN_Author_Business_Profile_Toggle', 'enqueue_editor_script' ) );
+
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
 add_filter( 'wp_authenticate_user', array( 'RBN_Member_Approval', 'block_pending_login' ), 10, 2 );
@@ -119,6 +129,11 @@ add_action( 'admin_init', array( 'RBN_Settings', 'register_settings' ) );
 
 add_action( 'admin_menu', array( 'RBN_Communities_Admin', 'register_menu' ) );
 add_action( 'admin_init', array( 'RBN_Communities_Admin', 'maybe_handle_request' ) );
+
+add_action( 'admin_menu', array( 'RBN_Countries_Admin', 'register_menu' ) );
+add_action( 'admin_init', array( 'RBN_Countries_Admin', 'maybe_handle_request' ) );
+
+add_action( 'init', array( 'RBN_Country_Shortcodes', 'register' ) );
 
 add_action( 'rest_api_init', array( 'RBN_REST_Directory', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );
