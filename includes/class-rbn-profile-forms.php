@@ -35,6 +35,10 @@ class RBN_Profile_Forms {
 		$last_name          = isset( $_POST['rbn_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_last_name'] ) ) : '';
 		$display            = isset( $_POST['rbn_display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_display_name'] ) ) : '';
 		$bio                = isset( $_POST['rbn_bio'] ) ? sanitize_textarea_field( wp_unslash( $_POST['rbn_bio'] ) ) : '';
+		// Optional - not every member wants to share a phone number at all;
+		// see RBN_Templates::job_form()'s per-listing "hide my phone number"
+		// option for the other half of that opt-in/opt-out pairing.
+		$phone_number       = isset( $_POST['rbn_phone_number'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_phone_number'] ) ) : '';
 		$origin_country_id  = isset( $_POST['rbn_origin_country_id'] ) ? absint( $_POST['rbn_origin_country_id'] ) : 0;
 		$current_country_id = isset( $_POST['rbn_current_country_id'] ) ? absint( $_POST['rbn_current_country_id'] ) : 0;
 
@@ -63,6 +67,7 @@ class RBN_Profile_Forms {
 		);
 
 		update_user_meta( $user_id, 'description', $bio );
+		update_user_meta( $user_id, 'rbn_phone_number', $phone_number );
 
 		// Validated against RBN_Countries::get_by_id() above, so these
 		// set_*_country() calls cannot fail here - still checked because

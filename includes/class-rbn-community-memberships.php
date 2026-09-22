@@ -155,6 +155,55 @@ class RBN_Community_Memberships {
 		return $communities;
 	}
 
+	/**
+	 * The communities a user is both (a) an active member of and (b) whose
+	 * destination country matches the given country - the eligibility rule
+	 * RBN_Business_Query::community_scope_clause() already applies for
+	 * directory visibility, factored out here so the job form's community
+	 * picker (which must offer the same restricted set - see
+	 * RBN_Job_Forms) doesn't duplicate the intersection logic a third time.
+	 *
+	 * Ordered by joined_at ascending, oldest first - RBN_Job_Forms relies on
+	 * this order to pick a default community when a member submits the job
+	 * form with none checked.
+	 *
+	 * @return object[] Community rows (RBN_Communities objects), oldest joined first.
+	 */
+	public static function get_communities_for_user_in_country( $user_id, $country_id ) {
+		$country_id = absint( $country_id );
+
+		if ( ! $country_id ) {
+			return array();
+		}
+
+		$in_country_ids = array_map( 'absint', wp_list_pluck( RBN_Communities::get_for_destination_country( $country_id ), 'id' ) );
+
+		$eligible = array();
+
+		foreach ( self::get_for_user( $user_id ) as $membership ) {
+			if ( self::STATUS_ACTIVE !== $membership->status || ! in_array( (int) $membership->community_id, $in_country_ids, true ) ) {
+				continue;
+			}
+
+			$community = RBN_Communities::get_by_id( $membership->community_id );
+
+			// Cloned rather than mutated in place - get_by_id() returns
+			// objects straight out of RBN_Communities' own request-lifetime
+			// cache (see its CACHE_GROUP), so writing directly to $community
+			// would leak this membership's joined_at onto that shared,
+			// user-independent cached object for every other caller.
+			if ( $community ) {
+				$community              = clone $community;
+				$community->joined_at   = $membership->joined_at;
+				$eligible[ $membership->joined_at . '_' . $community->id ] = $community;
+			}
+		}
+
+		ksort( $eligible );
+
+		return array_values( $eligible );
+	}
+
 	public static function member_count( $community_id ) {
 		global $wpdb;
 

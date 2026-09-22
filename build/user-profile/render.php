@@ -20,11 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $current_url = esc_url_raw( home_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ) ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- unslashed and escaped via esc_url_raw().
-// rbn_confirm_deletion/rbn_edit_business only toggle which copy/button or
-// which business the account-deletion/business sections show on THIS load;
-// stripped here so neither gets carried into the hidden redirect field of
-// every other form on the page.
-$current_url = remove_query_arg( array( 'rbn_confirm_deletion', 'rbn_edit_business' ), $current_url );
+// rbn_confirm_deletion/rbn_edit_business/rbn_edit_job only toggle which
+// copy/button or which business/job the account-deletion/business/requests
+// sections show on THIS load; stripped here so none of them gets carried
+// into the hidden redirect field of every other form on the page.
+$current_url = remove_query_arg( array( 'rbn_confirm_deletion', 'rbn_edit_business', 'rbn_edit_job' ), $current_url );
 // Read-only: only chooses which (already-sanitized, centrally-defined)
 // notice message to display - never a state change, so no nonce applies.
 $notice_code = isset( $_GET['rbn_notice'] ) ? sanitize_key( wp_unslash( $_GET['rbn_notice'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended

@@ -144,66 +144,186 @@ class RBN_Templates {
 	 */
 	public static function member_dashboard( $current_user, $current_url, $notice_code ) {
 		$businesses = RBN_Business_Repository::get_all_for_user( $current_user->ID );
+		$jobs       = RBN_Job_Repository::get_all_for_user( $current_user->ID );
 
-		// Which business (if any) the form below is editing - read directly
-		// here rather than passed in, same as account_deletion_section()'s
-		// rbn_confirm_deletion below. Read-only: only chooses which
-		// business's data pre-fills the form, never a state change, so no
-		// nonce applies - get_by_id_for_user() re-verifies ownership
-		// regardless of what this value claims.
+		// Which business/job (if any) the form below is editing - read
+		// directly here rather than passed in, same as
+		// account_deletion_section()'s rbn_confirm_deletion below. Read-only:
+		// only chooses which record's data pre-fills the form, never a state
+		// change, so no nonce applies - get_by_id_for_user() re-verifies
+		// ownership regardless of what this value claims.
 		$editing_business_id = isset( $_GET['rbn_edit_business'] ) ? absint( $_GET['rbn_edit_business'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$editing_business     = $editing_business_id ? RBN_Business_Repository::get_by_id_for_user( $editing_business_id, $current_user->ID ) : null;
+
+		$editing_job_id = isset( $_GET['rbn_edit_job'] ) ? absint( $_GET['rbn_edit_job'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$editing_job    = $editing_job_id ? RBN_Job_Repository::get_by_id_for_user( $editing_job_id, $current_user->ID ) : null;
+
+		$tabs = array(
+			'profile'     => array(
+				'label'   => __( 'Profile', 'roomworks-business-networking' ),
+				'content' => self::profile_edit_form( $current_user, $current_url, $notice_code ),
+			),
+			'communities' => array(
+				'label'   => __( 'Communities', 'roomworks-business-networking' ),
+				'content' => self::communities_section( $current_user, $current_url, $notice_code ),
+			),
+			'businesses'  => array(
+				'label'   => __( 'Businesses', 'roomworks-business-networking' ),
+				'content' => self::businesses_section( $businesses, $editing_business, $current_user, $current_url, $notice_code ),
+			),
+			'favourites'  => array(
+				'label'   => __( 'Favourites', 'roomworks-business-networking' ),
+				'content' => self::favourites_section( $current_user, $current_url ),
+			),
+			'requests'    => array(
+				'label'   => __( 'Requests', 'roomworks-business-networking' ),
+				'content' => self::jobs_section( $jobs, $editing_job, $current_user, $current_url, $notice_code ),
+			),
+		);
+
+		// Not offered to administrators at all - see
+		// account_deletion_section()'s docblock - so the tab itself is
+		// dropped rather than shown with nothing in it.
+		$account_content = self::account_deletion_section( $current_user, $current_url, $notice_code );
+		if ( '' !== $account_content ) {
+			$tabs['account'] = array(
+				'label'   => __( 'Account', 'roomworks-business-networking' ),
+				'content' => $account_content,
+			);
+		}
+
+		// The FALLBACK tab to land on once JS turns this into an actual
+		// tabbed interface (see initTabs() in view.js) - used only when
+		// initTabs()'s own first choice, the panel containing the current
+		// URL's #hash target (e.g. "Edit" on a business/request links to
+		// #rbn-business-form/#rbn-job-form, each inside its own panel),
+		// doesn't apply - there's no hash at all right after a plain form
+		// POST redirect, only a ?rbn_notice= query arg. Checked in priority
+		// order:
+		//
+		// 1. Whichever record is currently being edited/confirmed - covers
+		//    a GET navigation that has neither a notice nor a matching
+		//    in-panel anchor (there isn't one for "Request Account
+		//    Deletion", only for the Cancel link that undoes it).
+		// 2. The section a just-submitted form's notice belongs to (e.g.
+		//    posting a brand new request, which has no ID in the URL for
+		//    rule 1 to key off, still lands on "Requests" via its
+		//    job_saved notice).
+		// 3. The first tab, if neither of the above matched anything.
+		//
+		// Irrelevant without JS, since every panel is already visible there
+		// - nothing to "land on".
+		$confirming_deletion = ! empty( $_GET['rbn_confirm_deletion'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as account_deletion_section()'s own identical check.
+
+		// A follow/unfollow notice is also technically "section business"
+		// under RBN_Notices::section()'s generic prefix match (business_
+		// followed/unfollowed/follow_*), which would otherwise land back
+		// on "Businesses" instead of "Favourites" - checked before the
+		// generic map below, not folded into it. Listed explicitly rather
+		// than prefix-matched: "business_followed"/"business_unfollowed"
+		// don't share a clean common prefix with each other or with the
+		// business_follow_* error codes.
+		$follow_notice_codes = array(
+			'business_followed',
+			'business_unfollowed',
+			'business_follow_invalid_request',
+			'business_follow_not_found',
+			'business_follow_own_business',
+		);
+		$is_follow_notice    = in_array( $notice_code, $follow_notice_codes, true );
+
+		if ( $editing_business_id ) {
+			$active_tab = 'businesses';
+		} elseif ( $editing_job_id ) {
+			$active_tab = 'requests';
+		} elseif ( $confirming_deletion ) {
+			$active_tab = 'account';
+		} elseif ( $is_follow_notice ) {
+			$active_tab = 'favourites';
+		} else {
+			$section_to_tab = array(
+				'profile'          => 'profile',
+				'community'        => 'communities',
+				'business'         => 'businesses',
+				'job'              => 'requests',
+				'account_deletion' => 'account',
+			);
+			$active_tab = isset( $section_to_tab[ RBN_Notices::section( $notice_code ) ] ) ? $section_to_tab[ RBN_Notices::section( $notice_code ) ] : '';
+		}
+
+		if ( ! isset( $tabs[ $active_tab ] ) ) {
+			$active_tab = array_key_first( $tabs );
+		}
 
 		ob_start();
 		?>
 		<div class="rbn-dashboard">
-			<?php echo self::profile_summary( $current_user, $businesses ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
-			<?php echo self::profile_edit_form( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php echo self::communities_section( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php echo self::businesses_section( $businesses, $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<?php echo self::account_deletion_section( $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo self::profile_header( $current_user, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 
-			<p class="rbn-profile__logout">
-				<a class="rbn-link" href="<?php echo esc_url( wp_logout_url( $current_url ) ); ?>"><?php esc_html_e( 'Log out', 'roomworks-business-networking' ); ?></a>
-			</p>
+			<div class="rbn-tabs" data-rbn-tabs data-rbn-active-tab="<?php echo esc_attr( $active_tab ); ?>">
+				<nav class="rbn-tabs__nav" aria-label="<?php esc_attr_e( 'Dashboard sections', 'roomworks-business-networking' ); ?>">
+					<?php foreach ( $tabs as $key => $tab ) : ?>
+						<a class="rbn-tabs__tab" href="#rbn-tab-panel-<?php echo esc_attr( $key ); ?>" data-rbn-tab-link="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $tab['label'] ); ?></a>
+					<?php endforeach; ?>
+				</nav>
+
+				<div class="rbn-tabs__panels">
+					<?php foreach ( $tabs as $key => $tab ) : ?>
+						<div class="rbn-tabs__panel" id="rbn-tab-panel-<?php echo esc_attr( $key ); ?>" data-rbn-tab-panel="<?php echo esc_attr( $key ); ?>">
+							<?php echo $tab['content']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within each section's own render method. ?>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
 		</div>
 		<?php
 		return ob_get_clean();
 	}
 
-	private static function profile_summary( $current_user, array $businesses ) {
-		$bio = get_user_meta( $current_user->ID, 'description', true );
+	/**
+	 * The cover-banner/avatar header above the tabs - a purely decorative
+	 * CSS gradient banner (no upload feature), the member's name, their
+	 * origin/current-country pairing (the same one their communities are
+	 * built from) and bio if set, and the one action that isn't tied to any
+	 * particular tab (logging out).
+	 */
+	private static function profile_header( $current_user, $current_url ) {
+		$bio                 = get_user_meta( $current_user->ID, 'description', true );
+		$origin_country_id   = RBN_Countries::get_origin_country_id( $current_user->ID );
+		$current_country_id  = RBN_Countries::get_current_country_id( $current_user->ID );
+		$origin_country      = $origin_country_id ? RBN_Countries::get_by_id( $origin_country_id ) : null;
+		$current_country     = $current_country_id ? RBN_Countries::get_by_id( $current_country_id ) : null;
+
+		$location = '';
+		if ( $origin_country && $current_country ) {
+			/* translators: 1: origin country name, 2: current country name. */
+			$location = sprintf( __( '%1$s → %2$s', 'roomworks-business-networking' ), $origin_country->name, $current_country->name );
+		} elseif ( $current_country ) {
+			$location = $current_country->name;
+		} elseif ( $origin_country ) {
+			$location = $origin_country->name;
+		}
 
 		ob_start();
 		?>
-		<div class="rbn-profile rbn-card">
-			<div class="rbn-profile__header">
-				<?php echo get_avatar( $current_user->ID, 96 ); ?>
+		<div class="rbn-profile-header">
+			<div class="rbn-profile-header__cover" aria-hidden="true"></div>
+			<div class="rbn-profile-header__content">
+				<span class="rbn-profile-header__avatar"><?php echo get_avatar( $current_user->ID, 112 ); ?></span>
 
-				<div>
-					<h2 class="rbn-profile__name"><?php echo esc_html( $current_user->display_name ); ?></h2>
+				<div class="rbn-profile-header__info">
+					<h2 class="rbn-profile-header__name"><?php echo esc_html( $current_user->display_name ); ?></h2>
+					<?php if ( $location ) : ?>
+						<p class="rbn-profile-header__location"><?php echo self::icon( 'pin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static trusted markup, see icon(). ?><?php echo esc_html( $location ); ?></p>
+					<?php endif; ?>
 					<?php if ( $bio ) : ?>
-						<p class="rbn-profile__bio"><?php echo esc_html( $bio ); ?></p>
+						<p class="rbn-profile-header__bio"><?php echo esc_html( $bio ); ?></p>
 					<?php endif; ?>
 				</div>
-			</div>
 
-			<div class="rbn-profile__business">
-				<h3><?php esc_html_e( 'Businesses', 'roomworks-business-networking' ); ?></h3>
-				<?php if ( $businesses ) : ?>
-					<ul class="rbn-profile__business-list">
-						<?php foreach ( $businesses as $business ) : ?>
-							<li>
-								<?php echo esc_html( wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) ); ?>
-								<?php if ( 'pending' === $business->post_status ) : ?>
-									<span class="rbn-status rbn-status--pending"><?php esc_html_e( 'Pending review', 'roomworks-business-networking' ); ?></span>
-								<?php endif; ?>
-							</li>
-						<?php endforeach; ?>
-					</ul>
-				<?php else : ?>
-					<p class="rbn-field-note"><?php esc_html_e( "You haven't added a business yet.", 'roomworks-business-networking' ); ?></p>
-				<?php endif; ?>
+				<p class="rbn-profile-header__actions">
+					<a class="rbn-link" href="<?php echo esc_url( wp_logout_url( $current_url ) ); ?>"><?php esc_html_e( 'Log out', 'roomworks-business-networking' ); ?></a>
+				</p>
 			</div>
 		</div>
 		<?php
@@ -236,7 +356,7 @@ class RBN_Templates {
 
 		ob_start();
 		?>
-		<section class="rbn-delete-account rbn-card">
+		<section class="rbn-delete-account rbn-card" id="rbn-delete-account">
 			<h3><?php esc_html_e( 'Delete Account', 'roomworks-business-networking' ); ?></h3>
 
 			<?php echo self::notice_for_section( $notice_code, 'account_deletion' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -266,7 +386,7 @@ class RBN_Templates {
 						<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
 						<button type="submit" class="rbn-button rbn-button--danger"><?php esc_html_e( 'Yes, Delete My Account', 'roomworks-business-networking' ); ?></button>
 					</form>
-					<a class="rbn-link" href="<?php echo esc_url( $current_url ); ?>"><?php esc_html_e( 'Cancel', 'roomworks-business-networking' ); ?></a>
+					<a class="rbn-link" href="<?php echo esc_url( $current_url . '#rbn-delete-account' ); ?>"><?php esc_html_e( 'Cancel', 'roomworks-business-networking' ); ?></a>
 				</div>
 			<?php else : ?>
 				<p class="rbn-field-note"><?php esc_html_e( 'Deleting your account is permanent and also removes your business listing. This cannot be undone once it takes effect.', 'roomworks-business-networking' ); ?></p>
@@ -279,6 +399,7 @@ class RBN_Templates {
 
 	private static function profile_edit_form( $current_user, $current_url, $notice_code ) {
 		$bio                = get_user_meta( $current_user->ID, 'description', true );
+		$phone_number       = get_user_meta( $current_user->ID, 'rbn_phone_number', true );
 		$origin_country_id  = RBN_Countries::get_origin_country_id( $current_user->ID );
 		$current_country_id = RBN_Countries::get_current_country_id( $current_user->ID );
 
@@ -309,6 +430,11 @@ class RBN_Templates {
 				<p>
 					<label for="rbn-profile-bio"><?php esc_html_e( 'About You', 'roomworks-business-networking' ); ?></label>
 					<textarea id="rbn-profile-bio" name="rbn_bio" rows="4"><?php echo esc_textarea( $bio ); ?></textarea>
+				</p>
+				<p>
+					<label for="rbn-profile-phone-number"><?php esc_html_e( 'Phone Number', 'roomworks-business-networking' ); ?></label>
+					<input type="tel" id="rbn-profile-phone-number" name="rbn_phone_number" autocomplete="tel" value="<?php echo esc_attr( $phone_number ); ?>" />
+					<span class="rbn-field-note"><?php esc_html_e( 'Optional. Offered as a contact option on your notice board requests - you can hide it on any individual one.', 'roomworks-business-networking' ); ?></span>
 				</p>
 				<?php echo self::country_field( 'rbn-profile-origin-country', 'rbn_origin_country_id', __( 'Country of Origin', 'roomworks-business-networking' ), $origin_country_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within country_field(). ?>
 				<?php echo self::country_field( 'rbn-profile-current-country', 'rbn_current_country_id', __( 'Country You Currently Live In', 'roomworks-business-networking' ), $current_country_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -398,6 +524,53 @@ class RBN_Templates {
 			<input type="hidden" name="rbn_community_id" value="<?php echo esc_attr( $community_id ); ?>" />
 			<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
 			<button type="submit" class="rbn-button rbn-button--secondary"><?php echo esc_html( $label ); ?></button>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The follow/unfollow heart button - used on both a directory/
+	 * favourites business card and the single business profile page. Same
+	 * plain-POST, no-JS-required pattern as community_action_form() above,
+	 * not a fetch()-based toggle, so it works identically everywhere it's
+	 * placed without needing a REST endpoint or any JS at all (the
+	 * directory's async re-render in view.js only needs to reproduce this
+	 * markup, not any click-handling logic of its own).
+	 *
+	 * Renders nothing for a logged-out visitor (the single business
+	 * profile page is reachable while logged out - see its own docblock)
+	 * or for the business's own owner, matching
+	 * RBN_Business_Follow_Forms::handle_follow()'s own server-side rule.
+	 */
+	private static function business_follow_form( $business_id, $is_following, $is_own, $redirect_to, $show_label = false ) {
+		if ( ! is_user_logged_in() || $is_own ) {
+			return '';
+		}
+
+		$action = $is_following ? RBN_Business_Follow_Forms::UNFOLLOW_ACTION : RBN_Business_Follow_Forms::FOLLOW_ACTION;
+		$label  = $is_following
+			? __( 'Unfollow this business', 'roomworks-business-networking' )
+			: __( 'Follow this business', 'roomworks-business-networking' );
+
+		ob_start();
+		?>
+		<form class="rbn-business-follow-form" method="post" action="<?php echo esc_url( $redirect_to ); ?>">
+			<?php wp_nonce_field( $action, 'rbn_business_follow_nonce' ); ?>
+			<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( $action ); ?>" />
+			<input type="hidden" name="rbn_business_id" value="<?php echo esc_attr( $business_id ); ?>" />
+			<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $redirect_to ); ?>" />
+			<button
+				type="submit"
+				class="rbn-business-follow-btn<?php echo $is_following ? ' rbn-business-follow-btn--following' : ''; ?>"
+				aria-pressed="<?php echo $is_following ? 'true' : 'false'; ?>"
+				aria-label="<?php echo esc_attr( $label ); ?>"
+			>
+				<?php echo self::icon( 'heart' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static trusted markup, see icon(). ?>
+				<?php if ( $show_label ) : ?>
+					<span><?php echo $is_following ? esc_html__( 'Following', 'roomworks-business-networking' ) : esc_html__( 'Follow', 'roomworks-business-networking' ); ?></span>
+				<?php endif; ?>
+			</button>
 		</form>
 		<?php
 		return ob_get_clean();
@@ -514,6 +687,44 @@ class RBN_Templates {
 			<?php endif; ?>
 		</section>
 		<?php echo self::business_form( $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The "Favourites" tab - every business the member currently follows
+	 * (RBN_Business_Follows), reusing business_card() so a favourited
+	 * business looks and behaves exactly like it does in the directory,
+	 * including its own unfollow control - no separate markup to keep in
+	 * sync. A business that's since been unpublished simply isn't in
+	 * $followed_businesses any more (see
+	 * RBN_Business_Follows::get_followed_businesses_for_user()'s docblock),
+	 * not shown here as a broken/ghost entry.
+	 */
+	private static function favourites_section( $current_user, $current_url ) {
+		$followed_businesses = RBN_Business_Follows::get_followed_businesses_for_user( $current_user->ID );
+
+		ob_start();
+		?>
+		<section class="rbn-favourites rbn-card">
+			<h3><?php esc_html_e( 'Favourites', 'roomworks-business-networking' ); ?></h3>
+			<?php if ( empty( $followed_businesses ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "You haven't followed any businesses yet - look for the heart button on a business's profile or in the directory.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<div class="rbn-directory__grid">
+					<?php foreach ( $followed_businesses as $business ) : ?>
+						<?php
+						// Always following, by construction - this list IS
+						// the follow relationship, so no batch lookup is
+						// needed the way results() needs one for a mixed
+						// set of businesses.
+						$item = RBN_Business_Query::normalize( $business, array( $business->ID => true ), $current_user->ID );
+						echo self::business_card( $item, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within.
+						?>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+		</section>
 		<?php
 		return ob_get_clean();
 	}
@@ -698,13 +909,34 @@ class RBN_Templates {
 	 * endpoint, so a name matching an existing type is reused rather than
 	 * duplicated. Degrades to a plain select without JS - "Other" still
 	 * submits, just as no category, since adding one needs a request.
+	 *
+	 * Also reused by job_form() for the request form's Category field (see
+	 * RBN_Taxonomy_Business_Category's class docblock) - $id_prefix/
+	 * $field_name let that second instance render with its own unique
+	 * element IDs and a different form field name, since both forms can be
+	 * on the page at once (the member dashboard) and duplicate IDs would
+	 * break the <label for> association on whichever instance rendered
+	 * second. The JS behind data-rbn-category-field itself already scopes
+	 * everything relative to each field's own wrapper (see
+	 * user-profile/view.js's initCategoryField()), so it needs no changes to
+	 * support more than one instance - only the id/name attributes did.
+	 * $label lets that second instance say "Category" instead of "Business
+	 * Type" - same taxonomy/options either way, just a less confusing label
+	 * for someone posting a request rather than a business.
 	 */
-	private static function business_type_field( array $selected_categories, $categories ) {
+	private static function business_type_field( array $selected_categories, $categories, $id_prefix = 'business', $field_name = 'rbn_business_category', $label = null ) {
 		$category_id = ! empty( $selected_categories ) ? (int) $selected_categories[0]->term_id : 0;
 
 		if ( is_wp_error( $categories ) ) {
 			$categories = array();
 		}
+
+		if ( null === $label ) {
+			$label = __( 'Business Type', 'roomworks-business-networking' );
+		}
+
+		$select_id = 'rbn-' . $id_prefix . '-category';
+		$new_id    = 'rbn-' . $id_prefix . '-category-new';
 
 		$i18n = array(
 			'adding' => __( 'Adding…', 'roomworks-business-networking' ),
@@ -720,8 +952,8 @@ class RBN_Templates {
 			data-rest-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
 			data-i18n="<?php echo esc_attr( wp_json_encode( $i18n ) ); ?>"
 		>
-			<label for="rbn-business-category"><?php esc_html_e( 'Business Type', 'roomworks-business-networking' ); ?></label>
-			<select id="rbn-business-category" name="rbn_business_category" data-rbn-category-select required>
+			<label for="<?php echo esc_attr( $select_id ); ?>"><?php echo esc_html( $label ); ?></label>
+			<select id="<?php echo esc_attr( $select_id ); ?>" name="<?php echo esc_attr( $field_name ); ?>" data-rbn-category-select required>
 				<option value=""><?php esc_html_e( '— Select —', 'roomworks-business-networking' ); ?></option>
 				<?php foreach ( $categories as $category ) : ?>
 					<option value="<?php echo esc_attr( $category->term_id ); ?>" <?php selected( $category_id, $category->term_id ); ?>>
@@ -732,10 +964,10 @@ class RBN_Templates {
 			</select>
 
 			<span class="rbn-category-add" data-rbn-category-add hidden>
-				<label for="rbn-business-category-new" class="rbn-visually-hidden"><?php esc_html_e( 'New business type', 'roomworks-business-networking' ); ?></label>
+				<label for="<?php echo esc_attr( $new_id ); ?>" class="rbn-visually-hidden"><?php esc_html_e( 'New business type', 'roomworks-business-networking' ); ?></label>
 				<input
 					type="text"
-					id="rbn-business-category-new"
+					id="<?php echo esc_attr( $new_id ); ?>"
 					data-rbn-category-input
 					placeholder="<?php esc_attr_e( 'e.g. Painting & Decorating', 'roomworks-business-networking' ); ?>"
 				/>
@@ -867,6 +1099,252 @@ class RBN_Templates {
 	}
 
 	/**
+	 * "My Requests" (each with an Edit link jumping to the form below,
+	 * pre-filled for that one) plus the add/edit form itself - same shape as
+	 * businesses_section() above, but with no pending-review badge:
+	 * requests auto-publish (see RBN_Job_Forms).
+	 */
+	private static function jobs_section( array $jobs, $editing_job, $current_user, $current_url, $notice_code ) {
+		ob_start();
+		?>
+		<section class="rbn-my-jobs rbn-card">
+			<h3><?php esc_html_e( 'My Requests', 'roomworks-business-networking' ); ?></h3>
+			<?php if ( empty( $jobs ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "You haven't posted a request yet - use the form below to add one.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<ul class="rbn-my-jobs__list">
+					<?php foreach ( $jobs as $job ) : ?>
+						<li>
+							<span class="rbn-my-jobs__title"><?php echo esc_html( wp_specialchars_decode( get_the_title( $job ), ENT_QUOTES ) ); ?></span>
+							<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_job', $job->ID, $current_url ) . '#rbn-job-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</section>
+		<?php echo self::job_form( $editing_job, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php
+		return ob_get_clean();
+	}
+
+	private static function job_form( $job, $current_user, $current_url, $notice_code ) {
+		$current_country_id   = RBN_Countries::get_current_country_id( $current_user->ID );
+		$eligible_communities = RBN_Community_Memberships::get_communities_for_user_in_country( $current_user->ID, $current_country_id );
+
+		// A new request can't be posted without an eligible community to
+		// belong to - an existing one can still be edited even if the
+		// member has since moved country and has none left, same reasoning
+		// as business_form()'s equivalent gate.
+		if ( ! $job && empty( $eligible_communities ) ) {
+			ob_start();
+			?>
+			<section class="rbn-edit-job rbn-card" id="rbn-job-form">
+				<h3><?php esc_html_e( 'Post a Request', 'roomworks-business-networking' ); ?></h3>
+				<p class="rbn-field-note"><?php esc_html_e( 'Join a community in your current country above before posting a request.', 'roomworks-business-networking' ); ?></p>
+			</section>
+			<?php
+			return ob_get_clean();
+		}
+
+		$title       = $job ? wp_specialchars_decode( get_the_title( $job ), ENT_QUOTES ) : '';
+		$description = $job ? $job->post_content : '';
+		// Category reuses the same Business Type taxonomy businesses use -
+		// see RBN_Taxonomy_Business_Category's class docblock for why - so
+		// this shares business_type_field() (including its member-facing
+		// "Other, add a new type" flow) rather than a separate field.
+		$selected_categories = $job ? wp_get_post_terms( $job->ID, RBN_Taxonomy_Business_Category::TAXONOMY ) : array();
+		if ( is_wp_error( $selected_categories ) ) {
+			$selected_categories = array();
+		}
+		$urgency             = $job ? get_post_meta( $job->ID, 'rbn_urgency', true ) : '';
+		$town_city           = $job ? get_post_meta( $job->ID, 'rbn_town_city', true ) : '';
+		$county_region       = $job ? get_post_meta( $job->ID, 'rbn_county_region', true ) : '';
+		$budget              = $job ? get_post_meta( $job->ID, 'rbn_budget', true ) : '';
+		$closing_date        = $job ? get_post_meta( $job->ID, 'rbn_closing_date', true ) : '';
+		$hide_phone          = $job ? (bool) get_post_meta( $job->ID, 'rbn_hide_phone', true ) : false;
+		// Multi-valued meta (single => false) - every rbn_community_id row
+		// this request is currently posted to, see RBN_Post_Type_Job.
+		$selected_community_ids = $job ? array_map( 'intval', (array) get_post_meta( $job->ID, 'rbn_community_id', false ) ) : array();
+
+		$categories = get_terms(
+			array(
+				'taxonomy'   => RBN_Taxonomy_Business_Category::TAXONOMY,
+				'hide_empty' => false,
+			)
+		);
+
+		$phone_number = get_user_meta( $current_user->ID, 'rbn_phone_number', true );
+
+		ob_start();
+		?>
+		<section class="rbn-edit-job rbn-card" id="rbn-job-form">
+			<h3>
+				<?php
+				echo $job
+					/* translators: %s: request title. */
+					? esc_html( sprintf( __( 'Edit %s', 'roomworks-business-networking' ), $title ) )
+					: esc_html__( 'Post a Request', 'roomworks-business-networking' );
+				?>
+			</h3>
+
+			<?php echo self::notice_for_section( $notice_code, 'job' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+			<p class="rbn-field-note"><?php esc_html_e( 'All fields are required except Budget and Closing Date.', 'roomworks-business-networking' ); ?></p>
+
+			<form class="rbn-form" method="post" action="<?php echo esc_url( $current_url ); ?>">
+				<?php wp_nonce_field( RBN_Job_Forms::ACTION, 'rbn_job_nonce' ); ?>
+				<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( RBN_Job_Forms::ACTION ); ?>" />
+				<input type="hidden" name="rbn_job_id" value="<?php echo esc_attr( $job ? $job->ID : 0 ); ?>" />
+				<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
+
+				<?php echo self::job_community_field( $eligible_communities, $selected_community_ids ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+
+				<p>
+					<label for="rbn-job-title"><?php esc_html_e( 'Title', 'roomworks-business-networking' ); ?></label>
+					<input type="text" id="rbn-job-title" name="rbn_job_title" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'e.g. Need a new boiler installed', 'roomworks-business-networking' ); ?>" required />
+				</p>
+
+				<?php
+				echo self::business_type_field( $selected_categories, $categories, 'job', 'rbn_job_category', __( 'Category', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within business_type_field().
+				?>
+				<?php echo self::urgency_field( $urgency ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+
+				<p>
+					<label for="rbn-job-description"><?php esc_html_e( 'Description', 'roomworks-business-networking' ); ?></label>
+					<textarea id="rbn-job-description" name="rbn_job_description" rows="4" required><?php echo esc_textarea( $description ); ?></textarea>
+				</p>
+
+				<div class="rbn-form__grid">
+					<p>
+						<label for="rbn-job-town-city"><?php esc_html_e( 'Town / City', 'roomworks-business-networking' ); ?></label>
+						<input type="text" id="rbn-job-town-city" name="rbn_town_city" value="<?php echo esc_attr( $town_city ); ?>" required />
+					</p>
+					<p>
+						<label for="rbn-job-county-region"><?php esc_html_e( 'County / Region', 'roomworks-business-networking' ); ?></label>
+						<input type="text" id="rbn-job-county-region" name="rbn_county_region" value="<?php echo esc_attr( $county_region ); ?>" required />
+					</p>
+					<p>
+						<label for="rbn-job-budget"><?php esc_html_e( 'Budget', 'roomworks-business-networking' ); ?></label>
+						<input type="text" id="rbn-job-budget" name="rbn_budget" value="<?php echo esc_attr( $budget ); ?>" placeholder="<?php esc_attr_e( 'e.g. 200 - 400', 'roomworks-business-networking' ); ?>" />
+						<span class="rbn-field-note"><?php esc_html_e( 'Numbers only - the currency symbol for the country you currently live in is added automatically.', 'roomworks-business-networking' ); ?></span>
+					</p>
+					<p>
+						<label for="rbn-job-closing-date"><?php esc_html_e( 'Closing Date', 'roomworks-business-networking' ); ?></label>
+						<input type="date" id="rbn-job-closing-date" name="rbn_closing_date" value="<?php echo esc_attr( $closing_date ); ?>" />
+					</p>
+				</div>
+
+				<?php if ( $phone_number ) : ?>
+					<p class="rbn-form__checkbox">
+						<label>
+							<input type="checkbox" name="rbn_hide_phone" value="1" <?php checked( $hide_phone ); ?> />
+							<?php esc_html_e( 'Hide my phone number on this request', 'roomworks-business-networking' ); ?>
+						</label>
+						<span class="rbn-field-note"><?php esc_html_e( 'Your account email is always shown as contact; your profile phone number is shown too unless you tick this.', 'roomworks-business-networking' ); ?></span>
+					</p>
+				<?php else : ?>
+					<p class="rbn-field-note"><?php esc_html_e( 'Only your account email will be shown as contact - add a phone number on your profile above to also offer that.', 'roomworks-business-networking' ); ?></p>
+				<?php endif; ?>
+
+				<p>
+					<button type="submit" class="rbn-button">
+						<?php
+						echo $job
+							? esc_html__( 'Save Changes', 'roomworks-business-networking' )
+							: esc_html__( 'Post Request', 'roomworks-business-networking' );
+						?>
+					</button>
+				</p>
+			</form>
+		</section>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The job's Communities field - a checkbox group, not a required single
+	 * select like business_community_field(): a job may be posted to more
+	 * than one eligible community at once, and none-checked is a valid
+	 * submission (RBN_Job_Forms defaults it to the oldest-joined one), so
+	 * nothing here is marked required. Options are the member's eligible
+	 * communities (joined AND in their current country - see
+	 * RBN_Community_Memberships::get_communities_for_user_in_country()),
+	 * plus - same reasoning as business_community_field() - any community
+	 * this job is already assigned to even if it's no longer eligible, so
+	 * saving the form can't silently drop it.
+	 */
+	private static function job_community_field( array $eligible_communities, array $selected_community_ids ) {
+		$options = $eligible_communities;
+		// int-cast - wp_list_pluck() here returns whatever type each
+		// community row's ->id property already is (a string, straight out
+		// of a $wpdb->get_results() row), while $selected_community_ids is
+		// always already int (see job_form()'s call site) - without this,
+		// the strict in_array() below never matches, and every eligible
+		// community the job is already assigned to gets appended a second
+		// time as if it weren't already an option.
+		$option_ids = array_map( 'intval', wp_list_pluck( $options, 'id' ) );
+
+		foreach ( $selected_community_ids as $community_id ) {
+			if ( in_array( $community_id, $option_ids, true ) ) {
+				continue;
+			}
+
+			$community = RBN_Communities::get_by_id( $community_id );
+
+			if ( $community ) {
+				$options[] = $community;
+			}
+		}
+
+		// Only reachable when editing an existing job whose owner has no
+		// eligible community left at all (e.g. they've since moved
+		// country) - no checkboxes are rendered, so the save handler
+		// leaves this job's community assignment exactly as it was.
+		if ( empty( $options ) ) {
+			ob_start();
+			?>
+			<p class="rbn-field-note"><?php esc_html_e( "This request isn't assigned to a community you're currently eligible for - join one in your current country above, then edit this listing again to reassign it.", 'roomworks-business-networking' ); ?></p>
+			<?php
+			return ob_get_clean();
+		}
+
+		ob_start();
+		?>
+		<fieldset class="rbn-job-community-field rbn-form__field">
+			<legend><?php esc_html_e( 'Communities', 'roomworks-business-networking' ); ?></legend>
+			<?php foreach ( $options as $community ) : ?>
+				<p class="rbn-form__checkbox">
+					<label>
+						<input type="checkbox" name="rbn_communities[]" value="<?php echo esc_attr( $community->id ); ?>" <?php checked( in_array( (int) $community->id, $selected_community_ids, true ) ); ?> />
+						<?php echo esc_html( $community->name ); ?>
+					</label>
+				</p>
+			<?php endforeach; ?>
+			<span class="rbn-field-note"><?php esc_html_e( 'Which of your communities this request is posted to. Leave everything unchecked to post it to your main (oldest-joined) community automatically.', 'roomworks-business-networking' ); ?></span>
+		</fieldset>
+		<?php
+		return ob_get_clean();
+	}
+
+	private static function urgency_field( $selected ) {
+		ob_start();
+		?>
+		<p>
+			<label for="rbn-job-urgency"><?php esc_html_e( 'Urgency', 'roomworks-business-networking' ); ?></label>
+			<select id="rbn-job-urgency" name="rbn_urgency" required>
+				<option value=""><?php esc_html_e( '— Select —', 'roomworks-business-networking' ); ?></option>
+				<?php foreach ( RBN_Post_Type_Job::URGENCY_OPTIONS as $value => $label ) : ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $selected, $value ); ?>>
+						<?php echo esc_html( $label ); ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * The filter form. Submits via a normal GET request so filtering works
 	 * without JS (the block re-renders server-side from $_GET); view.js
 	 * intercepts the same form to fetch results asynchronously instead.
@@ -920,7 +1398,7 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	public static function directory_results( $results ) {
+	public static function directory_results( $results, $current_url = '' ) {
 		ob_start();
 
 		if ( empty( $results['items'] ) ) {
@@ -931,7 +1409,7 @@ class RBN_Templates {
 			?>
 			<div class="rbn-directory__grid">
 				<?php foreach ( $results['items'] as $item ) : ?>
-					<?php echo self::business_card( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+					<?php echo self::business_card( $item, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 				<?php endforeach; ?>
 			</div>
 			<?php
@@ -940,10 +1418,22 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
-	private static function business_card( $item ) {
+	/**
+	 * $current_url is where the follow/unfollow form (if rendered at all -
+	 * see business_follow_form()) redirects back to, so acting on a card
+	 * lands back on this same filtered/paginated directory view rather
+	 * than some other page. Left empty for a context that never needs the
+	 * follow control (there isn't one currently, but keeps this method
+	 * usable without it).
+	 */
+	private static function business_card( $item, $current_url = '' ) {
 		ob_start();
 		?>
 		<article class="rbn-business-card rbn-card">
+			<?php if ( $current_url ) : ?>
+				<?php echo self::business_follow_form( $item['id'], $item['is_following'], $item['is_own'], $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+			<?php endif; ?>
+
 			<?php if ( $item['logo'] ) : ?>
 				<img class="rbn-business-card__logo" src="<?php echo esc_url( $item['logo'] ); ?>" alt="" loading="lazy" />
 			<?php else : ?>
@@ -1062,6 +1552,173 @@ class RBN_Templates {
 	}
 
 	/**
+	 * The notice board's filter form - same shape as directory_filters(),
+	 * with Urgency in place of Service and Category meaning
+	 * RBN_Taxonomy_Business_Category (same taxonomy businesses use - see
+	 * that class's docblock) rather than a separate vocabulary.
+	 */
+	public static function notice_board_filters( $filter_options, $filters, $current_url ) {
+		ob_start();
+		?>
+		<form class="rbn-form rbn-directory__filters rbn-card" method="get" action="<?php echo esc_url( $current_url ); ?>" data-rbn-filter-form>
+			<p>
+				<label for="rbn-job-filter-search"><?php esc_html_e( 'Search', 'roomworks-business-networking' ); ?></label>
+				<input type="search" id="rbn-job-filter-search" name="rbn_search" value="<?php echo esc_attr( $filters['search'] ); ?>" />
+			</p>
+
+			<p>
+				<label for="rbn-job-filter-category"><?php esc_html_e( 'Category', 'roomworks-business-networking' ); ?></label>
+				<select id="rbn-job-filter-category" name="rbn_category">
+					<option value=""><?php esc_html_e( 'All Categories', 'roomworks-business-networking' ); ?></option>
+					<?php foreach ( $filter_options['categories'] as $category ) : ?>
+						<option value="<?php echo esc_attr( $category['slug'] ); ?>" <?php selected( $filters['category'], $category['slug'] ); ?>>
+							<?php echo esc_html( $category['name'] ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+
+			<p>
+				<label for="rbn-job-filter-urgency"><?php esc_html_e( 'Urgency', 'roomworks-business-networking' ); ?></label>
+				<select id="rbn-job-filter-urgency" name="rbn_urgency">
+					<option value=""><?php esc_html_e( 'Any Urgency', 'roomworks-business-networking' ); ?></option>
+					<?php foreach ( $filter_options['urgency_options'] as $urgency ) : ?>
+						<option value="<?php echo esc_attr( $urgency['value'] ); ?>" <?php selected( $filters['urgency'], $urgency['value'] ); ?>>
+							<?php echo esc_html( $urgency['name'] ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+
+			<p>
+				<label for="rbn-job-filter-location"><?php esc_html_e( 'Location', 'roomworks-business-networking' ); ?></label>
+				<input type="text" id="rbn-job-filter-location" name="rbn_location" value="<?php echo esc_attr( $filters['location'] ); ?>" placeholder="<?php esc_attr_e( 'Town or county', 'roomworks-business-networking' ); ?>" />
+			</p>
+
+			<p class="rbn-directory__filter-actions" data-rbn-filter-actions>
+				<button type="submit" class="rbn-button"><?php esc_html_e( 'Filter', 'roomworks-business-networking' ); ?></button>
+				<?php if ( $filters['category'] || $filters['urgency'] || $filters['location'] || $filters['search'] ) : ?>
+					<a class="rbn-directory__clear rbn-link" href="<?php echo esc_url( $current_url ); ?>" data-rbn-filter-clear><?php esc_html_e( 'Clear filters', 'roomworks-business-networking' ); ?></a>
+				<?php endif; ?>
+			</p>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
+	public static function notice_board_results( $results ) {
+		ob_start();
+
+		if ( empty( $results['items'] ) ) {
+			?>
+			<p class="rbn-directory__empty"><?php esc_html_e( 'No requests found.', 'roomworks-business-networking' ); ?></p>
+			<?php
+		} else {
+			?>
+			<div class="rbn-directory__grid">
+				<?php foreach ( $results['items'] as $item ) : ?>
+					<?php echo self::job_card( $item ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+				<?php endforeach; ?>
+			</div>
+			<?php
+		}
+
+		return ob_get_clean();
+	}
+
+	private static function job_card( $item ) {
+		ob_start();
+		?>
+		<article class="rbn-job-card rbn-card">
+			<div class="rbn-job-card__body">
+				<?php if ( $item['category'] ) : ?>
+					<p class="rbn-job-card__category"><?php echo esc_html( $item['category'] ); ?></p>
+				<?php endif; ?>
+
+				<h3 class="rbn-job-card__title">
+					<a href="<?php echo esc_url( $item['permalink'] ); ?>"><?php echo esc_html( $item['title'] ); ?></a>
+				</h3>
+
+				<?php if ( $item['urgency'] ) : ?>
+					<p class="rbn-job-card__urgency"><?php echo esc_html( $item['urgency'] ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( $item['excerpt'] ) : ?>
+					<p class="rbn-job-card__excerpt"><?php echo esc_html( $item['excerpt'] ); ?></p>
+				<?php endif; ?>
+
+				<?php $location = trim( implode( ', ', array_filter( array( $item['town_city'], $item['county_region'] ) ) ) ); ?>
+				<?php if ( $location ) : ?>
+					<p class="rbn-job-card__location"><?php echo self::icon( 'pin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static trusted markup, see icon(). ?><?php echo esc_html( $location ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( $item['budget'] ) : ?>
+					<p class="rbn-job-card__budget"><?php echo esc_html( $item['budget'] ); ?></p>
+				<?php endif; ?>
+
+				<?php if ( $item['closing_date'] ) : ?>
+					<p class="rbn-job-card__closing">
+						<?php
+						printf(
+							/* translators: %s: closing date. */
+							esc_html__( 'Closes %s', 'roomworks-business-networking' ),
+							esc_html( date_i18n( get_option( 'date_format' ), strtotime( $item['closing_date'] ) ) )
+						);
+						?>
+					</p>
+				<?php endif; ?>
+
+				<p class="rbn-job-card__link">
+					<a href="<?php echo esc_url( $item['permalink'] ); ?>"><?php esc_html_e( 'View Details', 'roomworks-business-networking' ); ?></a>
+				</p>
+			</div>
+		</article>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Same shape as directory_pagination(), reusing pagination_range() -
+	 * only the filter query args carried through page links differ (urgency
+	 * instead of service).
+	 */
+	public static function notice_board_pagination( $results, $filters, $current_url ) {
+		if ( $results['total_pages'] <= 1 ) {
+			return '';
+		}
+
+		ob_start();
+		?>
+		<nav class="rbn-pagination" aria-label="<?php esc_attr_e( 'Notice board pagination', 'roomworks-business-networking' ); ?>">
+			<?php foreach ( self::pagination_range( $results['page'], $results['total_pages'] ) as $page ) : ?>
+				<?php if ( '...' === $page ) : ?>
+					<span class="rbn-pagination__ellipsis" aria-hidden="true">&hellip;</span>
+					<?php continue; ?>
+				<?php endif; ?>
+				<?php
+				$page_args = array_filter(
+					array(
+						'rbn_category' => $filters['category'],
+						'rbn_urgency'  => $filters['urgency'],
+						'rbn_location' => $filters['location'],
+						'rbn_search'   => $filters['search'],
+						'rbn_page'     => $page > 1 ? $page : null,
+					)
+				);
+				$page_url = $page_args ? add_query_arg( $page_args, $current_url ) : $current_url;
+				?>
+				<?php if ( $page === $results['page'] ) : ?>
+					<span class="rbn-pagination__current" aria-current="page"><?php echo esc_html( $page ); ?></span>
+				<?php else : ?>
+					<a href="<?php echo esc_url( $page_url ); ?>" data-rbn-page="<?php echo esc_attr( $page ); ?>"><?php echo esc_html( $page ); ?></a>
+				<?php endif; ?>
+			<?php endforeach; ?>
+		</nav>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
 	 * Small trusted inline icon set for the profile cards. Never fed user
 	 * input, so it's safe to echo raw - kept out of wp_kses_post() because
 	 * that strips the SVG tags icons need.
@@ -1075,6 +1732,7 @@ class RBN_Templates {
 			'mail'   => '<rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 6-10 7L2 6"></path>',
 			'radius' => '<circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle>',
 			'image'  => '<rect x="2.5" y="4.5" width="19" height="15" rx="1.5"></rect><circle cx="8" cy="9.7" r="1.6" fill="currentColor"></circle><path d="M3.6 17.5 8 11.8l2.6 2.7L15.2 9l5.2 8.5H3.6Z" fill="currentColor"></path>',
+			'heart'  => '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>',
 		);
 
 		if ( ! isset( $icons[ $name ] ) ) {
@@ -1089,7 +1747,7 @@ class RBN_Templates {
 	 * core blocks (Post Title, Post Featured Image, Post Content): business
 	 * type, all services, full location, contact details, owning member.
 	 */
-	public static function business_profile( WP_Post $business ) {
+	public static function business_profile( WP_Post $business, $current_url = '', $notice_code = '' ) {
 		$categories = get_the_terms( $business, RBN_Taxonomy_Business_Category::TAXONOMY );
 		$services   = get_the_terms( $business, RBN_Taxonomy_Service::TAXONOMY );
 
@@ -1104,14 +1762,28 @@ class RBN_Templates {
 		$owner    = get_userdata( $business->post_author );
 		$location = trim( implode( ', ', array_filter( array( $town_city, $county_region, $postcode ) ) ) );
 
+		$current_user_id = get_current_user_id();
+		$is_own           = $current_user_id && $current_user_id === (int) $business->post_author;
+		$is_following      = $current_user_id && RBN_Business_Follows::is_following( $current_user_id, $business->ID );
+
 		ob_start();
 		?>
 		<article <?php post_class( 'rbn-business-profile' ); ?>>
+
+			<?php if ( $notice_code ) : ?>
+				<?php echo self::notice( $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+			<?php endif; ?>
 
 			<?php if ( 'publish' !== $business->post_status && current_user_can( 'edit_post', $business->ID ) ) : ?>
 				<p class="rbn-notice rbn-notice--error" role="status">
 					<?php esc_html_e( "This business is pending review and isn't visible to the public yet.", 'roomworks-business-networking' ); ?>
 				</p>
+			<?php endif; ?>
+
+			<?php if ( $current_url ) : ?>
+				<div class="rbn-business-profile__follow">
+					<?php echo self::business_follow_form( $business->ID, $is_following, $is_own, $current_url, true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+				</div>
 			<?php endif; ?>
 
 			<?php if ( has_post_thumbnail( $business ) ) : ?>
@@ -1188,6 +1860,114 @@ class RBN_Templates {
 			<?php endif; ?>
 
 		</article>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * Everything the default single-request template doesn't already render
+	 * (title/content) - urgency, category, location, budget, closing date,
+	 * contact, poster. Appended via RBN_Post_Type_Job::append_details_to_content()
+	 * rather than a dedicated Site-Editor block/template like
+	 * business_profile() above needs - see that method's docblock for why.
+	 *
+	 * Contact always includes the poster's account email; phone is only
+	 * included if they've set one on their profile AND haven't hidden it on
+	 * this specific request (rbn_hide_phone) - see RBN_Job_Forms.
+	 */
+	public static function job_profile( WP_Post $job ) {
+		$categories  = get_the_terms( $job, RBN_Taxonomy_Business_Category::TAXONOMY );
+		$urgency_key = get_post_meta( $job->ID, 'rbn_urgency', true );
+		$urgency     = isset( RBN_Post_Type_Job::URGENCY_OPTIONS[ $urgency_key ] ) ? RBN_Post_Type_Job::URGENCY_OPTIONS[ $urgency_key ] : '';
+
+		$town_city     = get_post_meta( $job->ID, 'rbn_town_city', true );
+		$county_region = get_post_meta( $job->ID, 'rbn_county_region', true );
+		$budget        = RBN_Job_Query::format_budget( get_post_meta( $job->ID, 'rbn_budget', true ), $job->post_author );
+		$closing_date  = get_post_meta( $job->ID, 'rbn_closing_date', true );
+		$hide_phone    = (bool) get_post_meta( $job->ID, 'rbn_hide_phone', true );
+
+		$owner       = get_userdata( $job->post_author );
+		$owner_email = $owner ? $owner->user_email : '';
+		$owner_phone = ( $owner && ! $hide_phone ) ? get_user_meta( $owner->ID, 'rbn_phone_number', true ) : '';
+
+		$location = trim( implode( ', ', array_filter( array( $town_city, $county_region ) ) ) );
+
+		ob_start();
+		?>
+		<div class="rbn-job-profile">
+
+			<?php if ( 'publish' !== $job->post_status && current_user_can( 'edit_post', $job->ID ) ) : ?>
+				<p class="rbn-notice rbn-notice--error" role="status">
+					<?php esc_html_e( "This request isn't visible to other members yet.", 'roomworks-business-networking' ); ?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( $urgency || ( $categories && ! is_wp_error( $categories ) && ! empty( $categories ) ) ) : ?>
+				<p class="rbn-job-profile__badges">
+					<?php if ( $categories && ! is_wp_error( $categories ) && ! empty( $categories ) ) : ?>
+						<span class="rbn-job-profile__badge"><?php echo esc_html( wp_specialchars_decode( $categories[0]->name, ENT_QUOTES ) ); ?></span>
+					<?php endif; ?>
+					<?php if ( $urgency ) : ?>
+						<span class="rbn-job-profile__badge"><?php echo esc_html( $urgency ); ?></span>
+					<?php endif; ?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( $location || $budget || $closing_date || $owner_email || $owner_phone ) : ?>
+				<div class="rbn-job-profile__grid">
+
+					<?php if ( $location || $budget || $closing_date ) : ?>
+						<section class="rbn-job-profile__card">
+							<h2 class="rbn-job-profile__card-title"><?php esc_html_e( 'Details', 'roomworks-business-networking' ); ?></h2>
+							<?php if ( $location ) : ?>
+								<p class="rbn-job-profile__row"><?php echo self::icon( 'pin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( $location ); ?></p>
+							<?php endif; ?>
+							<?php if ( $budget ) : ?>
+								<p class="rbn-job-profile__row-label"><?php esc_html_e( 'Budget', 'roomworks-business-networking' ); ?></p>
+								<p class="rbn-job-profile__row"><?php echo esc_html( $budget ); ?></p>
+							<?php endif; ?>
+							<?php if ( $closing_date ) : ?>
+								<p class="rbn-job-profile__row rbn-job-profile__row--muted">
+									<?php
+									printf(
+										/* translators: %s: closing date. */
+										esc_html__( 'Closes %s', 'roomworks-business-networking' ),
+										esc_html( date_i18n( get_option( 'date_format' ), strtotime( $closing_date ) ) )
+									);
+									?>
+								</p>
+							<?php endif; ?>
+						</section>
+					<?php endif; ?>
+
+					<?php if ( $owner_email || $owner_phone ) : ?>
+						<section class="rbn-job-profile__card">
+							<h2 class="rbn-job-profile__card-title"><?php esc_html_e( 'Contact', 'roomworks-business-networking' ); ?></h2>
+							<ul class="rbn-job-profile__contact-list">
+								<?php if ( $owner_email ) : ?>
+									<li><a class="rbn-job-profile__row" href="mailto:<?php echo esc_attr( $owner_email ); ?>"><?php echo self::icon( 'mail' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( $owner_email ); ?></a></li>
+								<?php endif; ?>
+								<?php if ( $owner_phone ) : ?>
+									<li><a class="rbn-job-profile__row" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $owner_phone ) ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( $owner_phone ); ?></a></li>
+								<?php endif; ?>
+							</ul>
+						</section>
+					<?php endif; ?>
+
+				</div>
+			<?php endif; ?>
+
+			<?php if ( $owner ) : ?>
+				<div class="rbn-job-profile__owner">
+					<?php echo get_avatar( $owner->ID, 48 ); ?>
+					<span>
+						<span class="rbn-job-profile__owner-label"><?php esc_html_e( 'Posted by', 'roomworks-business-networking' ); ?></span>
+						<span class="rbn-job-profile__owner-name"><?php echo esc_html( $owner->display_name ); ?></span>
+					</span>
+				</div>
+			<?php endif; ?>
+
+		</div>
 		<?php
 		return ob_get_clean();
 	}

@@ -20,9 +20,86 @@ document.addEventListener(
 	function () {
 		document.querySelectorAll( '[data-rbn-tag-field]' ).forEach( initTagField );
 		document.querySelectorAll( '[data-rbn-category-field]' ).forEach( initCategoryField );
+		document.querySelectorAll( '[data-rbn-tabs]' ).forEach( initTabs );
 		stripNoticeFromUrl();
 	}
 );
+
+/**
+ * Progressively enhances the dashboard's server-rendered, always-visible
+ * sections into an actual tabbed interface: every panel already has its own
+ * heading and works as a plain jump-link target without this (see
+ * RBN_Templates::member_dashboard()'s docblock), so this only ever adds
+ * behaviour on top rather than being required to reveal anything.
+ */
+function initTabs( container ) {
+	const links  = Array.from( container.querySelectorAll( '[data-rbn-tab-link]' ) );
+	const panels = Array.from( container.querySelectorAll( '[data-rbn-tab-panel]' ) );
+
+	if ( ! links.length || ! panels.length ) {
+		return;
+	}
+
+	function activate( key ) {
+		links.forEach(
+			function ( link ) {
+				link.classList.toggle( 'is-active', link.getAttribute( 'data-rbn-tab-link' ) === key );
+				link.setAttribute( 'aria-selected', link.getAttribute( 'data-rbn-tab-link' ) === key ? 'true' : 'false' );
+			}
+		);
+		panels.forEach(
+			function ( panel ) {
+				panel.classList.toggle( 'is-active', panel.getAttribute( 'data-rbn-tab-panel' ) === key );
+			}
+		);
+	}
+
+	links.forEach(
+		function ( link ) {
+			link.setAttribute( 'role', 'tab' );
+			link.addEventListener(
+				'click',
+				function ( event ) {
+					event.preventDefault();
+					activate( link.getAttribute( 'data-rbn-tab-link' ) );
+				}
+			);
+		}
+	);
+
+	container.classList.add( 'is-js-enhanced' );
+
+	// Whichever panel actually contains the current URL's #hash target (e.g.
+	// clicking "Edit" on a business links to #rbn-business-form, inside the
+	// Businesses panel) wins over the server-computed default - it reflects
+	// exactly what the visitor just clicked, for any link that targets an
+	// in-panel anchor, not just the specific cases
+	// RBN_Templates::member_dashboard() special-cases server-side
+	// (edit-in-progress / confirming account deletion, itself only a
+	// fallback for when there's no hash at all, e.g. straight after a form
+	// POST redirect).
+	let initialTab = container.getAttribute( 'data-rbn-active-tab' ) || links[ 0 ].getAttribute( 'data-rbn-tab-link' );
+	let hashTarget = null;
+
+	if ( window.location.hash.length > 1 ) {
+		hashTarget = document.getElementById( window.location.hash.slice( 1 ) );
+		const hashPanel = hashTarget ? hashTarget.closest( '[data-rbn-tab-panel]' ) : null;
+
+		if ( hashPanel ) {
+			initialTab = hashPanel.getAttribute( 'data-rbn-tab-panel' );
+		}
+	}
+
+	activate( initialTab );
+
+	// Hiding the other panels changes the page layout, so the browser's own
+	// (already-happened) jump to the #hash target needs redoing once that
+	// settles - without this it scrolls to where the target used to be,
+	// before the other panels collapsed out of the way.
+	if ( hashTarget ) {
+		hashTarget.scrollIntoView();
+	}
+}
 
 /**
  * The success/error banner (e.g. "Your business has been submitted for

@@ -18,6 +18,7 @@ class RBN_Activator {
 		RBN_Taxonomy_Business_Category::register();
 		RBN_Taxonomy_Service::register();
 		RBN_Post_Type_Business::register();
+		RBN_Post_Type_Job::register();
 
 		RBN_Taxonomy_Business_Category::seed_defaults();
 		RBN_Countries::seed_defaults();

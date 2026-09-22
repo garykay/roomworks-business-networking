@@ -93,6 +93,8 @@
 	.rbn-form input[type="password"],
 	.rbn-form input[type="url"],
 	.rbn-form input[type="search"],
+	.rbn-form input[type="tel"],
+	.rbn-form input[type="date"],
 	.rbn-form select,
 	.rbn-form textarea {
 		box-sizing: border-box;
@@ -386,43 +388,78 @@
 		gap: 1.5rem;
 	}
 
-	.rbn-profile__header {
+	.rbn-icon {
+		flex: 0 0 auto;
+		width: 1em;
+		height: 1em;
+		color: var( --rbn-accent );
+	}
+
+	// Profile header - cover banner + overlapping avatar. The cover is
+	// purely decorative (a CSS gradient, no upload feature - members can't
+	// change it), so it's a plain aria-hidden div rather than an <img>.
+	.rbn-profile-header {
+		overflow: hidden;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+	}
+
+	.rbn-profile-header__cover {
+		height: 140px;
+		background: linear-gradient( 135deg, var( --rbn-accent ) 0%, #6d4fe0 100% );
+	}
+
+	.rbn-profile-header__content {
+		display: flex;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		gap: 1rem;
+		padding: 0 1.75rem 1.5rem;
+	}
+
+	.rbn-profile-header__avatar {
+		flex: 0 0 auto;
+		display: block;
+		margin-top: -56px;
+		border: 4px solid var( --rbn-surface );
+		border-radius: 50%;
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+
+		img {
+			display: block;
+			border-radius: 50%;
+		}
+	}
+
+	.rbn-profile-header__info {
+		flex: 1 1 240px;
+		padding-top: 0.75rem;
+	}
+
+	.rbn-profile-header__name {
+		margin: 0 0 0.35rem;
+	}
+
+	.rbn-profile-header__location {
 		display: flex;
 		align-items: center;
-		gap: 1.25rem;
-		margin-bottom: 1.5rem;
+		gap: 0.4rem;
+		margin: 0 0 0.35rem;
+		color: var( --rbn-muted );
+		font-size: 0.9rem;
 	}
 
-	.rbn-profile__header img {
-		flex: 0 0 auto;
-		border-radius: 50%;
-	}
-
-	.rbn-profile__name {
-		margin: 0 0 0.25rem;
-	}
-
-	.rbn-profile__bio {
+	.rbn-profile-header__bio {
 		margin: 0;
 		color: var( --rbn-muted );
 	}
 
-	.rbn-profile__business {
-		padding-top: 1.5rem;
-		border-top: 1px solid var( --rbn-border );
-
-		h3 {
-			margin: 0 0 0.5rem;
-			color: var( --rbn-muted );
-			font-size: 0.75rem;
-			font-weight: 700;
-			letter-spacing: 0.06em;
-			text-transform: uppercase;
-		}
-
-		p {
-			margin: 0;
-		}
+	.rbn-profile-header__actions {
+		flex: 0 0 auto;
+		margin: 0 0 0.5rem;
 	}
 
 	.rbn-status--pending {
@@ -437,8 +474,61 @@
 		font-weight: 600;
 	}
 
-	.rbn-profile__logout {
-		margin: 0;
+	// Tabs - server-renders every panel visible with plain in-page anchor
+	// links for the nav (works without JS, just jump-scrolls); initTabs()
+	// in view.js progressively enhances this into an actual tabbed
+	// interface once it runs, adding .is-js-enhanced so the CSS below that
+	// hides inactive panels only ever applies when there's JS behind it to
+	// switch them back.
+	.rbn-tabs__nav {
+		display: flex;
+		gap: 0.25rem;
+		overflow-x: auto;
+		margin-bottom: 1.5rem;
+		border-bottom: 1px solid var( --rbn-border );
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.rbn-tabs__tab {
+		flex: 0 0 auto;
+		padding: 0.85rem 1.1rem;
+		border-bottom: 2px solid transparent;
+		color: var( --rbn-muted );
+		font-size: 0.9375rem;
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+
+		&:hover,
+		&:focus-visible {
+			color: var( --rbn-text );
+		}
+	}
+
+	.rbn-tabs.is-js-enhanced .rbn-tabs__tab.is-active {
+		border-bottom-color: var( --rbn-accent );
+		color: var( --rbn-accent );
+	}
+
+	.rbn-tabs__panels {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+
+	.rbn-tabs.is-js-enhanced .rbn-tabs__panel {
+		display: none;
+	}
+
+	.rbn-tabs.is-js-enhanced .rbn-tabs__panel.is-active {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
 
 	// Account deletion
@@ -463,5 +553,155 @@
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 1.25rem;
+	}
+
+	// Favourites tab - reuses RBN_Templates::business_card() (same markup
+	// the directory block renders), so this is the same grid/card CSS as
+	// roomworks-business-networking/style.scss's .rbn-directory__grid /
+	// .rbn-business-card* - kept as its own copy rather than a shared
+	// stylesheet, per this file's own "Shared building blocks" comment
+	// near the top: each block ships its own compiled CSS bundle.
+
+	.rbn-directory__grid {
+		display: grid;
+		grid-template-columns: repeat( auto-fill, minmax( 240px, 1fr ) );
+		gap: 1.25rem;
+		margin-top: 1rem;
+	}
+
+	.rbn-business-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.rbn-business-card__logo {
+		width: 100%;
+		height: 120px;
+		object-fit: cover;
+	}
+
+	.rbn-business-card__logo--placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var( --rbn-surface-muted );
+
+		.rbn-icon {
+			width: 36px;
+			height: 36px;
+			color: #c2c6cd;
+		}
+	}
+
+	.rbn-business-card__body {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		padding: 1.1rem;
+	}
+
+	.rbn-business-card__category {
+		margin: 0 0 0.4rem;
+		color: var( --rbn-accent );
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.rbn-business-card__name {
+		margin: 0 0 0.4rem;
+		font-size: 1.0625rem;
+
+		a {
+			color: var( --rbn-text );
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				color: var( --rbn-accent );
+			}
+		}
+	}
+
+	.rbn-business-card__excerpt {
+		margin: 0 0 0.6rem;
+		color: var( --rbn-muted );
+		font-size: 0.875rem;
+		line-height: 1.5;
+	}
+
+	.rbn-business-card__location {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.4rem;
+		margin: 0 0 0.6rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+	}
+
+	.rbn-business-card__services {
+		margin: 0 0 0.85rem;
+		color: var( --rbn-muted );
+		font-size: 0.8rem;
+	}
+
+	.rbn-business-card__link {
+		margin: auto 0 0;
+
+		a {
+			color: var( --rbn-accent );
+			font-size: 0.875rem;
+			font-weight: 600;
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.rbn-business-follow-form {
+		position: absolute;
+		top: 0.65rem;
+		right: 0.65rem;
+		z-index: 1;
+	}
+
+	.rbn-business-follow-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 34px;
+		height: 34px;
+		padding: 0;
+		border: none;
+		border-radius: 999px;
+		background: rgba( 255, 255, 255, 0.92 );
+		box-shadow: var( --rbn-shadow );
+		color: var( --rbn-muted );
+		cursor: pointer;
+
+		.rbn-icon {
+			width: 16px;
+			height: 16px;
+			color: inherit;
+		}
+
+		&:hover,
+		&:focus-visible {
+			color: #e0245e;
+		}
+	}
+
+	.rbn-business-follow-btn--following {
+		color: #e0245e;
+
+		.rbn-icon {
+			fill: currentColor;
+		}
 	}
 }

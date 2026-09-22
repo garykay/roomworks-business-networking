@@ -29,6 +29,47 @@
 		background: var( --rbn-surface );
 	}
 
+	.rbn-business-profile__follow {
+		display: flex;
+		justify-content: flex-end;
+		margin: 0 0 1rem;
+	}
+
+	.rbn-business-follow-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.55rem 1rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: 999px;
+		background: var( --rbn-surface );
+		color: var( --rbn-muted );
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+
+		.rbn-icon {
+			width: 16px;
+			height: 16px;
+			color: inherit;
+		}
+
+		&:hover,
+		&:focus-visible {
+			border-color: #e0245e;
+			color: #e0245e;
+		}
+	}
+
+	.rbn-business-follow-btn--following {
+		border-color: #e0245e;
+		color: #e0245e;
+
+		.rbn-icon {
+			fill: currentColor;
+		}
+	}
+
 	.rbn-business-profile__badge {
 		display: inline-flex;
 		align-items: center;

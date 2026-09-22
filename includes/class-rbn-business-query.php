@@ -62,8 +62,20 @@ class RBN_Business_Query {
 
 		$query = new WP_Query( $query_args );
 
+		// Fetched once per request, not once per business - see
+		// RBN_Business_Follows::get_followed_business_ids_for_user()'s
+		// docblock. Empty for a logged-out visitor (the REST endpoint
+		// itself stays open to them - RBN_REST_Directory's docblock).
+		$current_user_id = get_current_user_id();
+		$followed_ids    = $current_user_id ? array_flip( RBN_Business_Follows::get_followed_business_ids_for_user( $current_user_id ) ) : array();
+
 		return array(
-			'items'       => array_map( array( __CLASS__, 'normalize' ), $query->posts ),
+			'items'       => array_map(
+				static function ( $business ) use ( $followed_ids, $current_user_id ) {
+					return self::normalize( $business, $followed_ids, $current_user_id );
+				},
+				$query->posts
+			),
 			'total'       => (int) $query->found_posts,
 			'total_pages' => (int) $query->max_num_pages,
 			'page'        => $page,
@@ -194,7 +206,17 @@ class RBN_Business_Query {
 	 * Only fields safe to expose publicly - no owner email, phone, or any
 	 * other private contact data.
 	 */
-	private static function normalize( WP_Post $business ) {
+	/**
+	 * Public (not private) so RBN_Templates::favourites_section() can reuse
+	 * it directly for the dashboard's Favourites tab, which isn't built
+	 * from a WP_Query run through results() above - keeps the field
+	 * mapping in exactly one place either way.
+	 *
+	 * @param WP_Post $business
+	 * @param array   $followed_ids     Business IDs the current viewer follows, as array keys (from results() - an isset() against this is how is_following avoids a query per business).
+	 * @param int     $current_user_id  0 for a logged-out viewer.
+	 */
+	public static function normalize( WP_Post $business, array $followed_ids = array(), $current_user_id = 0 ) {
 		$categories = get_the_terms( $business, RBN_Taxonomy_Business_Category::TAXONOMY );
 		$services   = get_the_terms( $business, RBN_Taxonomy_Service::TAXONOMY );
 		$logo       = get_the_post_thumbnail_url( $business, 'medium' );
@@ -213,6 +235,8 @@ class RBN_Business_Query {
 			'services'      => ( $services && ! is_wp_error( $services ) ) ? array_map( array( __CLASS__, 'decoded_name' ), $services ) : array(),
 			'town_city'     => get_post_meta( $business->ID, 'rbn_town_city', true ),
 			'county_region' => get_post_meta( $business->ID, 'rbn_county_region', true ),
+			'is_own'        => $current_user_id && $current_user_id === (int) $business->post_author,
+			'is_following'  => isset( $followed_ids[ $business->ID ] ),
 		);
 	}
 

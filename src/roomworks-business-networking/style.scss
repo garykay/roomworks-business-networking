@@ -149,6 +149,7 @@
 	}
 
 	.rbn-business-card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -157,6 +158,49 @@
 		&:hover {
 			box-shadow: var( --rbn-shadow-hover );
 			transform: translateY( -2px );
+		}
+	}
+
+	.rbn-business-follow-form {
+		position: absolute;
+		top: 0.75rem;
+		right: 0.75rem;
+		z-index: 1;
+	}
+
+	.rbn-business-follow-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border: none;
+		border-radius: 999px;
+		background: rgba( 255, 255, 255, 0.92 );
+		box-shadow: var( --rbn-shadow );
+		color: var( --rbn-muted );
+		cursor: pointer;
+		transition: color 0.15s ease, transform 0.15s ease;
+
+		.rbn-icon {
+			width: 18px;
+			height: 18px;
+			color: inherit;
+		}
+
+		&:hover,
+		&:focus-visible {
+			color: #e0245e;
+			transform: scale( 1.05 );
+		}
+	}
+
+	.rbn-business-follow-btn--following {
+		color: #e0245e;
+
+		.rbn-icon {
+			fill: currentColor;
 		}
 	}
 
