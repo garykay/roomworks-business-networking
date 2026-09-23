@@ -1,0 +1,51 @@
+/**
+ * The following styles get applied both on the front of your site
+ * and in the editor.
+ */
+
+.wp-block-roomworks-business-networking-roomworks-advertising-block {
+	--rbn-border: #e6e8ee;
+	--rbn-muted: #667085;
+	--rbn-radius: 12px;
+
+	.rbn-advert {
+		position: relative;
+		padding: 0.75rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+	}
+
+	.rbn-advert__label {
+		display: block;
+		margin: 0 0 0.5rem;
+		color: var( --rbn-muted );
+		font-size: 0.6875rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.rbn-advert__content {
+		:first-child {
+			margin-top: 0;
+		}
+
+		:last-child {
+			margin-bottom: 0;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+		}
+	}
+
+	.rbn-advert__editor-notice {
+		margin: 0;
+		padding: 0.85rem 1.1rem;
+		border: 1px dashed var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		color: var( --rbn-muted );
+		font-size: 0.9rem;
+	}
+}

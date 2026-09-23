@@ -73,6 +73,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-jobs.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-authors.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-author-business-profile-toggle.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-advert.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-advert-picker.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-templates.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-stats.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-activator.php';
@@ -106,6 +108,11 @@ add_filter( 'rest_user_query', array( 'RBN_Post_Authors', 'filter_rest_user_quer
 
 add_action( 'init', array( 'RBN_Author_Business_Profile_Toggle', 'register_meta' ) );
 add_action( 'enqueue_block_editor_assets', array( 'RBN_Author_Business_Profile_Toggle', 'enqueue_editor_script' ) );
+
+add_action( 'init', array( 'RBN_Post_Type_Advert', 'register' ) );
+
+add_action( 'init', array( 'RBN_Advert_Picker', 'register_meta' ) );
+add_action( 'enqueue_block_editor_assets', array( 'RBN_Advert_Picker', 'enqueue_editor_script' ) );
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
