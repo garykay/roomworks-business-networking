@@ -1,16 +1,12 @@
 <?php
 /**
- * Consolidated "things waiting on an admin" screen: pending member
- * applications, pending business listings, and pending account-deletion
- * requests. The underlying status logic already lives in
- * RBN_Member_Approval, RBN_Post_Type_Business/core post statuses, and
- * RBN_Account_Deletion - this class is the admin-page presentation on top,
- * plus the two actions that had no admin UI at all before (business
- * approve/reject, and an admin cancelling a member's pending deletion).
- *
- * Member approve/reject reuses RBN_Member_Approval's existing
- * admin_action_rbn_approve_member / admin_action_rbn_reject_member hooks
- * rather than duplicating that logic here.
+ * Admin screen for pending account-deletion requests - the only thing left
+ * here that still needs a human. Member activation now happens automatically
+ * (RBN_Member_Approval - an admin who needs to intervene on a stuck or
+ * abusive signup does so from the row actions on the Users screen instead),
+ * and a new business listing from an already-active member publishes
+ * immediately (RBN_Business_Forms), so neither has a dedicated review queue
+ * here any more.
  *
  * @package RoomworksBusinessNetworking
  */
@@ -26,8 +22,8 @@ class RBN_Approvals {
 	public static function register_menu() {
 		add_submenu_page(
 			'edit.php?post_type=' . RBN_Post_Type_Business::POST_TYPE,
-			__( 'Approvals', 'roomworks-business-networking' ),
-			__( 'Approvals', 'roomworks-business-networking' ),
+			__( 'Account Deletions', 'roomworks-business-networking' ),
+			__( 'Account Deletions', 'roomworks-business-networking' ),
 			'edit_users',
 			self::PAGE_SLUG,
 			array( __CLASS__, 'render_page' )
@@ -40,107 +36,9 @@ class RBN_Approvals {
 		}
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Approvals', 'roomworks-business-networking' ); ?></h1>
-			<?php
-			self::render_member_section();
-			self::render_business_section();
-			self::render_deletion_section();
-			?>
+			<h1><?php esc_html_e( 'Account Deletions', 'roomworks-business-networking' ); ?></h1>
+			<?php self::render_deletion_section(); ?>
 		</div>
-		<?php
-	}
-
-	private static function render_member_section() {
-		$users = get_users(
-			array(
-				'meta_key'   => RBN_Member_Approval::META_KEY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_value' => RBN_Member_Approval::STATUS_PENDING, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
-				'orderby'    => 'registered',
-				'order'      => 'DESC',
-			)
-		);
-		?>
-		<h2><?php esc_html_e( 'Pending Member Applications', 'roomworks-business-networking' ); ?></h2>
-		<?php if ( empty( $users ) ) : ?>
-			<p><?php esc_html_e( 'No member applications are waiting for review.', 'roomworks-business-networking' ); ?></p>
-			<?php return; ?>
-		<?php endif; ?>
-		<table class="wp-list-table widefat fixed striped">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Name', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Email', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Registered', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Actions', 'roomworks-business-networking' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ( $users as $user ) : ?>
-					<tr>
-						<td><?php echo esc_html( $user->display_name ); ?></td>
-						<td><?php echo esc_html( $user->user_email ); ?></td>
-						<td><?php echo esc_html( mysql2date( get_option( 'date_format' ), $user->user_registered ) ); ?></td>
-						<td>
-							<a class="button button-primary" href="<?php echo esc_url( self::action_url( 'rbn_approve_member', 'user_id', $user->ID ) ); ?>">
-								<?php esc_html_e( 'Approve', 'roomworks-business-networking' ); ?>
-							</a>
-							<a class="button" href="<?php echo esc_url( self::action_url( 'rbn_reject_member', 'user_id', $user->ID ) ); ?>">
-								<?php esc_html_e( 'Reject', 'roomworks-business-networking' ); ?>
-							</a>
-						</td>
-					</tr>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
-		<?php
-	}
-
-	private static function render_business_section() {
-		$businesses = get_posts(
-			array(
-				'post_type'      => RBN_Post_Type_Business::POST_TYPE,
-				'post_status'    => 'pending',
-				'posts_per_page' => -1,
-				'orderby'        => 'date',
-				'order'          => 'DESC',
-			)
-		);
-		?>
-		<h2><?php esc_html_e( 'Pending Business Listings', 'roomworks-business-networking' ); ?></h2>
-		<?php if ( empty( $businesses ) ) : ?>
-			<p><?php esc_html_e( 'No business listings are waiting for review.', 'roomworks-business-networking' ); ?></p>
-			<?php return; ?>
-		<?php endif; ?>
-		<table class="wp-list-table widefat fixed striped">
-			<thead>
-				<tr>
-					<th><?php esc_html_e( 'Business', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Owner', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Category', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Submitted', 'roomworks-business-networking' ); ?></th>
-					<th><?php esc_html_e( 'Actions', 'roomworks-business-networking' ); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php foreach ( $businesses as $business ) : ?>
-					<?php $categories = get_the_terms( $business, RBN_Taxonomy_Business_Category::TAXONOMY ); ?>
-					<tr>
-						<td><a href="<?php echo esc_url( get_edit_post_link( $business ) ); ?>"><?php echo esc_html( wp_specialchars_decode( get_the_title( $business ), ENT_QUOTES ) ); ?></a></td>
-						<td><?php echo esc_html( get_the_author_meta( 'display_name', $business->post_author ) ); ?></td>
-						<td><?php echo esc_html( ( $categories && ! is_wp_error( $categories ) && ! empty( $categories ) ) ? wp_specialchars_decode( $categories[0]->name, ENT_QUOTES ) : '' ); ?></td>
-						<td><?php echo esc_html( mysql2date( get_option( 'date_format' ), $business->post_date ) ); ?></td>
-						<td>
-							<a class="button button-primary" href="<?php echo esc_url( self::action_url( 'rbn_approve_business', 'post_id', $business->ID ) ); ?>">
-								<?php esc_html_e( 'Approve', 'roomworks-business-networking' ); ?>
-							</a>
-							<a class="button" href="<?php echo esc_url( self::action_url( 'rbn_reject_business', 'post_id', $business->ID ) ); ?>">
-								<?php esc_html_e( 'Reject', 'roomworks-business-networking' ); ?>
-							</a>
-						</td>
-					</tr>
-				<?php endforeach; ?>
-			</tbody>
-		</table>
 		<?php
 	}
 
@@ -204,42 +102,6 @@ class RBN_Approvals {
 			),
 			$action . '_' . $id
 		);
-	}
-
-	public static function handle_approve_business() {
-		self::handle_business_decision( true );
-	}
-
-	public static function handle_reject_business() {
-		self::handle_business_decision( false );
-	}
-
-	private static function handle_business_decision( $approve ) {
-		$post_id      = isset( $_GET['post_id'] ) ? absint( $_GET['post_id'] ) : 0;
-		$nonce_action = ( $approve ? 'rbn_approve_business_' : 'rbn_reject_business_' ) . $post_id;
-		$nonce        = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-
-		if ( ! $post_id || ! $nonce || ! wp_verify_nonce( $nonce, $nonce_action ) ) {
-			wp_die( esc_html__( 'Invalid request.', 'roomworks-business-networking' ) );
-		}
-
-		if ( ! current_user_can( $approve ? 'publish_post' : 'delete_post', $post_id ) ) {
-			wp_die( esc_html__( 'You are not allowed to do that.', 'roomworks-business-networking' ) );
-		}
-
-		if ( $approve ) {
-			wp_update_post(
-				array(
-					'ID'          => $post_id,
-					'post_status' => 'publish',
-				)
-			);
-		} else {
-			wp_trash_post( $post_id );
-		}
-
-		wp_safe_redirect( self::page_url() );
-		exit;
 	}
 
 	public static function handle_cancel_deletion() {

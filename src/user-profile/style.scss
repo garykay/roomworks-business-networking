@@ -548,6 +548,18 @@
 		}
 	}
 
+	.rbn-link--danger {
+		color: #c2362f;
+	}
+
+	.rbn-my-businesses__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 1.25rem;
+		width: 100%;
+	}
+
 	.rbn-delete-account__actions {
 		display: flex;
 		flex-wrap: wrap;
