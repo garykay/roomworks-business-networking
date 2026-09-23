@@ -50,13 +50,14 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-repository.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follows.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follow-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-notices.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-access-control.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-emails.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-member-approval.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-auth-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-profile-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-forms.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-account-deletion.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-account-deletion-forms.php';
-require_once RBN_PLUGIN_DIR . 'includes/class-rbn-access-control.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-settings.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-approvals.php';
@@ -96,6 +97,7 @@ add_action( 'wp_enqueue_scripts', array( 'RBN_Post_Type_Job', 'enqueue_profile_s
 add_action( 'init', array( 'RBN_Auth_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Profile_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Business_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Business_Forms', 'handle_delete_request' ) );
 add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Job_Forms', 'handle_request' ) );
@@ -116,16 +118,16 @@ add_action( 'enqueue_block_editor_assets', array( 'RBN_Advert_Picker', 'enqueue_
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
+add_action( 'init', array( 'RBN_Member_Approval', 'maybe_handle_activation' ) );
 add_filter( 'wp_authenticate_user', array( 'RBN_Member_Approval', 'block_pending_login' ), 10, 2 );
 add_filter( 'manage_users_columns', array( 'RBN_Member_Approval', 'add_column' ) );
 add_filter( 'manage_users_custom_column', array( 'RBN_Member_Approval', 'render_column' ), 10, 3 );
 add_filter( 'user_row_actions', array( 'RBN_Member_Approval', 'add_row_actions' ), 10, 2 );
 add_action( 'admin_action_rbn_approve_member', array( 'RBN_Member_Approval', 'handle_approve' ) );
 add_action( 'admin_action_rbn_reject_member', array( 'RBN_Member_Approval', 'handle_reject' ) );
+add_action( 'admin_action_rbn_resend_activation', array( 'RBN_Member_Approval', 'handle_resend_activation' ) );
 
 add_action( 'admin_menu', array( 'RBN_Approvals', 'register_menu' ) );
-add_action( 'admin_action_rbn_approve_business', array( 'RBN_Approvals', 'handle_approve_business' ) );
-add_action( 'admin_action_rbn_reject_business', array( 'RBN_Approvals', 'handle_reject_business' ) );
 add_action( 'admin_action_rbn_cancel_deletion', array( 'RBN_Approvals', 'handle_cancel_deletion' ) );
 
 add_action( 'template_redirect', array( 'RBN_Access_Control', 'restrict_members_only_pages' ) );

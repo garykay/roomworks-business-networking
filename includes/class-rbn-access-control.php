@@ -50,16 +50,17 @@ class RBN_Access_Control {
 
 	/**
 	 * Finds the page hosting this plugin's own front-end login form (see
-	 * RBN_Templates::auth_forms()) so a logged-out visitor lands somewhere
-	 * consistent with the rest of the site, instead of wp-login.php. Falls
-	 * back to wp-login.php if no such page exists yet.
+	 * RBN_Templates::auth_forms()), or null if no such page exists yet.
+	 * Used both to build a "come back here after logging in" redirect (see
+	 * login_url() below) and, by RBN_Member_Approval/RBN_Emails, as the
+	 * destination for activation-related emails.
 	 *
 	 * The lookup result is cached for a few hours (transient, since this
 	 * runs on every logged-out visit to the restricted page and object
 	 * caching alone won't survive between requests on most hosts) rather
 	 * than left to query on every hit.
 	 */
-	private static function login_url( $redirect_to ) {
+	public static function login_page_id() {
 		$page_id = get_transient( self::LOGIN_PAGE_CACHE_KEY );
 
 		if ( false === $page_id ) {
@@ -79,8 +80,20 @@ class RBN_Access_Control {
 			set_transient( self::LOGIN_PAGE_CACHE_KEY, $page_id, 6 * HOUR_IN_SECONDS );
 		}
 
+		return $page_id ? $page_id : 0;
+	}
+
+	/**
+	 * This plugin's own front-end login page URL, falling back to
+	 * wp-login.php if no such page exists yet. Public so anything that
+	 * needs to point a logged-out visitor at "log in here" - not just the
+	 * members-only page redirect below - can reuse the same lookup.
+	 */
+	public static function login_url( $redirect_to = '' ) {
+		$page_id = self::login_page_id();
+
 		if ( $page_id ) {
-			return add_query_arg( 'redirect_to', rawurlencode( $redirect_to ), get_permalink( $page_id ) );
+			return $redirect_to ? add_query_arg( 'redirect_to', rawurlencode( $redirect_to ), get_permalink( $page_id ) ) : get_permalink( $page_id );
 		}
 
 		return wp_login_url( $redirect_to );

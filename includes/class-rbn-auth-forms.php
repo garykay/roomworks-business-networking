@@ -162,9 +162,9 @@ class RBN_Auth_Forms {
 		}
 
 		if ( self::looks_like_bot() ) {
-			// Respond exactly as a real pending registration would, without
+			// Respond exactly as a real registration would, without
 			// creating a user - see looks_like_bot() docblock for why.
-			self::redirect_with_notice( 'register_pending_approval' );
+			self::redirect_with_notice( 'register_check_email' );
 		}
 
 		$first_name         = isset( $_POST['rbn_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_first_name'] ) ) : '';
@@ -240,13 +240,14 @@ class RBN_Auth_Forms {
 		// for why this can never create a duplicate.
 		RBN_Communities::get_or_create_for_pair( $origin_country_id, $current_country_id );
 
-		// New accounts require admin approval before they can log in - see
-		// RBN_Member_Approval - so we deliberately do not log the member in
-		// here the way a normal registration flow would.
+		// New accounts require the member to click their activation email
+		// before they can log in - see RBN_Member_Approval - so we
+		// deliberately do not log the member in here the way a normal
+		// registration flow would.
 		RBN_Member_Approval::mark_pending( $user_id );
-		RBN_Member_Approval::notify_admin_of_registration( $user_id );
+		RBN_Member_Approval::send_activation_email( $user_id );
 
-		self::redirect_with_notice( 'register_pending_approval' );
+		self::redirect_with_notice( 'register_check_email' );
 	}
 
 }

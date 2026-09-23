@@ -20,6 +20,50 @@ class RBN_Business_Forms {
 
 	const ACTION = 'rbn_save_business';
 
+	const DELETE_ACTION = 'rbn_delete_business';
+
+	/**
+	 * A member deleting one of their own businesses - same "never trust a
+	 * client-supplied ID" rule as handle_request(): the submitted ID must
+	 * resolve via get_by_id_for_user() before anything happens.
+	 *
+	 * Trashed rather than force-deleted, so an admin can still restore a
+	 * listing removed by mistake from wp-admin. To the member it's gone
+	 * either way - RBN_Business_Repository treats trash as "not owned",
+	 * and it drops out of the directory and everyone's Favourites (which
+	 * only ever list published businesses). Follow rows pointing at it are
+	 * cleaned up by RBN_Business_Follows::cleanup_on_business_deleted() once
+	 * the trash is emptied and the post is permanently deleted.
+	 */
+	public static function handle_delete_request() {
+		if ( empty( $_POST['rbn_form_action'] ) || self::DELETE_ACTION !== $_POST['rbn_form_action'] || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- strict comparisons against literals; the actual nonce is verified just below before anything happens.
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$nonce = isset( $_POST['rbn_business_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_business_nonce'] ) ) : '';
+
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, self::DELETE_ACTION ) ) {
+			self::redirect_with_notice( 'business_invalid_request' );
+		}
+
+		$business_id = isset( $_POST['rbn_business_id'] ) ? absint( $_POST['rbn_business_id'] ) : 0;
+		$business    = RBN_Business_Repository::get_by_id_for_user( $business_id, get_current_user_id() );
+
+		if ( ! $business || ! current_user_can( 'delete_post', $business->ID ) ) {
+			self::redirect_with_notice( 'business_not_permitted' );
+		}
+
+		if ( ! wp_trash_post( $business->ID ) ) {
+			self::redirect_with_notice( 'business_not_permitted' );
+		}
+
+		self::redirect_with_notice( 'business_deleted' );
+	}
+
 	public static function handle_request() {
 		if ( empty( $_POST['rbn_form_action'] ) || self::ACTION !== $_POST['rbn_form_action'] || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- strict comparisons against literals; the actual nonce is verified just below before anything happens.
 			return;
@@ -105,6 +149,8 @@ class RBN_Business_Forms {
 			self::redirect_with_notice( 'business_logo_invalid' );
 		}
 
+		$is_new_business = ! $business;
+
 		if ( $business ) {
 			if ( ! current_user_can( 'edit_post', $business->ID ) ) {
 				self::redirect_with_notice( 'business_not_permitted' );
@@ -123,14 +169,24 @@ class RBN_Business_Forms {
 				self::redirect_with_notice( 'business_not_permitted' );
 			}
 
-			// Always created as pending: this is the member self-service
-			// path, which must always go through admin review.
+			// Admins no longer review every application by hand (see
+			// RBN_Member_Approval) - only an activated account can reach
+			// this form at all (login is blocked otherwise), so a listing
+			// from one goes straight to 'publish' instead of sitting in a
+			// 'pending' review queue nobody has time to work through. The
+			// status check is still explicit here (rather than assuming
+			// "logged in" already means "activated") so this stays correct
+			// even if that login gate is ever loosened.
+			$new_business_status = RBN_Member_Approval::STATUS_APPROVED === RBN_Member_Approval::get_status( $user_id )
+				? 'publish'
+				: 'pending';
+
 			$post_id = wp_insert_post(
 				array(
 					'post_type'    => RBN_Post_Type_Business::POST_TYPE,
 					'post_title'   => $name,
 					'post_content' => $description,
-					'post_status'  => 'pending',
+					'post_status'  => $new_business_status,
 					'post_author'  => $user_id,
 				),
 				true
@@ -159,7 +215,11 @@ class RBN_Business_Forms {
 
 		self::handle_logo_upload( $post_id );
 
-		self::redirect_with_notice( $business ? 'business_updated' : 'business_saved' );
+		if ( ! $is_new_business ) {
+			self::redirect_with_notice( 'business_updated' );
+		}
+
+		self::redirect_with_notice( 'publish' === $new_business_status ? 'business_published' : 'business_saved' );
 	}
 
 	/**

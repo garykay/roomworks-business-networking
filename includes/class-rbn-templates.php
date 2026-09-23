@@ -213,7 +213,8 @@ class RBN_Templates {
 		//
 		// Irrelevant without JS, since every panel is already visible there
 		// - nothing to "land on".
-		$confirming_deletion = ! empty( $_GET['rbn_confirm_deletion'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as account_deletion_section()'s own identical check.
+		$confirming_deletion          = ! empty( $_GET['rbn_confirm_deletion'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as account_deletion_section()'s own identical check.
+		$confirming_business_deletion = ! empty( $_GET['rbn_confirm_delete_business'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as businesses_section()'s own check.
 
 		// A follow/unfollow notice is also technically "section business"
 		// under RBN_Notices::section()'s generic prefix match (business_
@@ -232,7 +233,7 @@ class RBN_Templates {
 		);
 		$is_follow_notice    = in_array( $notice_code, $follow_notice_codes, true );
 
-		if ( $editing_business_id ) {
+		if ( $editing_business_id || $confirming_business_deletion ) {
 			$active_tab = 'businesses';
 		} elseif ( $editing_job_id ) {
 			$active_tab = 'requests';
@@ -656,15 +657,22 @@ class RBN_Templates {
 
 	/**
 	 * "My Businesses" list (each with an Edit link jumping to the form
-	 * below, pre-filled for that one) plus the add/edit form itself. A
+	 * below, pre-filled for that one, and a Delete link that swaps that
+	 * row for a confirm step - same two-step, no-JS pattern as
+	 * account_deletion_section()) plus the add/edit form itself. A
 	 * member may own several businesses - see RBN_Business_Repository -
 	 * so unlike the profile/community sections there's a list here rather
 	 * than a single implicit record.
 	 */
 	private static function businesses_section( array $businesses, $editing_business, $current_user, $current_url, $notice_code ) {
+		// Read-only: only chooses which row shows the confirm step. The
+		// delete itself is a nonce-protected POST, and ownership is
+		// re-verified server-side by RBN_Business_Forms::handle_delete_request().
+		$confirm_delete_id = isset( $_GET['rbn_confirm_delete_business'] ) ? absint( $_GET['rbn_confirm_delete_business'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		ob_start();
 		?>
-		<section class="rbn-my-businesses rbn-card">
+		<section class="rbn-my-businesses rbn-card" id="rbn-my-businesses">
 			<h3><?php esc_html_e( 'My Businesses', 'roomworks-business-networking' ); ?></h3>
 			<?php if ( empty( $businesses ) ) : ?>
 				<p class="rbn-field-note"><?php esc_html_e( "You haven't added a business yet - use the form below to add one.", 'roomworks-business-networking' ); ?></p>
@@ -680,7 +688,22 @@ class RBN_Templates {
 							<?php if ( $community ) : ?>
 								<span class="rbn-field-note"><?php echo esc_html( $community->name ); ?></span>
 							<?php endif; ?>
-							<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_business', $business->ID, $current_url ) . '#rbn-business-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+							<?php if ( $confirm_delete_id === $business->ID ) : ?>
+								<p class="rbn-field-note"><?php esc_html_e( 'Are you sure? This business will be removed from the directory. This cannot be undone.', 'roomworks-business-networking' ); ?></p>
+								<div class="rbn-my-businesses__actions">
+									<form class="rbn-form" method="post" action="<?php echo esc_url( $current_url ); ?>">
+										<?php wp_nonce_field( RBN_Business_Forms::DELETE_ACTION, 'rbn_business_nonce' ); ?>
+										<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( RBN_Business_Forms::DELETE_ACTION ); ?>" />
+										<input type="hidden" name="rbn_business_id" value="<?php echo esc_attr( $business->ID ); ?>" />
+										<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
+										<button type="submit" class="rbn-button rbn-button--danger"><?php esc_html_e( 'Yes, Delete Business', 'roomworks-business-networking' ); ?></button>
+									</form>
+									<a class="rbn-link" href="<?php echo esc_url( $current_url . '#rbn-my-businesses' ); ?>"><?php esc_html_e( 'Cancel', 'roomworks-business-networking' ); ?></a>
+								</div>
+							<?php else : ?>
+								<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_business', $business->ID, $current_url ) . '#rbn-business-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+								<a class="rbn-link rbn-link--danger" href="<?php echo esc_url( add_query_arg( 'rbn_confirm_delete_business', $business->ID, $current_url ) . '#rbn-my-businesses' ); ?>"><?php esc_html_e( 'Delete', 'roomworks-business-networking' ); ?></a>
+							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
 				</ul>
