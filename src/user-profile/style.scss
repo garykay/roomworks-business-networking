@@ -222,6 +222,35 @@
 		color: #c2362f;
 	}
 
+	// A field a rejected submission flagged (see
+	// RBN_Templates::field_error_class()/field_error_message()) - the same
+	// red used everywhere else for danger/error state (.rbn-button--danger,
+	// .rbn-required-marker, .rbn-notice), so it reads as one consistent
+	// "something's wrong here" colour rather than a one-off.
+	.rbn-field--invalid {
+		input[type="text"],
+		input[type="email"],
+		input[type="url"],
+		input[type="tel"],
+		input[type="file"],
+		select,
+		textarea {
+			border-color: #c2362f;
+
+			&:focus {
+				border-color: #c2362f;
+				box-shadow: 0 0 0 3px rgba( 194, 54, 47, 0.15 );
+			}
+		}
+	}
+
+	.rbn-field-error {
+		display: block;
+		margin-top: 0.4rem;
+		color: #c2362f;
+		font-size: 0.8125rem;
+	}
+
 	.rbn-visually-hidden {
 		position: absolute;
 		width: 1px;

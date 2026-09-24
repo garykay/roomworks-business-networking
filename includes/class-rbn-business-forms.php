@@ -22,6 +22,144 @@ class RBN_Business_Forms {
 
 	const DELETE_ACTION = 'rbn_delete_business';
 
+	const STICKY_TRANSIENT_PREFIX = 'rbn_business_sticky_';
+
+	const LOGO_STASH_TRANSIENT_PREFIX = 'rbn_business_logo_stash_';
+
+	/**
+	 * Saves a rejected submission's field values for exactly one page load,
+	 * so RBN_Templates::business_form() can redisplay what the member typed
+	 * instead of the blank/stale form it would otherwise fall back to -
+	 * every other error path here works by redirecting to a fresh GET (see
+	 * redirect_with_notice()), which loses $_POST entirely by design. A
+	 * transient (rather than, say, a session) because this plugin has no
+	 * session handling anywhere else and doesn't want to start for one
+	 * form; a short TTL because it's only ever meant to survive the
+	 * redirect that follows it immediately, not to linger.
+	 *
+	 * The Business Logo file itself is never part of $submitted - there is
+	 * no way to repopulate a <input type="file"> from the server, so a
+	 * member whose logo upload was rejected (or who simply tripped a
+	 * different field's validation after choosing one) will need to
+	 * reselect it.
+	 *
+	 * $field_errors is which specific field(s) failed - e.g. array( 'name',
+	 * 'contact_email' ) - so RBN_Templates::business_form() can mark just
+	 * those with an error state instead of leaving the member to guess which
+	 * of a dozen required fields the generic notice text is about.
+	 */
+	private static function remember_submission( $user_id, array $submitted, array $field_errors ) {
+		$submitted['field_errors'] = $field_errors;
+		set_transient( self::STICKY_TRANSIENT_PREFIX . $user_id, $submitted, MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Reads back a submission saved by remember_submission(), if any -
+	 * consumed immediately (delete on read) so it only ever affects the one
+	 * page load right after the failed submit, never a later, unrelated
+	 * visit to the same form. $business_id must match the business (or 0,
+	 * for "Add a Business") the sticky data was captured for, so a stray
+	 * transient never bleeds its values into the wrong form.
+	 */
+	public static function consume_sticky_submission( $user_id, $business_id ) {
+		$key       = self::STICKY_TRANSIENT_PREFIX . $user_id;
+		$submitted = get_transient( $key );
+
+		if ( ! $submitted ) {
+			return null;
+		}
+
+		delete_transient( $key );
+
+		if ( (int) $submitted['business_id'] !== (int) $business_id ) {
+			return null;
+		}
+
+		return $submitted;
+	}
+
+	/**
+	 * Keeps a just-validated logo upload past this request when some other
+	 * field's validation fails - PHP deletes the original $_FILES tmp_name
+	 * the moment the request ends, so without this a member who correctly
+	 * picked a logo but, say, left Phone blank would have to reselect it too
+	 * (browsers won't let a server prefill a file input either way, but this
+	 * at least means resubmitting doesn't require a *file picker* round trip
+	 * on top of fixing the one field that actually failed).
+	 *
+	 * Deliberately a separate, longer-lived transient from
+	 * remember_submission()'s: that one is consumed (deleted) the moment the
+	 * retry form is rendered, but the logo needs to still be there for the
+	 * *next* form submission after that, not just the render in between.
+	 * Only ever holds one pending file per user - a second stash (a new
+	 * upload, or the same one retried again) replaces it via
+	 * discard_stashed_logo() rather than accumulating temp files.
+	 */
+	private static function stash_logo_upload( $user_id, $business_id ) {
+		// wp_tempnam() lives in wp-admin/includes/file.php, which (unlike
+		// wp-admin/includes/{image,media}.php's functions used elsewhere in
+		// this class) isn't loaded on the front end by default - this method
+		// runs from handle_request(), reached via a plain front-end POST.
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		$file     = $_FILES['rbn_business_logo']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- nonce verified by handle_request() before this is ever called; only passed to wp_tempnam()/wp_check_filetype_and_ext(), which sanitize internally.
+		$tmp_path = wp_tempnam( $file['name'] );
+
+		if ( ! $tmp_path || ! move_uploaded_file( $file['tmp_name'], $tmp_path ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_read_move_uploaded_file -- moving a validated upload out of PHP's own tmp storage, before the media library (which handle_logo_upload() defers to) is ever involved.
+			return;
+		}
+
+		self::discard_stashed_logo( $user_id );
+
+		set_transient(
+			self::LOGO_STASH_TRANSIENT_PREFIX . $user_id,
+			array(
+				'business_id' => $business_id,
+				'tmp_path'    => $tmp_path,
+				'name'        => sanitize_file_name( $file['name'] ),
+				'type'        => wp_check_filetype_and_ext( $tmp_path, $file['name'] )['type'],
+			),
+			10 * MINUTE_IN_SECONDS
+		);
+	}
+
+	/**
+	 * A read-only look at a stashed logo (if any) for this user's given
+	 * business - $business_id must match the same way
+	 * consume_sticky_submission()'s does, so a stash from adding one
+	 * business never bleeds into a different one. Used by
+	 * RBN_Templates::business_form() to tell the member their previously
+	 * selected file is still there, without consuming it - it's still
+	 * needed for the *next* submission, not just this render.
+	 */
+	public static function peek_stashed_logo( $user_id, $business_id ) {
+		$stash = get_transient( self::LOGO_STASH_TRANSIENT_PREFIX . $user_id );
+
+		if ( ! $stash || (int) $stash['business_id'] !== (int) $business_id ) {
+			return null;
+		}
+
+		return $stash;
+	}
+
+	/**
+	 * Deletes a stashed logo's transient and temp file together, so the two
+	 * can never end up out of sync - called once a stash is no longer
+	 * needed: superseded by a new upload (stash_logo_upload() calls this on
+	 * itself first), successfully attached to a business
+	 * (handle_logo_upload()), or the member explicitly removed it instead of
+	 * replacing it (also handle_logo_upload(), via rbn_remove_logo).
+	 */
+	private static function discard_stashed_logo( $user_id ) {
+		$stash = get_transient( self::LOGO_STASH_TRANSIENT_PREFIX . $user_id );
+
+		if ( $stash && ! empty( $stash['tmp_path'] ) && file_exists( $stash['tmp_path'] ) ) {
+			wp_delete_file( $stash['tmp_path'] );
+		}
+
+		delete_transient( self::LOGO_STASH_TRANSIENT_PREFIX . $user_id );
+	}
+
 	/**
 	 * A member deleting one of their own businesses - same "never trust a
 	 * client-supplied ID" rule as handle_request(): the submitted ID must
@@ -95,19 +233,6 @@ class RBN_Business_Forms {
 		$community_submitted = isset( $_POST['rbn_community_id'] );
 		$community_id        = $community_submitted ? absint( $_POST['rbn_community_id'] ) : 0;
 
-		// A new business always needs a community. An existing one only
-		// needs to validate a submitted value - the form omits the field
-		// entirely (see RBN_Templates::business_community_field()) when the
-		// owner has no communities to choose from, in which case the
-		// existing value (however it got there) is left untouched.
-		$community_id_is_valid = $community_submitted
-			? ( $community_id && ( RBN_Community_Memberships::is_member( $user_id, $community_id ) || ( $business && $community_id === absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) ) ) )
-			: (bool) $business;
-
-		if ( ! $community_id_is_valid ) {
-			self::redirect_with_notice( 'business_invalid_community' );
-		}
-
 		$name          = isset( $_POST['rbn_business_name'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_business_name'] ) ) : '';
 		$description   = isset( $_POST['rbn_business_description'] ) ? sanitize_textarea_field( wp_unslash( $_POST['rbn_business_description'] ) ) : '';
 		$category_id   = isset( $_POST['rbn_business_category'] ) ? absint( $_POST['rbn_business_category'] ) : 0;
@@ -120,6 +245,53 @@ class RBN_Business_Forms {
 		$phone         = isset( $_POST['rbn_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_phone'] ) ) : '';
 		$contact_email = isset( $_POST['rbn_contact_email'] ) ? sanitize_email( wp_unslash( $_POST['rbn_contact_email'] ) ) : '';
 
+		// Remembered for the length of one redirect round-trip (see
+		// remember_submission()'s docblock) so a validation failure below
+		// can redisplay what the member actually typed instead of the blank/
+		// stale form RBN_Templates::business_form() would otherwise fall
+		// back to - it only ever reads from $business (or nothing, for a new
+		// listing), never from a failed $_POST.
+		$submitted = compact(
+			'business_id',
+			'community_id',
+			'name',
+			'description',
+			'category_id',
+			'service_ids',
+			'town_city',
+			'county_region',
+			'postcode',
+			'service_area',
+			'website',
+			'phone',
+			'contact_email'
+		);
+
+		// A new business always needs a community. An existing one only
+		// needs to validate a submitted value - the form omits the field
+		// entirely (see RBN_Templates::business_community_field()) when the
+		// owner has no communities to choose from, in which case the
+		// existing value (however it got there) is left untouched.
+		$community_id_is_valid = $community_submitted
+			? ( $community_id && ( RBN_Community_Memberships::is_member( $user_id, $community_id ) || ( $business && $community_id === absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) ) ) )
+			: (bool) $business;
+
+		// A logo is stashed here (rather than only once, after every check)
+		// because it's only worth keeping when it actually validated - see
+		// stash_logo_upload()'s docblock - and every one of these three
+		// recoverable failures needs the same "was a good logo also
+		// submitted this time?" check.
+		$logo_submitted_now = self::logo_was_submitted();
+		$logo_is_valid_now  = self::logo_upload_is_valid();
+
+		if ( ! $community_id_is_valid ) {
+			if ( $logo_submitted_now && $logo_is_valid_now ) {
+				self::stash_logo_upload( $user_id, $business_id );
+			}
+			self::remember_submission( $user_id, $submitted, array( 'community' ) );
+			self::redirect_with_notice( 'business_invalid_community' );
+		}
+
 		$valid_service_ids = array_values(
 			array_filter(
 				array_unique( $service_ids ),
@@ -129,23 +301,63 @@ class RBN_Business_Forms {
 			)
 		);
 
-		// Every field is mandatory except Website - see RBN_Templates::business_form().
-		if (
-			'' === $name
-			|| '' === $description
-			|| ! $category_id || ! term_exists( $category_id, RBN_Taxonomy_Business_Category::TAXONOMY )
-			|| empty( $valid_service_ids )
-			|| '' === $town_city
-			|| '' === $county_region
-			|| '' === $postcode
-			|| '' === $service_area
-			|| '' === $phone
-			|| '' === $contact_email || ! is_email( $contact_email )
-		) {
+		// Checked and collected individually (rather than one combined
+		// condition) so a failure can point at exactly the field(s)
+		// responsible - see remember_submission()'s docblock - instead of
+		// leaving every field looking equally suspect. Every field is
+		// mandatory except Website - see RBN_Templates::business_form().
+		$field_errors = array();
+
+		if ( '' === $name ) {
+			$field_errors[] = 'name';
+		}
+
+		if ( '' === $description ) {
+			$field_errors[] = 'description';
+		}
+
+		if ( ! $category_id || ! term_exists( $category_id, RBN_Taxonomy_Business_Category::TAXONOMY ) ) {
+			$field_errors[] = 'category';
+		}
+
+		if ( empty( $valid_service_ids ) ) {
+			$field_errors[] = 'services';
+		}
+
+		if ( '' === $town_city ) {
+			$field_errors[] = 'town_city';
+		}
+
+		if ( '' === $county_region ) {
+			$field_errors[] = 'county_region';
+		}
+
+		if ( '' === $postcode ) {
+			$field_errors[] = 'postcode';
+		}
+
+		if ( '' === $service_area ) {
+			$field_errors[] = 'service_area';
+		}
+
+		if ( '' === $phone ) {
+			$field_errors[] = 'phone';
+		}
+
+		if ( '' === $contact_email || ! is_email( $contact_email ) ) {
+			$field_errors[] = 'contact_email';
+		}
+
+		if ( ! empty( $field_errors ) ) {
+			if ( $logo_submitted_now && $logo_is_valid_now ) {
+				self::stash_logo_upload( $user_id, $business_id );
+			}
+			self::remember_submission( $user_id, $submitted, $field_errors );
 			self::redirect_with_notice( 'business_missing_fields' );
 		}
 
-		if ( ! self::logo_upload_is_valid() ) {
+		if ( ! $logo_is_valid_now ) {
+			self::remember_submission( $user_id, $submitted, array( 'logo' ) );
 			self::redirect_with_notice( 'business_logo_invalid' );
 		}
 
@@ -213,7 +425,7 @@ class RBN_Business_Forms {
 		update_post_meta( $post_id, 'rbn_phone', $phone );
 		update_post_meta( $post_id, 'rbn_contact_email', $contact_email );
 
-		self::handle_logo_upload( $post_id );
+		self::handle_logo_upload( $post_id, $user_id, $business_id );
 
 		if ( ! $is_new_business ) {
 			self::redirect_with_notice( 'business_updated' );
@@ -256,11 +468,20 @@ class RBN_Business_Forms {
 	/**
 	 * Uploads and attaches a new logo if one was submitted (already
 	 * confirmed valid by logo_upload_is_valid() before the post was ever
-	 * saved), otherwise removes the current one if requested. Runs after
-	 * the business post is saved, since the attachment needs a real post
-	 * ID as its parent.
+	 * saved) or, failing that, one stashed by stash_logo_upload() from an
+	 * earlier attempt this same business rejected for an unrelated reason;
+	 * otherwise removes the current logo if requested. Runs after the
+	 * business post is saved, since the attachment needs a real post ID as
+	 * its parent.
+	 *
+	 * Checked in this order deliberately: a file chosen just now always wins
+	 * over an older stash (stash_logo_upload() already discards the old one
+	 * whenever a newer upload replaces it, but this covers the same request
+	 * seeing both); and an explicit "remove logo" checkbox wins over a stash
+	 * too, so a member who deliberately unchecks/removes it on a retry isn't
+	 * overridden by a file they picked on an earlier, failed attempt.
 	 */
-	private static function handle_logo_upload( $post_id ) {
+	private static function handle_logo_upload( $post_id, $user_id, $business_id ) {
 		if ( self::logo_was_submitted() ) {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 			require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -272,11 +493,37 @@ class RBN_Business_Forms {
 				set_post_thumbnail( $post_id, $attachment_id );
 			}
 
+			self::discard_stashed_logo( $user_id );
 			return;
 		}
 
 		if ( ! empty( $_POST['rbn_remove_logo'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified by handle_request() before this is ever called; value is only ever used as a boolean flag.
 			delete_post_thumbnail( $post_id );
+			self::discard_stashed_logo( $user_id );
+			return;
+		}
+
+		$stash = self::peek_stashed_logo( $user_id, $business_id );
+
+		if ( $stash ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+
+			$attachment_id = media_handle_sideload(
+				array(
+					'name'     => $stash['name'],
+					'type'     => $stash['type'],
+					'tmp_name' => $stash['tmp_path'],
+				),
+				$post_id
+			);
+
+			if ( ! is_wp_error( $attachment_id ) ) {
+				set_post_thumbnail( $post_id, $attachment_id );
+			}
+
+			self::discard_stashed_logo( $user_id );
 		}
 	}
 

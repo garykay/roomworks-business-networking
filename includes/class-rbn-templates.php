@@ -614,7 +614,7 @@ class RBN_Templates {
 	 * included as an option (selected) so saving the form can't silently
 	 * change it to something else.
 	 */
-	private static function business_community_field( array $joined_communities, $current_community_id ) {
+	private static function business_community_field( array $joined_communities, $current_community_id, array $field_errors = array() ) {
 		$options = $joined_communities;
 
 		if ( $current_community_id && ! in_array( $current_community_id, wp_list_pluck( $options, 'id' ), true ) ) {
@@ -640,7 +640,7 @@ class RBN_Templates {
 
 		ob_start();
 		?>
-		<p>
+		<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'community' ) ); ?>">
 			<label for="rbn-business-community"><?php esc_html_e( 'Community', 'roomworks-business-networking' ); ?></label>
 			<select id="rbn-business-community" name="rbn_community_id" required>
 				<?php foreach ( $options as $community ) : ?>
@@ -650,6 +650,7 @@ class RBN_Templates {
 				<?php endforeach; ?>
 			</select>
 			<span class="rbn-field-note"><?php esc_html_e( 'Which community this business belongs to.', 'roomworks-business-networking' ); ?></span>
+			<?php echo self::field_error_message( $field_errors, 'community', __( 'Please select a community you belong to.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 		</p>
 		<?php
 		return ob_get_clean();
@@ -752,7 +753,37 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
+	/**
+	 * The class for a form field's wrapper when RBN_Business_Forms flagged
+	 * it as the (or one of the) reason(s) a submission was rejected - a
+	 * space-prefixed string ready to concatenate onto an existing class
+	 * attribute, or '' when this field wasn't one of them. Paired with
+	 * field_error_message() below; kept as two small helpers rather than one
+	 * that echoes everything, since the class goes on the wrapper element
+	 * and the message after the field itself.
+	 */
+	private static function field_error_class( array $field_errors, $field ) {
+		return in_array( $field, $field_errors, true ) ? ' rbn-field--invalid' : '';
+	}
+
+	/**
+	 * The red helper text under a field RBN_Business_Forms flagged, or ''
+	 * when it wasn't - see field_error_class()'s docblock.
+	 */
+	private static function field_error_message( array $field_errors, $field, $message ) {
+		if ( ! in_array( $field, $field_errors, true ) ) {
+			return '';
+		}
+
+		return '<span class="rbn-field-error">' . esc_html( $message ) . '</span>';
+	}
+
 	private static function business_form( $business, $current_user, $current_url, $notice_code ) {
+		// Consumed unconditionally (and first) so a sticky submission from a
+		// rejected form post never lingers past this one render - see
+		// RBN_Business_Forms::consume_sticky_submission()'s docblock.
+		$sticky = RBN_Business_Forms::consume_sticky_submission( $current_user->ID, $business ? $business->ID : 0 );
+
 		$current_country_id   = RBN_Countries::get_current_country_id( $current_user->ID );
 		$joined_communities   = RBN_Community_Memberships::get_communities_for_user( $current_user->ID );
 		$current_community_id = $business ? absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) : 0;
@@ -790,6 +821,52 @@ class RBN_Templates {
 		$phone         = $business ? get_post_meta( $business->ID, 'rbn_phone', true ) : '';
 		$contact_email = $business ? get_post_meta( $business->ID, 'rbn_contact_email', true ) : '';
 
+		// A stashed logo (see RBN_Business_Forms::stash_logo_upload()) is
+		// looked up separately from $sticky - it's meant to survive past
+		// this one render, into the *next* submission, so it isn't consumed
+		// here the way $sticky is.
+		$stashed_logo = RBN_Business_Forms::peek_stashed_logo( $current_user->ID, $business ? $business->ID : 0 );
+		$field_errors = $sticky ? $sticky['field_errors'] : array();
+
+		// A rejected submission overrides every field above with what the
+		// member actually typed, so fixing the one thing that failed doesn't
+		// mean retyping everything else - see
+		// RBN_Business_Forms::remember_submission()'s docblock. A logo file
+		// itself can't be restored this way (browsers won't let a server
+		// prefill a file input) - $stashed_logo above is what covers that
+		// instead.
+		if ( $sticky ) {
+			$name                  = $sticky['name'];
+			$description           = $sticky['description'];
+			$town_city             = $sticky['town_city'];
+			$county_region         = $sticky['county_region'];
+			$postcode              = $sticky['postcode'];
+			$service_area          = $sticky['service_area'];
+			$website               = $sticky['website'];
+			$phone                 = $sticky['phone'];
+			$contact_email         = $sticky['contact_email'];
+			$current_community_id  = $sticky['community_id'];
+
+			$selected_categories = array_filter(
+				array( $sticky['category_id'] ? get_term( $sticky['category_id'], RBN_Taxonomy_Business_Category::TAXONOMY ) : null ),
+				function ( $term ) {
+					return $term && ! is_wp_error( $term );
+				}
+			);
+
+			$selected_services = array_values(
+				array_filter(
+					array_map(
+						function ( $service_id ) {
+							$term = get_term( $service_id, RBN_Taxonomy_Service::TAXONOMY );
+							return ( $term && ! is_wp_error( $term ) ) ? $term : null;
+						},
+						$sticky['service_ids']
+					)
+				)
+			);
+		}
+
 		$categories = get_terms(
 			array(
 				'taxonomy'   => RBN_Taxonomy_Business_Category::TAXONOMY,
@@ -826,14 +903,15 @@ class RBN_Templates {
 				<input type="hidden" name="rbn_business_id" value="<?php echo esc_attr( $business ? $business->ID : 0 ); ?>" />
 				<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
 
-				<?php echo self::business_community_field( $joined_communities, $current_community_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+				<?php echo self::business_community_field( $joined_communities, $current_community_id, $field_errors ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 
-				<p>
+				<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'name' ) ); ?>">
 					<label for="rbn-business-name"><?php esc_html_e( 'Business Name', 'roomworks-business-networking' ); ?></label>
 					<input type="text" id="rbn-business-name" name="rbn_business_name" value="<?php echo esc_attr( $name ); ?>" required />
+					<?php echo self::field_error_message( $field_errors, 'name', __( 'Please enter a business name.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 				</p>
 
-				<p>
+				<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'logo' ) ); ?>">
 					<label for="rbn-business-logo"><?php esc_html_e( 'Business Logo', 'roomworks-business-networking' ); ?></label>
 					<?php if ( $business && has_post_thumbnail( $business ) ) : ?>
 						<span class="rbn-logo-preview">
@@ -842,6 +920,20 @@ class RBN_Templates {
 					<?php endif; ?>
 					<input type="file" id="rbn-business-logo" name="rbn_business_logo" accept="image/png,image/jpeg,image/gif,image/webp" />
 					<span class="rbn-field-note"><?php esc_html_e( 'Optional. JPG, PNG, GIF or WEBP, up to 5MB.', 'roomworks-business-networking' ); ?></span>
+					<?php if ( $stashed_logo ) : ?>
+						<span class="rbn-field-note">
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: the previously selected logo's filename. */
+									__( 'Keeping the logo you selected before (%s) - choose a different file above to replace it.', 'roomworks-business-networking' ),
+									$stashed_logo['name']
+								)
+							);
+							?>
+						</span>
+					<?php endif; ?>
+					<?php echo self::field_error_message( $field_errors, 'logo', __( 'Please choose a valid logo image (JPG, PNG, GIF or WEBP) under 5MB.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 				</p>
 
 				<?php if ( $business && has_post_thumbnail( $business ) ) : ?>
@@ -854,12 +946,13 @@ class RBN_Templates {
 				<?php endif; ?>
 
 				<?php
-				echo self::business_type_field( $selected_categories, $categories ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within business_type_field().
+				echo self::business_type_field( $selected_categories, $categories, 'business', 'rbn_business_category', null, self::field_error_message( $field_errors, 'category', __( 'Please choose a business type.', 'roomworks-business-networking' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within business_type_field().
 				?>
 
-				<p>
+				<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'description' ) ); ?>">
 					<label for="rbn-business-description"><?php esc_html_e( 'Description', 'roomworks-business-networking' ); ?></label>
 					<textarea id="rbn-business-description" name="rbn_business_description" rows="4" required><?php echo esc_textarea( $description ); ?></textarea>
+					<?php echo self::field_error_message( $field_errors, 'description', __( 'Please enter a description.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 				</p>
 
 				<?php
@@ -872,38 +965,59 @@ class RBN_Templates {
 					'search_id'      => 'rbn-service-search',
 					'placeholder'    => __( 'Start typing a service…', 'roomworks-business-networking' ),
 					'empty_note'     => __( 'No services are available yet.', 'roomworks-business-networking' ),
+					'error_message'  => self::field_error_message( $field_errors, 'services', __( 'Please add at least one service.', 'roomworks-business-networking' ) ),
 				);
 				echo self::tag_field( $services_field_args ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within tag_field().
 				?>
 
 				<div class="rbn-form__grid">
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'town_city' ) ); ?>">
 						<label for="rbn-business-town-city"><?php esc_html_e( 'Town / City', 'roomworks-business-networking' ); ?></label>
 						<input type="text" id="rbn-business-town-city" name="rbn_town_city" value="<?php echo esc_attr( $town_city ); ?>" required />
+						<?php echo self::field_error_message( $field_errors, 'town_city', __( 'Please enter a town or city.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 					</p>
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'county_region' ) ); ?>">
 						<label for="rbn-business-county-region"><?php echo esc_html( RBN_Countries::county_region_label( $current_country_id ) ); ?></label>
 						<input type="text" id="rbn-business-county-region" name="rbn_county_region" value="<?php echo esc_attr( $county_region ); ?>" required />
+						<?php
+						echo self::field_error_message( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message().
+							$field_errors,
+							'county_region',
+							/* translators: %s: this country's "County/Region"-style label. */
+							sprintf( __( 'Please enter your %s.', 'roomworks-business-networking' ), strtolower( RBN_Countries::county_region_label( $current_country_id ) ) )
+						);
+						?>
 					</p>
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'postcode' ) ); ?>">
 						<label for="rbn-business-postcode"><?php echo esc_html( RBN_Countries::postcode_label( $current_country_id ) ); ?></label>
 						<input type="text" id="rbn-business-postcode" name="rbn_postcode" value="<?php echo esc_attr( $postcode ); ?>" required />
+						<?php
+						echo self::field_error_message( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message().
+							$field_errors,
+							'postcode',
+							/* translators: %s: this country's "Postcode"-style label. */
+							sprintf( __( 'Please enter your %s.', 'roomworks-business-networking' ), strtolower( RBN_Countries::postcode_label( $current_country_id ) ) )
+						);
+						?>
 					</p>
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'service_area' ) ); ?>">
 						<label for="rbn-business-service-area"><?php esc_html_e( 'Service Area', 'roomworks-business-networking' ); ?></label>
 						<input type="text" id="rbn-business-service-area" name="rbn_service_area" value="<?php echo esc_attr( $service_area ); ?>" required />
+						<?php echo self::field_error_message( $field_errors, 'service_area', __( 'Please enter a service area.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 					</p>
 					<p>
 						<label for="rbn-business-website"><?php esc_html_e( 'Website', 'roomworks-business-networking' ); ?></label>
 						<input type="url" id="rbn-business-website" name="rbn_website" value="<?php echo esc_attr( $website ); ?>" />
 					</p>
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'phone' ) ); ?>">
 						<label for="rbn-business-phone"><?php esc_html_e( 'Phone', 'roomworks-business-networking' ); ?></label>
 						<input type="text" id="rbn-business-phone" name="rbn_phone" value="<?php echo esc_attr( $phone ); ?>" required />
+						<?php echo self::field_error_message( $field_errors, 'phone', __( 'Please enter a phone number.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 					</p>
-					<p>
+					<p class="<?php echo esc_attr( 'rbn-form__field' . self::field_error_class( $field_errors, 'contact_email' ) ); ?>">
 						<label for="rbn-business-contact-email"><?php esc_html_e( 'Contact Email', 'roomworks-business-networking' ); ?></label>
 						<input type="email" id="rbn-business-contact-email" name="rbn_contact_email" value="<?php echo esc_attr( $contact_email ); ?>" required />
+						<?php echo self::field_error_message( $field_errors, 'contact_email', __( 'Please enter a valid email address.', 'roomworks-business-networking' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within field_error_message(). ?>
 					</p>
 				</div>
 
@@ -947,8 +1061,14 @@ class RBN_Templates {
 	 * $label lets that second instance say "Category" instead of "Business
 	 * Type" - same taxonomy/options either way, just a less confusing label
 	 * for someone posting a request rather than a business.
+	 *
+	 * $error_message is pre-rendered HTML (see
+	 * RBN_Templates::field_error_message()) rather than a plain string, so
+	 * every call site decides for itself whether this field actually failed
+	 * - job_form()'s instance doesn't pass one, since posting a Request has
+	 * no sticky-submission/field-error tracking of its own.
 	 */
-	private static function business_type_field( array $selected_categories, $categories, $id_prefix = 'business', $field_name = 'rbn_business_category', $label = null ) {
+	private static function business_type_field( array $selected_categories, $categories, $id_prefix = 'business', $field_name = 'rbn_business_category', $label = null, $error_message = '' ) {
 		$category_id = ! empty( $selected_categories ) ? (int) $selected_categories[0]->term_id : 0;
 
 		if ( is_wp_error( $categories ) ) {
@@ -970,7 +1090,7 @@ class RBN_Templates {
 		ob_start();
 		?>
 		<p
-			class="rbn-business-type-field"
+			class="<?php echo esc_attr( 'rbn-business-type-field' . ( $error_message ? ' rbn-field--invalid' : '' ) ); ?>"
 			data-rbn-category-field
 			data-rest-url="<?php echo esc_url( rest_url( 'roomworks-business-networking/v1/business-categories' ) ); ?>"
 			data-rest-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
@@ -999,6 +1119,7 @@ class RBN_Templates {
 			</span>
 
 			<span class="rbn-field-note" data-rbn-category-status role="status" aria-live="polite"></span>
+			<?php echo $error_message; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already-escaped HTML from field_error_message(). ?>
 		</p>
 		<?php
 		return ob_get_clean();
@@ -1024,6 +1145,7 @@ class RBN_Templates {
 	 *     @type string    $search_id      Element ID for the text input.
 	 *     @type string    $placeholder    Text input placeholder.
 	 *     @type string    $empty_note     Message shown when the taxonomy has no terms at all.
+	 *     @type string    $error_message  Pre-rendered HTML (see RBN_Templates::field_error_message()) shown below the field, '' when this field wasn't flagged by a rejected submission.
 	 * }
 	 */
 	private static function tag_field( array $args ) {
@@ -1038,6 +1160,7 @@ class RBN_Templates {
 				'search_id'      => '',
 				'placeholder'    => '',
 				'empty_note'     => '',
+				'error_message'  => '',
 			)
 		);
 
@@ -1054,7 +1177,7 @@ class RBN_Templates {
 		ob_start();
 		?>
 		<fieldset
-			class="rbn-form__field rbn-tag-field"
+			class="<?php echo esc_attr( 'rbn-form__field rbn-tag-field' . ( $args['error_message'] ? ' rbn-field--invalid' : '' ) ); ?>"
 			data-rbn-tag-field
 			data-required="true"
 			data-input-name="<?php echo esc_attr( $args['input_name'] ); ?>"
@@ -1097,6 +1220,7 @@ class RBN_Templates {
 			</div>
 
 			<p class="rbn-field-note" data-rbn-tag-status role="status" aria-live="polite"></p>
+			<?php echo $args['error_message']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already-escaped HTML from field_error_message(). ?>
 
 			<noscript>
 				<?php if ( empty( $args['all_terms'] ) || is_wp_error( $args['all_terms'] ) ) : ?>
