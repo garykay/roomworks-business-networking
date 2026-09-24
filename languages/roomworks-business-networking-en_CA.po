@@ -4,15 +4,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Business Networking 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/roomworks-business-networking\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2026-09-24T05:51:03+00:00\n"
+"PO-Revision-Date: 2026-09-24T06:16:23+00:00\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_CA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-24T05:51:03+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: roomworks-business-networking\n"
+"X-Generator: WP-CLI 2.6.0\n"
 
 #. Plugin Name of the plugin
 #: roomworks-business-networking.php
@@ -34,7 +35,8 @@ msgstr ""
 msgid "Account deletion requested: %s"
 msgstr ""
 
-#. translators: 1: display name, 2: email address, 3: scheduled deletion date/time, 4: admin Users screen URL.
+#. translators: 1: display name, 2: email address, 3: scheduled deletion
+#. date/time, 4: admin Users screen URL.
 #: includes/class-rbn-account-deletion.php:180
 msgid ""
 "%1$s (%2$s) has requested their account be deleted.\n"
@@ -51,7 +53,9 @@ msgstr ""
 
 #. translators: 1: display name, 2: email address.
 #: includes/class-rbn-account-deletion.php:194
-msgid "%1$s (%2$s) has cancelled their account deletion request. No action is needed."
+msgid ""
+"%1$s (%2$s) has cancelled their account deletion request. No action is "
+"needed."
 msgstr ""
 
 #. translators: %s: member's display name.
@@ -81,8 +85,7 @@ msgid ""
 "If you didn't request this, please contact us straight away."
 msgstr ""
 
-#: includes/class-rbn-approvals.php:25
-#: includes/class-rbn-approvals.php:26
+#: includes/class-rbn-approvals.php:25 includes/class-rbn-approvals.php:26
 #: includes/class-rbn-approvals.php:39
 msgid "Account Deletions"
 msgstr ""
@@ -147,23 +150,17 @@ msgstr ""
 #: includes/class-rbn-communities-admin.php:31
 #: includes/class-rbn-communities-admin.php:32
 #: includes/class-rbn-communities-admin.php:181
-#: includes/class-rbn-settings.php:95
-#: includes/class-rbn-templates.php:167
-#: includes/class-rbn-templates.php:481
-#: includes/class-rbn-templates.php:1338
+#: includes/class-rbn-settings.php:95 includes/class-rbn-templates.php:167
+#: includes/class-rbn-templates.php:481 includes/class-rbn-templates.php:1338
 msgid "Communities"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:71
 #: includes/class-rbn-communities-admin.php:104
-#: includes/class-rbn-countries-admin.php:88
-#: includes/class-rbn-notices.php:21
-#: includes/class-rbn-notices.php:36
-#: includes/class-rbn-notices.php:38
-#: includes/class-rbn-notices.php:42
-#: includes/class-rbn-notices.php:51
-#: includes/class-rbn-notices.php:55
-#: includes/class-rbn-notices.php:60
+#: includes/class-rbn-countries-admin.php:88 includes/class-rbn-notices.php:21
+#: includes/class-rbn-notices.php:36 includes/class-rbn-notices.php:38
+#: includes/class-rbn-notices.php:42 includes/class-rbn-notices.php:51
+#: includes/class-rbn-notices.php:55 includes/class-rbn-notices.php:60
 #: includes/class-rbn-notices.php:66
 msgid "Your session expired. Please try again."
 msgstr ""
@@ -205,7 +202,9 @@ msgid "Origin Country"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:247
-msgid "Can't be changed after a community is created - members and businesses are already tied to it."
+msgid ""
+"Can't be changed after a community is created - members and businesses are "
+"already tied to it."
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:251
@@ -214,8 +213,7 @@ msgid "Destination Country"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:265
-#: includes/class-rbn-templates.php:861
-#: includes/class-rbn-templates.php:1237
+#: includes/class-rbn-templates.php:861 includes/class-rbn-templates.php:1237
 msgid "Description"
 msgstr ""
 
@@ -240,14 +238,12 @@ msgid "Update Community"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:281
-#: includes/class-rbn-templates.php:390
-#: includes/class-rbn-templates.php:701
+#: includes/class-rbn-templates.php:390 includes/class-rbn-templates.php:701
 msgid "Cancel"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:290
-#: includes/class-rbn-templates.php:595
-#: includes/class-rbn-templates.php:981
+#: includes/class-rbn-templates.php:595 includes/class-rbn-templates.php:981
 #: includes/class-rbn-templates.php:1359
 msgid "— Select —"
 msgstr ""
@@ -273,8 +269,7 @@ msgid "Members"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:342
-#: includes/class-rbn-templates.php:704
-#: includes/class-rbn-templates.php:1143
+#: includes/class-rbn-templates.php:704 includes/class-rbn-templates.php:1143
 msgid "Edit"
 msgstr ""
 
@@ -296,7 +291,10 @@ msgid "Please select a valid origin and destination country."
 msgstr ""
 
 #: includes/class-rbn-communities.php:52
-msgid "A community already exists for that origin/destination pair. Turn off \"Require unique origin/destination pair\" in Settings to allow more than one."
+msgid ""
+"A community already exists for that origin/destination pair. Turn off "
+"\"Require unique origin/destination pair\" in Settings to allow more than "
+"one."
 msgstr ""
 
 #: includes/class-rbn-communities.php:77
@@ -335,7 +333,11 @@ msgid "Demonyms saved."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:125
-msgid "Where the singular/plural demonym used in front-end copy comes from - e.g. \"South African\" / \"South Africans\" for South Africa. Correct an entry or fill in a blank one below; blanks fall back to the plain country name on the front end."
+msgid ""
+"Where the singular/plural demonym used in front-end copy comes from - e.g. "
+"\"South African\" / \"South Africans\" for South Africa. Correct an entry or"
+" fill in a blank one below; blanks fall back to the plain country name on "
+"the front end."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:130
@@ -343,7 +345,9 @@ msgid "Restore Missing Defaults"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:132
-msgid "Fills in any blank demonym below from the built-in list. Never overwrites one you've already set."
+msgid ""
+"Fills in any blank demonym below from the built-in list. Never overwrites "
+"one you've already set."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:148
@@ -351,11 +355,15 @@ msgid "Shortcodes"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:151
-msgid "Drop a country name or demonym into a Heading/Paragraph block (or any other content) so it stays correct without hand-editing every occurrence."
+msgid ""
+"Drop a country name or demonym into a Heading/Paragraph block (or any other "
+"content) so it stays correct without hand-editing every occurrence."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:154
-msgid "the noun-form demonym for a country, e.g. \"South African\" / \"South Africans\" (not the adjective)."
+msgid ""
+"the noun-form demonym for a country, e.g. \"South African\" / \"South "
+"Africans\" (not the adjective)."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:155
@@ -379,7 +387,9 @@ msgid "or"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:168
-msgid "Explicit override - an ISO 3166-1 alpha-2 code or a country ID. Takes priority over source."
+msgid ""
+"Explicit override - an ISO 3166-1 alpha-2 code or a country ID. Takes "
+"priority over source."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:171
@@ -387,19 +397,30 @@ msgid "(default)"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:177
-msgid "The Network Origin Country setting (<a href=\"%s\">Settings &rarr; Branding</a>) - which country this deployment represents."
+msgid ""
+"The Network Origin Country setting (<a href=\"%s\">Settings &rarr; "
+"Branding</a>) - which country this deployment represents."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:187
-msgid "The logged-in viewer's own Country of Origin profile field, falling back to source=\"network\" when logged out or not set."
+msgid ""
+"The logged-in viewer's own Country of Origin profile field, falling back to "
+"source=\"network\" when logged out or not set."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:191
-msgid "The logged-in viewer's own Country You Currently Live In profile field, falling back to the Default Destination Country setting (same Branding section) when logged out or not set."
+msgid ""
+"The logged-in viewer's own Country You Currently Live In profile field, "
+"falling back to the Default Destination Country setting (same Branding "
+"section) when logged out or not set."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:198
-msgid "<code>[rbn_demonym]</code> also takes <code>plural=\"1\"</code> (default <code>\"0\"</code>, i.e. singular). Both take <code>case=\"upper\"</code>, <code>\"lower\"</code>, or <code>\"title\"</code> (default: as stored below)."
+msgid ""
+"<code>[rbn_demonym]</code> also takes <code>plural=\"1\"</code> (default "
+"<code>\"0\"</code>, i.e. singular). Both take <code>case=\"upper\"</code>, "
+"<code>\"lower\"</code>, or <code>\"title\"</code> (default: as stored "
+"below)."
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:203
@@ -423,11 +444,13 @@ msgid "ABOUT SOUTH AFRICAN NETWORK"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:222
-msgid "...across the United Kingdom... (or the viewer's own country, once set)"
+msgid ""
+"...across the United Kingdom... (or the viewer's own country, once set)"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:226
-msgid "Fellow South Africans (for a member whose Country of Origin is South Africa)"
+msgid ""
+"Fellow South Africans (for a member whose Country of Origin is South Africa)"
 msgstr ""
 
 #: includes/class-rbn-countries-admin.php:230
@@ -494,14 +517,15 @@ msgid "Confirm your email to activate your account."
 msgstr ""
 
 #. translators: %s: first name.
-#: includes/class-rbn-emails.php:155
-#: includes/class-rbn-emails.php:199
+#: includes/class-rbn-emails.php:155 includes/class-rbn-emails.php:199
 #: includes/class-rbn-emails.php:254
 msgid "Hi %s,"
 msgstr ""
 
 #: includes/class-rbn-emails.php:157
-msgid "Thanks for signing up! Please confirm this is your email address to activate your account - you'll be able to log in as soon as you do."
+msgid ""
+"Thanks for signing up! Please confirm this is your email address to activate"
+" your account - you'll be able to log in as soon as you do."
 msgstr ""
 
 #: includes/class-rbn-emails.php:158
@@ -525,13 +549,19 @@ msgstr ""
 msgid "Your account is now active and you can log in at any time."
 msgstr ""
 
-#. translators: %s: community name, e.g. "South Africans in the United Kingdom".
+#. translators: %s: community name, e.g. "South Africans in the United
+#. Kingdom".
 #: includes/class-rbn-emails.php:190
-msgid "You've been added to %s - browse the directory to find and connect with other members there."
+msgid ""
+"You've been added to %s - browse the directory to find and connect with "
+"other members there."
 msgstr ""
 
 #: includes/class-rbn-emails.php:195
-msgid "You can also list your own business in the directory from your account dashboard - once your account is active, listings go live immediately, no waiting on review."
+msgid ""
+"You can also list your own business in the directory from your account "
+"dashboard - once your account is active, listings go live immediately, no "
+"waiting on review."
 msgstr ""
 
 #: includes/class-rbn-emails.php:201
@@ -553,7 +583,9 @@ msgstr ""
 
 #. translators: 1: display name, 2: email address.
 #: includes/class-rbn-emails.php:230
-msgid "%1$s (%2$s) just registered. They will be able to log in automatically once they confirm their email address - no action is needed from you."
+msgid ""
+"%1$s (%2$s) just registered. They will be able to log in automatically once "
+"they confirm their email address - no action is needed from you."
 msgstr ""
 
 #: includes/class-rbn-emails.php:235
@@ -569,11 +601,15 @@ msgid "We're sorry, your registration was not approved."
 msgstr ""
 
 #: includes/class-rbn-emails.php:256
-msgid "We're sorry, your account registration was not approved. If you believe this is a mistake, please get in touch with us."
+msgid ""
+"We're sorry, your account registration was not approved. If you believe this"
+" is a mistake, please get in touch with us."
 msgstr ""
 
 #: includes/class-rbn-member-approval.php:203
-msgid "Please check your email and click the activation link to activate your account."
+msgid ""
+"Please check your email and click the activation link to activate your "
+"account."
 msgstr ""
 
 #: includes/class-rbn-member-approval.php:207
@@ -613,11 +649,14 @@ msgid "We couldn't log you in with those details. Please try again."
 msgstr ""
 
 #: includes/class-rbn-notices.php:22
-msgid "Please check your email and click the activation link to activate your account before logging in."
+msgid ""
+"Please check your email and click the activation link to activate your "
+"account before logging in."
 msgstr ""
 
 #: includes/class-rbn-notices.php:23
-msgid "Your registration was not approved. Please contact us for more information."
+msgid ""
+"Your registration was not approved. Please contact us for more information."
 msgstr ""
 
 #: includes/class-rbn-notices.php:24
@@ -629,11 +668,14 @@ msgid "Your account is already active - you can log in below."
 msgstr ""
 
 #: includes/class-rbn-notices.php:26
-msgid "That activation link isn't valid or has expired. Please request a new one."
+msgid ""
+"That activation link isn't valid or has expired. Please request a new one."
 msgstr ""
 
 #: includes/class-rbn-notices.php:27
-msgid "Thanks for registering! We've sent an activation link to your email - click it to activate your account."
+msgid ""
+"Thanks for registering! We've sent an activation link to your email - click "
+"it to activate your account."
 msgstr ""
 
 #: includes/class-rbn-notices.php:28
@@ -656,8 +698,7 @@ msgstr ""
 msgid "Please agree to the Terms and Privacy Policy to continue."
 msgstr ""
 
-#: includes/class-rbn-notices.php:33
-#: includes/class-rbn-notices.php:40
+#: includes/class-rbn-notices.php:33 includes/class-rbn-notices.php:40
 msgid "Please select a valid country of origin and current country."
 msgstr ""
 
@@ -686,16 +727,18 @@ msgid "Please select a community you belong to."
 msgstr ""
 
 #: includes/class-rbn-notices.php:44
-msgid "Please fill in all required fields (Website is the only optional field)."
+msgid ""
+"Please fill in all required fields (Website is the only optional field)."
 msgstr ""
 
-#: includes/class-rbn-notices.php:45
-#: includes/class-rbn-notices.php:63
+#: includes/class-rbn-notices.php:45 includes/class-rbn-notices.php:63
 msgid "You don't have permission to do that."
 msgstr ""
 
 #: includes/class-rbn-notices.php:46
-msgid "Please upload a valid logo image (JPG, PNG, GIF or WEBP) under 5MB, or leave that field empty."
+msgid ""
+"Please upload a valid logo image (JPG, PNG, GIF or WEBP) under 5MB, or leave"
+" that field empty."
 msgstr ""
 
 #: includes/class-rbn-notices.php:47
@@ -719,7 +762,9 @@ msgid "Administrator accounts cannot be deleted this way."
 msgstr ""
 
 #: includes/class-rbn-notices.php:53
-msgid "Your account deletion request has been received. Unless you cancel it, your account will be permanently deleted in 24 hours."
+msgid ""
+"Your account deletion request has been received. Unless you cancel it, your "
+"account will be permanently deleted in 24 hours."
 msgstr ""
 
 #: includes/class-rbn-notices.php:54
@@ -747,7 +792,8 @@ msgid "Join a community in your current country before posting a request."
 msgstr ""
 
 #: includes/class-rbn-notices.php:62
-msgid "Please fill in all required fields (Budget and Closing Date are optional)."
+msgid ""
+"Please fill in all required fields (Budget and Closing Date are optional)."
 msgstr ""
 
 #: includes/class-rbn-notices.php:64
@@ -934,8 +980,7 @@ msgstr ""
 msgid "Something went wrong adding that service."
 msgstr ""
 
-#: includes/class-rbn-settings.php:28
-#: includes/class-rbn-settings.php:434
+#: includes/class-rbn-settings.php:28 includes/class-rbn-settings.php:434
 msgid "Directory Settings"
 msgstr ""
 
@@ -1005,7 +1050,9 @@ msgid "Default order for the directory listing."
 msgstr ""
 
 #: includes/class-rbn-settings.php:337
-msgid "Where new member and account-deletion alerts are sent. Leave blank to use the site admin email above."
+msgid ""
+"Where new member and account-deletion alerts are sent. Leave blank to use "
+"the site admin email above."
 msgstr ""
 
 #: includes/class-rbn-settings.php:354
@@ -1013,28 +1060,44 @@ msgid "hours"
 msgstr ""
 
 #: includes/class-rbn-settings.php:356
-msgid "How long a member has to cancel an account deletion request before it happens automatically. Only applies to requests made after this is changed."
+msgid ""
+"How long a member has to cancel an account deletion request before it "
+"happens automatically. Only applies to requests made after this is changed."
 msgstr ""
 
 #: includes/class-rbn-settings.php:371
-msgid "Require a unique origin/destination pair (e.g. only one \"South Africans in the UK\" community)."
+msgid ""
+"Require a unique origin/destination pair (e.g. only one \"South Africans in "
+"the UK\" community)."
 msgstr ""
 
 #: includes/class-rbn-settings.php:374
-msgid "Turn this off to allow more than one community for the same pair - for example regional sub-communities such as \"South Africans in the UK - London\"."
+msgid ""
+"Turn this off to allow more than one community for the same pair - for "
+"example regional sub-communities such as \"South Africans in the UK - "
+"London\"."
 msgstr ""
 
-#: includes/class-rbn-settings.php:385
-#: includes/class-rbn-settings.php:415
+#: includes/class-rbn-settings.php:385 includes/class-rbn-settings.php:415
 msgid "— None —"
 msgstr ""
 
 #: includes/class-rbn-settings.php:397
-msgid "Which country this network is for - the default for <code>[rbn_demonym]</code> and <code>[rbn_country]</code> when neither a <code>country</code> attribute nor <code>source=\"viewer_origin\"</code>/<code>source=\"viewer_current\"</code> is used (e.g. \"Built by South Africans, for South Africans\"). Edit demonyms on the <a href=\"%s\">Countries</a> screen."
+msgid ""
+"Which country this network is for - the default for "
+"<code>[rbn_demonym]</code> and <code>[rbn_country]</code> when neither a "
+"<code>country</code> attribute nor "
+"<code>source=\"viewer_origin\"</code>/<code>source=\"viewer_current\"</code>"
+" is used (e.g. \"Built by South Africans, for South Africans\"). Edit "
+"demonyms on the <a href=\"%s\">Countries</a> screen."
 msgstr ""
 
 #: includes/class-rbn-settings.php:423
-msgid "The fallback for [rbn_demonym source=\"viewer_current\"] / [rbn_country source=\"viewer_current\"] - shown to a logged-out visitor, or a member who hasn't set \"Country You Currently Live In\" on their profile. Once a member sets that field, they see their own country instead."
+msgid ""
+"The fallback for [rbn_demonym source=\"viewer_current\"] / [rbn_country "
+"source=\"viewer_current\"] - shown to a logged-out visitor, or a member who "
+"hasn't set \"Country You Currently Live In\" on their profile. Once a member"
+" sets that field, they see their own country instead."
 msgstr ""
 
 #: includes/class-rbn-sponsored-content.php:94
@@ -1121,13 +1184,11 @@ msgid "New Service Name"
 msgstr ""
 
 #: includes/class-rbn-taxonomy-service.php:35
-#: includes/class-rbn-templates.php:867
-#: includes/class-rbn-templates.php:1836
+#: includes/class-rbn-templates.php:867 includes/class-rbn-templates.php:1836
 msgid "Services"
 msgstr ""
 
-#: includes/class-rbn-templates.php:62
-#: includes/class-rbn-templates.php:80
+#: includes/class-rbn-templates.php:62 includes/class-rbn-templates.php:80
 msgid "Log In"
 msgstr ""
 
@@ -1135,8 +1196,7 @@ msgstr ""
 msgid "Username or Email"
 msgstr ""
 
-#: includes/class-rbn-templates.php:76
-#: includes/class-rbn-templates.php:118
+#: includes/class-rbn-templates.php:76 includes/class-rbn-templates.php:118
 msgid "Password"
 msgstr ""
 
@@ -1148,18 +1208,15 @@ msgstr ""
 msgid "Create an Account"
 msgstr ""
 
-#: includes/class-rbn-templates.php:100
-#: includes/class-rbn-templates.php:420
+#: includes/class-rbn-templates.php:100 includes/class-rbn-templates.php:420
 msgid "First Name"
 msgstr ""
 
-#: includes/class-rbn-templates.php:104
-#: includes/class-rbn-templates.php:424
+#: includes/class-rbn-templates.php:104 includes/class-rbn-templates.php:424
 msgid "Last Name"
 msgstr ""
 
-#: includes/class-rbn-templates.php:108
-#: includes/class-rbn-templates.php:428
+#: includes/class-rbn-templates.php:108 includes/class-rbn-templates.php:428
 msgid "Display Name"
 msgstr ""
 
@@ -1167,13 +1224,11 @@ msgstr ""
 msgid "Email Address"
 msgstr ""
 
-#: includes/class-rbn-templates.php:115
-#: includes/class-rbn-templates.php:440
+#: includes/class-rbn-templates.php:115 includes/class-rbn-templates.php:440
 msgid "Country of Origin"
 msgstr ""
 
-#: includes/class-rbn-templates.php:116
-#: includes/class-rbn-templates.php:441
+#: includes/class-rbn-templates.php:116 includes/class-rbn-templates.php:441
 msgid "Country You Currently Live In"
 msgstr ""
 
@@ -1193,8 +1248,7 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
-#: includes/class-rbn-templates.php:175
-#: includes/class-rbn-templates.php:733
+#: includes/class-rbn-templates.php:175 includes/class-rbn-templates.php:733
 msgid "Favourites"
 msgstr ""
 
@@ -1225,7 +1279,9 @@ msgstr ""
 
 #. translators: %s: scheduled deletion date/time.
 #: includes/class-rbn-templates.php:370
-msgid "Your account is scheduled for deletion on %s. You can cancel this request at any time before then."
+msgid ""
+"Your account is scheduled for deletion on %s. You can cancel this request at"
+" any time before then."
 msgstr ""
 
 #: includes/class-rbn-templates.php:379
@@ -1233,7 +1289,9 @@ msgid "Cancel Deletion Request"
 msgstr ""
 
 #: includes/class-rbn-templates.php:382
-msgid "Are you sure? Your account and business listing will be permanently deleted in 24 hours, unless you cancel before then."
+msgid ""
+"Are you sure? Your account and business listing will be permanently deleted "
+"in 24 hours, unless you cancel before then."
 msgstr ""
 
 #: includes/class-rbn-templates.php:388
@@ -1241,7 +1299,9 @@ msgid "Yes, Delete My Account"
 msgstr ""
 
 #: includes/class-rbn-templates.php:393
-msgid "Deleting your account is permanent and also removes your business listing. This cannot be undone once it takes effect."
+msgid ""
+"Deleting your account is permanent and also removes your business listing. "
+"This cannot be undone once it takes effect."
 msgstr ""
 
 #: includes/class-rbn-templates.php:394
@@ -1261,7 +1321,9 @@ msgid "Phone Number"
 msgstr ""
 
 #: includes/class-rbn-templates.php:438
-msgid "Optional. Offered as a contact option on your notice board requests - you can hide it on any individual one."
+msgid ""
+"Optional. Offered as a contact option on your notice board requests - you "
+"can hide it on any individual one."
 msgstr ""
 
 #: includes/class-rbn-templates.php:443
@@ -1285,7 +1347,8 @@ msgid "Available Communities"
 msgstr ""
 
 #: includes/class-rbn-templates.php:501
-msgid "Set the country you currently live in above to see communities you can join."
+msgid ""
+"Set the country you currently live in above to see communities you can join."
 msgstr ""
 
 #: includes/class-rbn-templates.php:503
@@ -1315,7 +1378,9 @@ msgid "Follow"
 msgstr ""
 
 #: includes/class-rbn-templates.php:636
-msgid "This business isn't assigned to a community yet - join one above, then edit this business again to assign it."
+msgid ""
+"This business isn't assigned to a community yet - join one above, then edit "
+"this business again to assign it."
 msgstr ""
 
 #: includes/class-rbn-templates.php:644
@@ -1339,7 +1404,9 @@ msgid "Pending review"
 msgstr ""
 
 #: includes/class-rbn-templates.php:692
-msgid "Are you sure? This business will be removed from the directory. This cannot be undone."
+msgid ""
+"Are you sure? This business will be removed from the directory. This cannot "
+"be undone."
 msgstr ""
 
 #: includes/class-rbn-templates.php:699
@@ -1351,22 +1418,24 @@ msgid "Delete"
 msgstr ""
 
 #: includes/class-rbn-templates.php:735
-msgid "You haven't followed any businesses yet - look for the heart button on a business's profile or in the directory."
+msgid ""
+"You haven't followed any businesses yet - look for the heart button on a "
+"business's profile or in the directory."
 msgstr ""
 
-#: includes/class-rbn-templates.php:768
-#: includes/class-rbn-templates.php:815
+#: includes/class-rbn-templates.php:768 includes/class-rbn-templates.php:815
 msgid "Add a Business"
 msgstr ""
 
 #: includes/class-rbn-templates.php:769
-msgid "Join a community above before adding a business - every business belongs to one."
+msgid ""
+"Join a community above before adding a business - every business belongs to "
+"one."
 msgstr ""
 
 #. translators: %s: business name.
 #. translators: %s: request title.
-#: includes/class-rbn-templates.php:814
-#: includes/class-rbn-templates.php:1209
+#: includes/class-rbn-templates.php:814 includes/class-rbn-templates.php:1209
 msgid "Edit %s"
 msgstr ""
 
@@ -1402,8 +1471,7 @@ msgstr ""
 msgid "No services are available yet."
 msgstr ""
 
-#: includes/class-rbn-templates.php:881
-#: includes/class-rbn-templates.php:1243
+#: includes/class-rbn-templates.php:881 includes/class-rbn-templates.php:1243
 msgid "Town / City"
 msgstr ""
 
@@ -1423,8 +1491,7 @@ msgstr ""
 msgid "Contact Email"
 msgstr ""
 
-#: includes/class-rbn-templates.php:914
-#: includes/class-rbn-templates.php:1277
+#: includes/class-rbn-templates.php:914 includes/class-rbn-templates.php:1277
 msgid "Save Changes"
 msgstr ""
 
@@ -1432,13 +1499,11 @@ msgstr ""
 msgid "Submit Business"
 msgstr ""
 
-#: includes/class-rbn-templates.php:959
-#: includes/class-rbn-templates.php:1392
+#: includes/class-rbn-templates.php:959 includes/class-rbn-templates.php:1392
 msgid "Business Type"
 msgstr ""
 
-#: includes/class-rbn-templates.php:966
-#: includes/class-rbn-templates.php:1045
+#: includes/class-rbn-templates.php:966 includes/class-rbn-templates.php:1045
 msgid "Adding…"
 msgstr ""
 
@@ -1454,14 +1519,12 @@ msgstr ""
 msgid "e.g. Painting & Decorating"
 msgstr ""
 
-#: includes/class-rbn-templates.php:998
-#: includes/class-rbn-templates.php:1095
+#: includes/class-rbn-templates.php:998 includes/class-rbn-templates.php:1095
 msgid "Add"
 msgstr ""
 
 #. translators: %s: term name.
-#: includes/class-rbn-templates.php:1047
-#: includes/class-rbn-templates.php:1080
+#: includes/class-rbn-templates.php:1047 includes/class-rbn-templates.php:1080
 msgid "Remove %s"
 msgstr ""
 
@@ -1481,13 +1544,13 @@ msgstr ""
 msgid "You haven't posted a request yet - use the form below to add one."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1166
-#: includes/class-rbn-templates.php:1210
+#: includes/class-rbn-templates.php:1166 includes/class-rbn-templates.php:1210
 msgid "Post a Request"
 msgstr ""
 
 #: includes/class-rbn-templates.php:1167
-msgid "Join a community in your current country above before posting a request."
+msgid ""
+"Join a community in your current country above before posting a request."
 msgstr ""
 
 #: includes/class-rbn-templates.php:1216
@@ -1502,13 +1565,11 @@ msgstr ""
 msgid "e.g. Need a new boiler installed"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1232
-#: includes/class-rbn-templates.php:1600
+#: includes/class-rbn-templates.php:1232 includes/class-rbn-templates.php:1600
 msgid "Category"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1251
-#: includes/class-rbn-templates.php:1960
+#: includes/class-rbn-templates.php:1251 includes/class-rbn-templates.php:1960
 msgid "Budget"
 msgstr ""
 
@@ -1517,7 +1578,9 @@ msgid "e.g. 200 - 400"
 msgstr ""
 
 #: includes/class-rbn-templates.php:1253
-msgid "Numbers only - the currency symbol for the country you currently live in is added automatically."
+msgid ""
+"Numbers only - the currency symbol for the country you currently live in is "
+"added automatically."
 msgstr ""
 
 #: includes/class-rbn-templates.php:1256
@@ -1529,11 +1592,15 @@ msgid "Hide my phone number on this request"
 msgstr ""
 
 #: includes/class-rbn-templates.php:1267
-msgid "Your account email is always shown as contact; your profile phone number is shown too unless you tick this."
+msgid ""
+"Your account email is always shown as contact; your profile phone number is "
+"shown too unless you tick this."
 msgstr ""
 
 #: includes/class-rbn-templates.php:1270
-msgid "Only your account email will be shown as contact - add a phone number on your profile above to also offer that."
+msgid ""
+"Only your account email will be shown as contact - add a phone number on "
+"your profile above to also offer that."
 msgstr ""
 
 #: includes/class-rbn-templates.php:1278
@@ -1541,25 +1608,29 @@ msgid "Post Request"
 msgstr ""
 
 #: includes/class-rbn-templates.php:1330
-msgid "This request isn't assigned to a community you're currently eligible for - join one in your current country above, then edit this listing again to reassign it."
+msgid ""
+"This request isn't assigned to a community you're currently eligible for - "
+"join one in your current country above, then edit this listing again to "
+"reassign it."
 msgstr ""
 
 #: includes/class-rbn-templates.php:1347
-msgid "Which of your communities this request is posted to. Leave everything unchecked to post it to your main (oldest-joined) community automatically."
+msgid ""
+"Which of your communities this request is posted to. Leave everything "
+"unchecked to post it to your main (oldest-joined) community automatically."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1357
-#: includes/class-rbn-templates.php:1612
+#: includes/class-rbn-templates.php:1357 includes/class-rbn-templates.php:1612
 msgid "Urgency"
 msgstr ""
 
-#. translators: %s: this viewer's country-specific term for postcode, e.g. "postcode" or "ZIP code".
+#. translators: %s: this viewer's country-specific term for postcode, e.g.
+#. "postcode" or "ZIP code".
 #: includes/class-rbn-templates.php:1380
 msgid "Town, county or %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1387
-#: includes/class-rbn-templates.php:1595
+#: includes/class-rbn-templates.php:1387 includes/class-rbn-templates.php:1595
 msgid "Search"
 msgstr ""
 
@@ -1567,19 +1638,16 @@ msgstr ""
 msgid "Service"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1416
-#: includes/class-rbn-templates.php:1624
+#: includes/class-rbn-templates.php:1416 includes/class-rbn-templates.php:1624
 #: includes/class-rbn-templates.php:1847
 msgid "Location"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1421
-#: includes/class-rbn-templates.php:1629
+#: includes/class-rbn-templates.php:1421 includes/class-rbn-templates.php:1629
 msgid "Filter"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1423
-#: includes/class-rbn-templates.php:1631
+#: includes/class-rbn-templates.php:1423 includes/class-rbn-templates.php:1631
 #: src/roomworks-business-networking/render.php:86
 #: src/roomworks-community-notice-board/render.php:66
 msgid "Clear filters"
@@ -1607,8 +1675,7 @@ msgid "Town or county"
 msgstr ""
 
 #. translators: %s: closing date.
-#: includes/class-rbn-templates.php:1694
-#: includes/class-rbn-templates.php:1968
+#: includes/class-rbn-templates.php:1694 includes/class-rbn-templates.php:1968
 #: src/roomworks-community-notice-board/render.php:65
 msgid "Closes %s"
 msgstr ""
@@ -1631,8 +1698,7 @@ msgstr ""
 msgid "Service area: %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1868
-#: includes/class-rbn-templates.php:1979
+#: includes/class-rbn-templates.php:1868 includes/class-rbn-templates.php:1979
 msgid "Contact"
 msgstr ""
 
@@ -1653,7 +1719,9 @@ msgid "Posted by"
 msgstr ""
 
 #: src/roomworks-advertising-block/render.php:38
-msgid "No advert selected for this page/post. Choose one from the \"Advert\" panel in the editor sidebar."
+msgid ""
+"No advert selected for this page/post. Choose one from the \"Advert\" panel "
+"in the editor sidebar."
 msgstr ""
 
 #: src/roomworks-advertising-block/render.php:53
@@ -1705,7 +1773,9 @@ msgid "Advert shown here"
 msgstr ""
 
 #: src/advert-picker/index.js:71
-msgid "Used by the advertising block when it appears in a template on this page/post."
+msgid ""
+"Used by the advertising block when it appears in a template on this "
+"page/post."
 msgstr ""
 
 #: src/post-author-business-profile-toggle/index.js:43
@@ -1725,23 +1795,38 @@ msgid "Off by default - the business profile will not show on this post."
 msgstr ""
 
 #: src/roomworks-advertising-block/edit.js:59
-msgid "Advertising: shows the advert assigned to the page/post being viewed (set via the \"Advert\" panel in the editor sidebar). Add this inside a Site Editor template to see a live preview here."
+msgid ""
+"Advertising: shows the advert assigned to the page/post being viewed (set "
+"via the \"Advert\" panel in the editor sidebar). Add this inside a Site "
+"Editor template to see a live preview here."
 msgstr ""
 
 #: src/roomworks-business-networking/edit.js:40
-msgid "Business Directory: lists published businesses with search, category, service and location filters. Results are loaded from the site, not shown here in the editor."
+msgid ""
+"Business Directory: lists published businesses with search, category, "
+"service and location filters. Results are loaded from the site, not shown "
+"here in the editor."
 msgstr ""
 
 #: src/roomworks-community-notice-board/edit.js:18
-msgid "Community Notice Board: lists members’ requests for work to be done, with search, category, urgency and location filters. Results are loaded from the site, not shown here in the editor."
+msgid ""
+"Community Notice Board: lists members’ requests for work to be done, with "
+"search, category, urgency and location filters. Results are loaded from the "
+"site, not shown here in the editor."
 msgstr ""
 
 #: src/roomworks-single-post-author-business-profile/edit.js:59
-msgid "Post Author's Business Profile: shows the business profile of whoever wrote the post being viewed, if they have one. Add this inside a Single Post template (Appearance ▸ Editor ▸ Templates) to see a live preview here."
+msgid ""
+"Post Author's Business Profile: shows the business profile of whoever wrote "
+"the post being viewed, if they have one. Add this inside a Single Post "
+"template (Appearance ▸ Editor ▸ Templates) to see a live preview here."
 msgstr ""
 
 #: src/single-business-profile/edit.js:59
-msgid "Single Business Profile: shows the business being viewed. Add this inside a Single Business template (Appearance ▸ Editor ▸ Templates) to see a live preview here."
+msgid ""
+"Single Business Profile: shows the business being viewed. Add this inside a "
+"Single Business template (Appearance ▸ Editor ▸ Templates) to see a live "
+"preview here."
 msgstr ""
 
 #: src/sponsored-content-toggle/index.js:39
@@ -1753,15 +1838,21 @@ msgid "This is a paid (sponsored) post"
 msgstr ""
 
 #: src/sponsored-content-toggle/index.js:45
-msgid "A \"Sponsored\" label shows above the title, and links to other sites are marked rel=\"sponsored\"."
+msgid ""
+"A \"Sponsored\" label shows above the title, and links to other sites are "
+"marked rel=\"sponsored\"."
 msgstr ""
 
 #: src/sponsored-content-toggle/index.js:49
-msgid "Turn on whenever a business has paid for this post - advertising rules require paid content to be labelled."
+msgid ""
+"Turn on whenever a business has paid for this post - advertising rules "
+"require paid content to be labelled."
 msgstr ""
 
 #: src/user-profile/edit.js:40
-msgid "Member Profile: shows the visitor’s own profile when logged in, or login/registration forms when logged out."
+msgid ""
+"Member Profile: shows the visitor’s own profile when logged in, or "
+"login/registration forms when logged out."
 msgstr ""
 
 #: src/roomworks-advertising-block/block.json
@@ -1771,7 +1862,9 @@ msgstr ""
 
 #: src/roomworks-advertising-block/block.json
 msgctxt "block description"
-msgid "Shows the advert assigned to the current page/post (see the Advert field in the editor sidebar). Place inside a Site Editor template."
+msgid ""
+"Shows the advert assigned to the current page/post (see the Advert field in "
+"the editor sidebar). Place inside a Site Editor template."
 msgstr ""
 
 #: src/roomworks-business-networking/block.json
@@ -1801,7 +1894,10 @@ msgstr ""
 
 #: src/roomworks-single-post-author-business-profile/block.json
 msgctxt "block description"
-msgid "Shows the business profile of the post's author, if they have a published business. Place inside a Single Post template alongside Post Title/Post Content."
+msgid ""
+"Shows the business profile of the post's author, if they have a published "
+"business. Place inside a Single Post template alongside Post Title/Post "
+"Content."
 msgstr ""
 
 #: src/single-business-profile/block.json
@@ -1811,7 +1907,10 @@ msgstr ""
 
 #: src/single-business-profile/block.json
 msgctxt "block description"
-msgid "Shows business type, services, location, contact details, and owner. Place inside a Single Business template in the Site Editor alongside Post Title/Post Content for the name and description."
+msgid ""
+"Shows business type, services, location, contact details, and owner. Place "
+"inside a Single Business template in the Site Editor alongside Post "
+"Title/Post Content for the name and description."
 msgstr ""
 
 #: src/user-profile/block.json

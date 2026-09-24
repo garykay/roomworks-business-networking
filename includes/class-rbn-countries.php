@@ -645,6 +645,47 @@ class RBN_Countries {
 	}
 
 	/**
+	 * The address-form label for the postcode field, matching the
+	 * terminology a member from this country would expect. Falls back to
+	 * the UK default ("Postcode") for a country with no distinct term of
+	 * its own, or if the country doesn't exist - same fallback pattern as
+	 * currency_symbol(). Not a complete per-country list, just the terms
+	 * distinct enough from the UK default to be worth calling out.
+	 */
+	public static function postcode_label( $country_id ) {
+		$country = self::get_by_id( $country_id );
+		$iso     = $country ? $country->iso_code : '';
+
+		switch ( $iso ) {
+			case 'US':
+				return __( 'ZIP Code', 'roomworks-business-networking' );
+			case 'IE':
+				return __( 'Eircode', 'roomworks-business-networking' );
+			default:
+				return __( 'Postcode', 'roomworks-business-networking' );
+		}
+	}
+
+	/**
+	 * The address-form label for the county/region field - see
+	 * postcode_label() above, same fallback to the UK default
+	 * ("County / Region").
+	 */
+	public static function county_region_label( $country_id ) {
+		$country = self::get_by_id( $country_id );
+		$iso     = $country ? $country->iso_code : '';
+
+		switch ( $iso ) {
+			case 'US':
+				return __( 'State', 'roomworks-business-networking' );
+			case 'AU':
+				return __( 'State / Territory', 'roomworks-business-networking' );
+			default:
+				return __( 'County / Region', 'roomworks-business-networking' );
+		}
+	}
+
+	/**
 	 * The demonym (noun form - "South African"/"South Africans", not the
 	 * adjective) for a country, e.g. for RBN_Demonym_Shortcode. Falls back to
 	 * the plain country name when nothing is configured, rather than

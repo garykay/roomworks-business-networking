@@ -753,6 +753,7 @@ class RBN_Templates {
 	}
 
 	private static function business_form( $business, $current_user, $current_url, $notice_code ) {
+		$current_country_id   = RBN_Countries::get_current_country_id( $current_user->ID );
 		$joined_communities   = RBN_Community_Memberships::get_communities_for_user( $current_user->ID );
 		$current_community_id = $business ? absint( get_post_meta( $business->ID, 'rbn_community_id', true ) ) : 0;
 
@@ -881,11 +882,11 @@ class RBN_Templates {
 						<input type="text" id="rbn-business-town-city" name="rbn_town_city" value="<?php echo esc_attr( $town_city ); ?>" required />
 					</p>
 					<p>
-						<label for="rbn-business-county-region"><?php esc_html_e( 'County / Region', 'roomworks-business-networking' ); ?></label>
+						<label for="rbn-business-county-region"><?php echo esc_html( RBN_Countries::county_region_label( $current_country_id ) ); ?></label>
 						<input type="text" id="rbn-business-county-region" name="rbn_county_region" value="<?php echo esc_attr( $county_region ); ?>" required />
 					</p>
 					<p>
-						<label for="rbn-business-postcode"><?php esc_html_e( 'Postcode', 'roomworks-business-networking' ); ?></label>
+						<label for="rbn-business-postcode"><?php echo esc_html( RBN_Countries::postcode_label( $current_country_id ) ); ?></label>
 						<input type="text" id="rbn-business-postcode" name="rbn_postcode" value="<?php echo esc_attr( $postcode ); ?>" required />
 					</p>
 					<p>
@@ -1243,7 +1244,7 @@ class RBN_Templates {
 						<input type="text" id="rbn-job-town-city" name="rbn_town_city" value="<?php echo esc_attr( $town_city ); ?>" required />
 					</p>
 					<p>
-						<label for="rbn-job-county-region"><?php esc_html_e( 'County / Region', 'roomworks-business-networking' ); ?></label>
+						<label for="rbn-job-county-region"><?php echo esc_html( RBN_Countries::county_region_label( $current_country_id ) ); ?></label>
 						<input type="text" id="rbn-job-county-region" name="rbn_county_region" value="<?php echo esc_attr( $county_region ); ?>" required />
 					</p>
 					<p>
@@ -1373,6 +1374,12 @@ class RBN_Templates {
 	 * intercepts the same form to fetch results asynchronously instead.
 	 */
 	public static function directory_filters( $filter_options, $filters, $current_url ) {
+		$current_country_id  = RBN_Countries::get_current_country_id( get_current_user_id() );
+		$location_placeholder = sprintf(
+			/* translators: %s: this viewer's country-specific term for postcode, e.g. "postcode" or "ZIP code". */
+			__( 'Town, county or %s', 'roomworks-business-networking' ),
+			mb_strtolower( RBN_Countries::postcode_label( $current_country_id ) )
+		);
 		ob_start();
 		?>
 		<form class="rbn-form rbn-directory__filters rbn-card" method="get" action="<?php echo esc_url( $current_url ); ?>" data-rbn-filter-form>
@@ -1407,7 +1414,7 @@ class RBN_Templates {
 
 			<p>
 				<label for="rbn-filter-location"><?php esc_html_e( 'Location', 'roomworks-business-networking' ); ?></label>
-				<input type="text" id="rbn-filter-location" name="rbn_location" value="<?php echo esc_attr( $filters['location'] ); ?>" placeholder="<?php esc_attr_e( 'Town, county or postcode', 'roomworks-business-networking' ); ?>" />
+				<input type="text" id="rbn-filter-location" name="rbn_location" value="<?php echo esc_attr( $filters['location'] ); ?>" placeholder="<?php echo esc_attr( $location_placeholder ); ?>" />
 			</p>
 
 			<p class="rbn-directory__filter-actions" data-rbn-filter-actions>
