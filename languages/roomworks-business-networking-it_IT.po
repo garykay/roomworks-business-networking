@@ -1,0 +1,2116 @@
+# Copyright (C) 2026 The WordPress Contributors
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Business Networking 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/roomworks-business-networking\n"
+"POT-Creation-Date: 2026-09-24T05:51:03+00:00\n"
+"PO-Revision-Date: 2026-09-24T06:21:03+00:00\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: roomworks-business-networking\n"
+"X-Generator: WP-CLI 2.6.0\n"
+
+#. Plugin Name of the plugin
+#: roomworks-business-networking.php
+msgid "Business Networking"
+msgstr "Business Networking"
+
+#. Description of the plugin
+#: roomworks-business-networking.php
+msgid "Frontend-first business networking platform for community members."
+msgstr ""
+"Piattaforma di networking tra imprese, incentrata sul frontend, per i membri"
+" della community."
+
+#. Author of the plugin
+#: roomworks-business-networking.php
+msgid "The WordPress Contributors"
+msgstr "The WordPress Contributors"
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:175
+msgid "Account deletion requested: %s"
+msgstr "Richiesta di eliminazione account: %s"
+
+#. translators: 1: display name, 2: email address, 3: scheduled deletion
+#. date/time, 4: admin Users screen URL.
+#: includes/class-rbn-account-deletion.php:180
+msgid ""
+"%1$s (%2$s) has requested their account be deleted.\n"
+"\n"
+"Unless they cancel the request, this will happen automatically on %3$s.\n"
+"\n"
+"%4$s"
+msgstr ""
+"%1$s (%2$s) ha richiesto l'eliminazione del proprio account.\n"
+"\n"
+"Salvo annullamento della richiesta, ciò avverrà automaticamente il %3$s.\n"
+"\n"
+"%4$s"
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:189
+msgid "Account deletion request cancelled: %s"
+msgstr "Richiesta di eliminazione account annullata: %s"
+
+#. translators: 1: display name, 2: email address.
+#: includes/class-rbn-account-deletion.php:194
+msgid ""
+"%1$s (%2$s) has cancelled their account deletion request. No action is "
+"needed."
+msgstr ""
+"%1$s (%2$s) ha annullato la propria richiesta di eliminazione dell'account. "
+"Non è necessaria alcuna azione."
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:213
+msgid "Account deletion FAILED: %s"
+msgstr "Eliminazione account NON RIUSCITA: %s"
+
+#. translators: 1: display name, 2: email address, 3: user ID.
+#: includes/class-rbn-account-deletion.php:218
+msgid ""
+"The scheduled account deletion for %1$s (%2$s, user ID %3$d) did not complete - WordPress refused the delete request.\n"
+"\n"
+"The account and business listing are still active and the deletion request is still marked as pending. Please investigate (e.g. another plugin blocking user deletion) and delete the account manually if needed."
+msgstr ""
+"L'eliminazione programmata dell'account di %1$s (%2$s, ID utente %3$d) non è stata completata - WordPress ha rifiutato la richiesta di eliminazione.\n"
+"\n"
+"L'account e la scheda attività sono ancora attivi e la richiesta di eliminazione è ancora contrassegnata come in sospeso. Verificare (ad es. un altro plugin che blocca l'eliminazione degli utenti) ed eliminare l'account manualmente, se necessario."
+
+#: includes/class-rbn-account-deletion.php:228
+msgid "Your account has been deleted"
+msgstr "Il tuo account è stato eliminato"
+
+#. translators: %s: member's display name.
+#: includes/class-rbn-account-deletion.php:231
+msgid ""
+"Hi %s,\n"
+"\n"
+"As requested, your account and business listing have been permanently deleted.\n"
+"\n"
+"If you didn't request this, please contact us straight away."
+msgstr ""
+"Ciao %s,\n"
+"\n"
+"Come richiesto, il tuo account e la tua scheda attività sono stati eliminati definitivamente.\n"
+"\n"
+"Se non hai richiesto questa operazione, contattaci immediatamente."
+
+#: includes/class-rbn-approvals.php:25 includes/class-rbn-approvals.php:26
+#: includes/class-rbn-approvals.php:39
+msgid "Account Deletions"
+msgstr "Eliminazioni account"
+
+#: includes/class-rbn-approvals.php:55
+msgid "Pending Account Deletions"
+msgstr "Eliminazioni account in sospeso"
+
+#: includes/class-rbn-approvals.php:57
+msgid "No account deletions are pending."
+msgstr "Nessuna eliminazione account in sospeso."
+
+#: includes/class-rbn-approvals.php:63
+#: includes/class-rbn-communities-admin.php:309
+msgid "Name"
+msgstr "Nome"
+
+#: includes/class-rbn-approvals.php:64
+msgid "Email"
+msgstr "Email"
+
+#: includes/class-rbn-approvals.php:65
+msgid "Requested"
+msgstr "Richiesta"
+
+#: includes/class-rbn-approvals.php:66
+msgid "Scheduled for"
+msgstr "Programmata per"
+
+#: includes/class-rbn-approvals.php:67
+#: includes/class-rbn-communities-admin.php:314
+msgid "Actions"
+msgstr "Azioni"
+
+#: includes/class-rbn-approvals.php:79
+msgid "Cancel deletion"
+msgstr "Annulla eliminazione"
+
+#: includes/class-rbn-approvals.php:109
+#: includes/class-rbn-communities-admin.php:65
+#: includes/class-rbn-communities-admin.php:98
+#: includes/class-rbn-communities-admin.php:127
+#: includes/class-rbn-countries-admin.php:66
+#: includes/class-rbn-countries-admin.php:82
+#: includes/class-rbn-member-approval.php:301
+#: includes/class-rbn-member-approval.php:314
+#: includes/class-rbn-member-approval.php:330
+msgid "You are not allowed to do that."
+msgstr "Non sei autorizzato a farlo."
+
+#: includes/class-rbn-approvals.php:117
+#: includes/class-rbn-communities-admin.php:134
+#: includes/class-rbn-countries-admin.php:72
+#: includes/class-rbn-member-approval.php:354
+msgid "Invalid request."
+msgstr "Richiesta non valida."
+
+#: includes/class-rbn-auth-forms.php:44
+msgid "Leave this field blank"
+msgstr "Lasciare questo campo vuoto"
+
+#: includes/class-rbn-communities-admin.php:31
+#: includes/class-rbn-communities-admin.php:32
+#: includes/class-rbn-communities-admin.php:181
+#: includes/class-rbn-settings.php:95 includes/class-rbn-templates.php:167
+#: includes/class-rbn-templates.php:481 includes/class-rbn-templates.php:1338
+msgid "Communities"
+msgstr "Community"
+
+#: includes/class-rbn-communities-admin.php:71
+#: includes/class-rbn-communities-admin.php:104
+#: includes/class-rbn-countries-admin.php:88 includes/class-rbn-notices.php:21
+#: includes/class-rbn-notices.php:36 includes/class-rbn-notices.php:38
+#: includes/class-rbn-notices.php:42 includes/class-rbn-notices.php:51
+#: includes/class-rbn-notices.php:55 includes/class-rbn-notices.php:60
+#: includes/class-rbn-notices.php:66
+msgid "Your session expired. Please try again."
+msgstr "La sessione è scaduta. Riprova."
+
+#: includes/class-rbn-communities-admin.php:88
+msgid "Community created."
+msgstr "Community creata."
+
+#: includes/class-rbn-communities-admin.php:122
+msgid "Community updated."
+msgstr "Community aggiornata."
+
+#: includes/class-rbn-communities-admin.php:140
+#: includes/class-rbn-communities.php:105
+msgid "Community not found."
+msgstr "Community non trovata."
+
+#: includes/class-rbn-communities-admin.php:149
+msgid "Community status updated."
+msgstr "Stato della community aggiornato."
+
+#. translators: %s: community name.
+#: includes/class-rbn-communities-admin.php:219
+msgid "Edit Community: %s"
+msgstr "Modifica community: %s"
+
+#: includes/class-rbn-communities-admin.php:220
+#: includes/class-rbn-communities-admin.php:279
+msgid "Add Community"
+msgstr "Aggiungi community"
+
+#: includes/class-rbn-communities-admin.php:235
+msgid "Community Name"
+msgstr "Nome della community"
+
+#: includes/class-rbn-communities-admin.php:244
+#: includes/class-rbn-communities-admin.php:256
+msgid "Origin Country"
+msgstr "Paese di origine"
+
+#: includes/class-rbn-communities-admin.php:247
+msgid ""
+"Can't be changed after a community is created - members and businesses are "
+"already tied to it."
+msgstr ""
+"Non può essere modificato dopo la creazione di una community - membri e "
+"attività sono già collegati ad essa."
+
+#: includes/class-rbn-communities-admin.php:251
+#: includes/class-rbn-communities-admin.php:260
+msgid "Destination Country"
+msgstr "Paese di destinazione"
+
+#: includes/class-rbn-communities-admin.php:265
+#: includes/class-rbn-templates.php:861 includes/class-rbn-templates.php:1237
+msgid "Description"
+msgstr "Descrizione"
+
+#: includes/class-rbn-communities-admin.php:269
+#: includes/class-rbn-communities-admin.php:313
+msgid "Status"
+msgstr "Stato"
+
+#: includes/class-rbn-communities-admin.php:272
+#: includes/class-rbn-communities-admin.php:339
+#: includes/class-rbn-member-approval.php:225
+msgid "Active"
+msgstr "Attiva"
+
+#: includes/class-rbn-communities-admin.php:273
+#: includes/class-rbn-communities-admin.php:339
+msgid "Inactive"
+msgstr "Inattiva"
+
+#: includes/class-rbn-communities-admin.php:279
+msgid "Update Community"
+msgstr "Aggiorna community"
+
+#: includes/class-rbn-communities-admin.php:281
+#: includes/class-rbn-templates.php:390 includes/class-rbn-templates.php:701
+msgid "Cancel"
+msgstr "Annulla"
+
+#: includes/class-rbn-communities-admin.php:290
+#: includes/class-rbn-templates.php:595 includes/class-rbn-templates.php:981
+#: includes/class-rbn-templates.php:1359
+msgid "— Select —"
+msgstr "— Seleziona —"
+
+#: includes/class-rbn-communities-admin.php:301
+msgid "Existing Communities"
+msgstr "Community esistenti"
+
+#: includes/class-rbn-communities-admin.php:303
+msgid "No communities yet."
+msgstr "Nessuna community ancora presente."
+
+#: includes/class-rbn-communities-admin.php:310
+msgid "Origin"
+msgstr "Origine"
+
+#: includes/class-rbn-communities-admin.php:311
+msgid "Destination"
+msgstr "Destinazione"
+
+#: includes/class-rbn-communities-admin.php:312
+msgid "Members"
+msgstr "Membri"
+
+#: includes/class-rbn-communities-admin.php:342
+#: includes/class-rbn-templates.php:704 includes/class-rbn-templates.php:1143
+msgid "Edit"
+msgstr "Modifica"
+
+#: includes/class-rbn-communities-admin.php:345
+msgid "Deactivate"
+msgstr "Disattiva"
+
+#: includes/class-rbn-communities-admin.php:345
+msgid "Activate"
+msgstr "Attiva"
+
+#: includes/class-rbn-communities.php:44
+#: includes/class-rbn-communities.php:111
+msgid "Please enter a community name."
+msgstr "Inserisci un nome per la community."
+
+#: includes/class-rbn-communities.php:48
+msgid "Please select a valid origin and destination country."
+msgstr "Seleziona un paese di origine e di destinazione validi."
+
+#: includes/class-rbn-communities.php:52
+msgid ""
+"A community already exists for that origin/destination pair. Turn off "
+"\"Require unique origin/destination pair\" in Settings to allow more than "
+"one."
+msgstr ""
+"Esiste già una community per questa coppia origine/destinazione. Disattiva "
+"\"Richiedi una coppia origine/destinazione univoca\" nelle Impostazioni per "
+"consentirne più di una."
+
+#: includes/class-rbn-communities.php:77
+msgid "Something went wrong creating that community."
+msgstr "Si è verificato un errore durante la creazione della community."
+
+#: includes/class-rbn-communities.php:136
+msgid "Something went wrong updating that community."
+msgstr "Si è verificato un errore durante l'aggiornamento della community."
+
+#. translators: 1: origin country name, 2: destination country name.
+#: includes/class-rbn-communities.php:307
+msgid "%1$s in %2$s"
+msgstr "%1$s in %2$s"
+
+#: includes/class-rbn-communities.php:377
+msgid "South Africans in the United Kingdom"
+msgstr "Sudafricani nel Regno Unito"
+
+#: includes/class-rbn-communities.php:380
+msgid "The original South Africans in the UK business network."
+msgstr "La rete di attività originale dei sudafricani nel Regno Unito."
+
+#: includes/class-rbn-countries-admin.php:29
+#: includes/class-rbn-countries-admin.php:30
+#: includes/class-rbn-countries-admin.php:123
+msgid "Countries"
+msgstr "Paesi"
+
+#: includes/class-rbn-countries-admin.php:77
+msgid "Missing demonyms restored from the built-in defaults."
+msgstr ""
+"Gli etnonimi mancanti sono stati ripristinati dai valori predefiniti "
+"integrati."
+
+#: includes/class-rbn-countries-admin.php:100
+msgid "Demonyms saved."
+msgstr "Etnonimi salvati."
+
+#: includes/class-rbn-countries-admin.php:125
+msgid ""
+"Where the singular/plural demonym used in front-end copy comes from - e.g. "
+"\"South African\" / \"South Africans\" for South Africa. Correct an entry or"
+" fill in a blank one below; blanks fall back to the plain country name on "
+"the front end."
+msgstr ""
+"Da dove proviene l'etnonimo singolare/plurale usato nei testi del frontend -"
+" ad es. \"sudafricano\" / \"sudafricani\" per il Sudafrica. Correggi una "
+"voce o compilane una vuota qui sotto; le voci vuote ricadono sul semplice "
+"nome del paese nel frontend."
+
+#: includes/class-rbn-countries-admin.php:130
+msgid "Restore Missing Defaults"
+msgstr "Ripristina valori predefiniti mancanti"
+
+#: includes/class-rbn-countries-admin.php:132
+msgid ""
+"Fills in any blank demonym below from the built-in list. Never overwrites "
+"one you've already set."
+msgstr ""
+"Compila qualsiasi etnonimo vuoto qui sotto a partire dall'elenco integrato. "
+"Non sovrascrive mai un valore già impostato."
+
+#: includes/class-rbn-countries-admin.php:148
+msgid "Shortcodes"
+msgstr "Shortcode"
+
+#: includes/class-rbn-countries-admin.php:151
+msgid ""
+"Drop a country name or demonym into a Heading/Paragraph block (or any other "
+"content) so it stays correct without hand-editing every occurrence."
+msgstr ""
+"Inserisci un nome di paese o un etnonimo in un blocco Titolo/Paragrafo (o in"
+" qualsiasi altro contenuto) affinché rimanga corretto senza dover modificare"
+" manualmente ogni occorrenza."
+
+#: includes/class-rbn-countries-admin.php:154
+msgid ""
+"the noun-form demonym for a country, e.g. \"South African\" / \"South "
+"Africans\" (not the adjective)."
+msgstr ""
+"l'etnonimo in forma di sostantivo di un paese, ad es. \"sudafricano\" / "
+"\"sudafricani\" (non l'aggettivo)."
+
+#: includes/class-rbn-countries-admin.php:155
+msgid "the plain country name, e.g. \"United Kingdom\"."
+msgstr "il semplice nome del paese, ad es. \"Regno Unito\"."
+
+#: includes/class-rbn-countries-admin.php:157
+msgid "Both resolve which country the same way:"
+msgstr "Entrambi risolvono il paese allo stesso modo:"
+
+#: includes/class-rbn-countries-admin.php:161
+msgid "Attribute"
+msgstr "Attributo"
+
+#: includes/class-rbn-countries-admin.php:162
+msgid "Effect"
+msgstr "Effetto"
+
+#: includes/class-rbn-countries-admin.php:167
+msgid "or"
+msgstr "oppure"
+
+#: includes/class-rbn-countries-admin.php:168
+msgid ""
+"Explicit override - an ISO 3166-1 alpha-2 code or a country ID. Takes "
+"priority over source."
+msgstr ""
+"Override esplicito - un codice ISO 3166-1 alpha-2 o un ID paese. Ha priorità"
+" su source."
+
+#: includes/class-rbn-countries-admin.php:171
+msgid "(default)"
+msgstr "(predefinito)"
+
+#: includes/class-rbn-countries-admin.php:177
+msgid ""
+"The Network Origin Country setting (<a href=\"%s\">Settings &rarr; "
+"Branding</a>) - which country this deployment represents."
+msgstr ""
+"L'impostazione Paese di origine della rete (<a href=\"%s\">Impostazioni "
+"&rarr; Branding</a>) - il paese che questa installazione rappresenta."
+
+#: includes/class-rbn-countries-admin.php:187
+msgid ""
+"The logged-in viewer's own Country of Origin profile field, falling back to "
+"source=\"network\" when logged out or not set."
+msgstr ""
+"Il campo profilo Paese di origine del visitatore che ha eseguito l'accesso, "
+"con fallback su source=\"network\" quando non ha eseguito l'accesso o non è "
+"impostato."
+
+#: includes/class-rbn-countries-admin.php:191
+msgid ""
+"The logged-in viewer's own Country You Currently Live In profile field, "
+"falling back to the Default Destination Country setting (same Branding "
+"section) when logged out or not set."
+msgstr ""
+"Il campo profilo Paese in cui vivi attualmente del visitatore che ha "
+"eseguito l'accesso, con fallback sull'impostazione Paese di destinazione "
+"predefinito (stessa sezione Branding) quando non ha eseguito l'accesso o non"
+" è impostato."
+
+#: includes/class-rbn-countries-admin.php:198
+msgid ""
+"<code>[rbn_demonym]</code> also takes <code>plural=\"1\"</code> (default "
+"<code>\"0\"</code>, i.e. singular). Both take <code>case=\"upper\"</code>, "
+"<code>\"lower\"</code>, or <code>\"title\"</code> (default: as stored "
+"below)."
+msgstr ""
+"<code>[rbn_demonym]</code> accetta anche <code>plural=\"1\"</code> "
+"(predefinito <code>\"0\"</code>, cioè singolare). Entrambi accettano "
+"<code>case=\"upper\"</code>, <code>\"lower\"</code> o <code>\"title\"</code>"
+" (predefinito: come salvato qui sotto)."
+
+#: includes/class-rbn-countries-admin.php:203
+msgid "Examples"
+msgstr "Esempi"
+
+#: includes/class-rbn-countries-admin.php:207
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/class-rbn-countries-admin.php:208
+msgid "Renders as"
+msgstr "Viene visualizzato come"
+
+#: includes/class-rbn-countries-admin.php:214
+msgid "Built by South Africans, for South Africans"
+msgstr "Creato dai sudafricani, per i sudafricani"
+
+#: includes/class-rbn-countries-admin.php:218
+msgid "ABOUT SOUTH AFRICAN NETWORK"
+msgstr "INFORMAZIONI SULLA RETE SUDAFRICANA"
+
+#: includes/class-rbn-countries-admin.php:222
+msgid ""
+"...across the United Kingdom... (or the viewer's own country, once set)"
+msgstr ""
+"...in tutto il Regno Unito... (o il paese del visitatore stesso, una volta "
+"impostato)"
+
+#: includes/class-rbn-countries-admin.php:226
+msgid ""
+"Fellow South Africans (for a member whose Country of Origin is South Africa)"
+msgstr ""
+"Compatrioti sudafricani (per un membro il cui paese di origine è il "
+"Sudafrica)"
+
+#: includes/class-rbn-countries-admin.php:230
+msgid "Nigerians and United Kingdom"
+msgstr "Nigeriani e Regno Unito"
+
+#: includes/class-rbn-countries-admin.php:255
+msgid "Filter by country name…"
+msgstr "Filtra per nome del paese…"
+
+#: includes/class-rbn-countries-admin.php:260
+#: includes/class-rbn-countries-admin.php:298
+msgid "Save Demonyms"
+msgstr "Salva etnonimi"
+
+#: includes/class-rbn-countries-admin.php:264
+msgid "Country"
+msgstr "Paese"
+
+#: includes/class-rbn-countries-admin.php:265
+msgid "Demonym (singular)"
+msgstr "Etnonimo (singolare)"
+
+#: includes/class-rbn-countries-admin.php:266
+msgid "Demonym (plural)"
+msgstr "Etnonimo (plurale)"
+
+#: includes/class-rbn-countries.php:661
+msgid "ZIP Code"
+msgstr "CAP"
+
+#: includes/class-rbn-countries.php:663
+msgid "Eircode"
+msgstr "Eircode"
+
+#: includes/class-rbn-countries.php:665
+msgid "Postcode"
+msgstr "CAP"
+
+#: includes/class-rbn-countries.php:680
+msgid "State"
+msgstr "Stato"
+
+#: includes/class-rbn-countries.php:682
+msgid "State / Territory"
+msgstr "Stato / Territorio"
+
+#: includes/class-rbn-countries.php:684
+msgid "County / Region"
+msgstr "Contea / Regione"
+
+#. translators: %s: site name.
+#: includes/class-rbn-emails.php:93
+msgid "You are receiving this email because of your account on %s."
+msgstr "Ricevi questa email a causa del tuo account su %s."
+
+#. translators: %s: site name.
+#: includes/class-rbn-emails.php:148
+msgid "Activate your %s account"
+msgstr "Attiva il tuo account %s"
+
+#: includes/class-rbn-emails.php:151
+msgid "Confirm your email to activate your account."
+msgstr "Conferma la tua email per attivare il tuo account."
+
+#. translators: %s: first name.
+#: includes/class-rbn-emails.php:155 includes/class-rbn-emails.php:199
+#: includes/class-rbn-emails.php:254
+msgid "Hi %s,"
+msgstr "Ciao %s,"
+
+#: includes/class-rbn-emails.php:157
+msgid ""
+"Thanks for signing up! Please confirm this is your email address to activate"
+" your account - you'll be able to log in as soon as you do."
+msgstr ""
+"Grazie per esserti registrato! Conferma che questo è il tuo indirizzo email "
+"per attivare il tuo account - potrai accedere non appena lo farai."
+
+#: includes/class-rbn-emails.php:158
+msgid "This link is valid for 48 hours."
+msgstr "Questo link è valido per 48 ore."
+
+#: includes/class-rbn-emails.php:160
+msgid "Activate my account"
+msgstr "Attiva il mio account"
+
+#. translators: %s: site name.
+#: includes/class-rbn-emails.php:178
+msgid "Welcome to %s!"
+msgstr "Benvenuto/a su %s!"
+
+#: includes/class-rbn-emails.php:181
+msgid "Your account is active - come say hello."
+msgstr "Il tuo account è attivo - vieni a salutarci."
+
+#: includes/class-rbn-emails.php:184
+msgid "Your account is now active and you can log in at any time."
+msgstr "Il tuo account è ora attivo e puoi accedere in qualsiasi momento."
+
+#. translators: %s: community name, e.g. "South Africans in the United
+#. Kingdom".
+#: includes/class-rbn-emails.php:190
+msgid ""
+"You've been added to %s - browse the directory to find and connect with "
+"other members there."
+msgstr ""
+"Sei stato aggiunto a %s - esplora la directory per trovare e connetterti con"
+" altri membri lì."
+
+#: includes/class-rbn-emails.php:195
+msgid ""
+"You can also list your own business in the directory from your account "
+"dashboard - once your account is active, listings go live immediately, no "
+"waiting on review."
+msgstr ""
+"Puoi anche inserire la tua attività nella directory dalla dashboard del tuo "
+"account - una volta che il tuo account è attivo, le schede vengono "
+"pubblicate immediatamente, senza attendere la revisione."
+
+#: includes/class-rbn-emails.php:201
+msgid "Log in"
+msgstr "Accedi"
+
+#. translators: %s: new member's display name.
+#: includes/class-rbn-emails.php:220
+msgid "New member: %s"
+msgstr "Nuovo membro: %s"
+
+#: includes/class-rbn-emails.php:223
+msgid "A new member has registered."
+msgstr "Un nuovo membro si è registrato."
+
+#: includes/class-rbn-emails.php:226
+msgid "New member registration"
+msgstr "Nuova registrazione membro"
+
+#. translators: 1: display name, 2: email address.
+#: includes/class-rbn-emails.php:230
+msgid ""
+"%1$s (%2$s) just registered. They will be able to log in automatically once "
+"they confirm their email address - no action is needed from you."
+msgstr ""
+"%1$s (%2$s) si è appena registrato/a. Potrà accedere automaticamente non "
+"appena confermerà il proprio indirizzo email - non è richiesta alcuna azione"
+" da parte tua."
+
+#: includes/class-rbn-emails.php:235
+msgid "View members"
+msgstr "Visualizza membri"
+
+#: includes/class-rbn-emails.php:249
+msgid "Your account registration"
+msgstr "La tua registrazione account"
+
+#: includes/class-rbn-emails.php:250
+msgid "We're sorry, your registration was not approved."
+msgstr "Siamo spiacenti, la tua registrazione non è stata approvata."
+
+#: includes/class-rbn-emails.php:256
+msgid ""
+"We're sorry, your account registration was not approved. If you believe this"
+" is a mistake, please get in touch with us."
+msgstr ""
+"Siamo spiacenti, la registrazione del tuo account non è stata approvata. Se "
+"ritieni che si tratti di un errore, contattaci."
+
+#: includes/class-rbn-member-approval.php:203
+msgid ""
+"Please check your email and click the activation link to activate your "
+"account."
+msgstr ""
+"Controlla la tua email e fai clic sul link di attivazione per attivare il "
+"tuo account."
+
+#: includes/class-rbn-member-approval.php:207
+msgid "Your registration was not approved."
+msgstr "La tua registrazione non è stata approvata."
+
+#: includes/class-rbn-member-approval.php:214
+msgid "Account Status"
+msgstr "Stato account"
+
+#: includes/class-rbn-member-approval.php:224
+msgid "Pending activation"
+msgstr "Attivazione in sospeso"
+
+#: includes/class-rbn-member-approval.php:226
+msgid "Rejected"
+msgstr "Rifiutato"
+
+#: includes/class-rbn-member-approval.php:256
+msgid "Activate now"
+msgstr "Attiva ora"
+
+#: includes/class-rbn-member-approval.php:275
+msgid "Resend activation email"
+msgstr "Invia di nuovo l'email di attivazione"
+
+#: includes/class-rbn-member-approval.php:292
+msgid "Reject"
+msgstr "Rifiuta"
+
+#: includes/class-rbn-notices.php:19
+msgid "Please enter your username/email and password."
+msgstr "Inserisci il tuo nome utente/email e la password."
+
+#: includes/class-rbn-notices.php:20
+msgid "We couldn't log you in with those details. Please try again."
+msgstr "Non siamo riusciti ad accedere con questi dati. Riprova."
+
+#: includes/class-rbn-notices.php:22
+msgid ""
+"Please check your email and click the activation link to activate your "
+"account before logging in."
+msgstr ""
+"Controlla la tua email e fai clic sul link di attivazione per attivare il "
+"tuo account prima di accedere."
+
+#: includes/class-rbn-notices.php:23
+msgid ""
+"Your registration was not approved. Please contact us for more information."
+msgstr ""
+"La tua registrazione non è stata approvata. Contattaci per maggiori "
+"informazioni."
+
+#: includes/class-rbn-notices.php:24
+msgid "Your account is now active! You can log in below."
+msgstr "Il tuo account è ora attivo! Puoi accedere qui sotto."
+
+#: includes/class-rbn-notices.php:25
+msgid "Your account is already active - you can log in below."
+msgstr "Il tuo account è già attivo - puoi accedere qui sotto."
+
+#: includes/class-rbn-notices.php:26
+msgid ""
+"That activation link isn't valid or has expired. Please request a new one."
+msgstr ""
+"Quel link di attivazione non è valido o è scaduto. Richiedine uno nuovo."
+
+#: includes/class-rbn-notices.php:27
+msgid ""
+"Thanks for registering! We've sent an activation link to your email - click "
+"it to activate your account."
+msgstr ""
+"Grazie per esserti registrato! Ti abbiamo inviato un link di attivazione via"
+" email - fai clic per attivare il tuo account."
+
+#: includes/class-rbn-notices.php:28
+msgid "Please fill in all required fields."
+msgstr "Compila tutti i campi obbligatori."
+
+#: includes/class-rbn-notices.php:29
+msgid "Please enter a valid email address."
+msgstr "Inserisci un indirizzo email valido."
+
+#: includes/class-rbn-notices.php:30
+msgid "Please choose a password with at least 8 characters."
+msgstr "Scegli una password di almeno 8 caratteri."
+
+#: includes/class-rbn-notices.php:31
+msgid "Passwords do not match."
+msgstr "Le password non coincidono."
+
+#: includes/class-rbn-notices.php:32
+msgid "Please agree to the Terms and Privacy Policy to continue."
+msgstr "Accetta i Termini e l'Informativa sulla privacy per continuare."
+
+#: includes/class-rbn-notices.php:33 includes/class-rbn-notices.php:40
+msgid "Please select a valid country of origin and current country."
+msgstr "Seleziona un paese di origine e un paese attuale validi."
+
+#: includes/class-rbn-notices.php:34
+msgid "An account already exists with that email address."
+msgstr "Esiste già un account con questo indirizzo email."
+
+#: includes/class-rbn-notices.php:35
+msgid "We couldn't create your account. Please try again."
+msgstr "Non siamo riusciti a creare il tuo account. Riprova."
+
+#: includes/class-rbn-notices.php:37
+msgid "You are already logged in."
+msgstr "Hai già effettuato l'accesso."
+
+#: includes/class-rbn-notices.php:39
+msgid "Please enter your first and last name."
+msgstr "Inserisci il tuo nome e cognome."
+
+#: includes/class-rbn-notices.php:41
+msgid "Your profile has been updated."
+msgstr "Il tuo profilo è stato aggiornato."
+
+#: includes/class-rbn-notices.php:43
+msgid "Please select a community you belong to."
+msgstr "Seleziona una community a cui appartieni."
+
+#: includes/class-rbn-notices.php:44
+msgid ""
+"Please fill in all required fields (Website is the only optional field)."
+msgstr ""
+"Compila tutti i campi obbligatori (Sito web è l'unico campo facoltativo)."
+
+#: includes/class-rbn-notices.php:45 includes/class-rbn-notices.php:63
+msgid "You don't have permission to do that."
+msgstr "Non hai il permesso di farlo."
+
+#: includes/class-rbn-notices.php:46
+msgid ""
+"Please upload a valid logo image (JPG, PNG, GIF or WEBP) under 5MB, or leave"
+" that field empty."
+msgstr ""
+"Carica un'immagine del logo valida (JPG, PNG, GIF o WEBP) inferiore a 5 MB, "
+"oppure lascia il campo vuoto."
+
+#: includes/class-rbn-notices.php:47
+msgid "Your business has been submitted for review."
+msgstr "La tua attività è stata inviata per la revisione."
+
+#: includes/class-rbn-notices.php:48
+msgid "Your business is now live in the directory!"
+msgstr "La tua attività è ora attiva nella directory!"
+
+#: includes/class-rbn-notices.php:49
+msgid "Your business has been updated."
+msgstr "La tua attività è stata aggiornata."
+
+#: includes/class-rbn-notices.php:50
+msgid "Your business has been deleted."
+msgstr "La tua attività è stata eliminata."
+
+#: includes/class-rbn-notices.php:52
+msgid "Administrator accounts cannot be deleted this way."
+msgstr ""
+"Gli account amministratore non possono essere eliminati in questo modo."
+
+#: includes/class-rbn-notices.php:53
+msgid ""
+"Your account deletion request has been received. Unless you cancel it, your "
+"account will be permanently deleted in 24 hours."
+msgstr ""
+"Abbiamo ricevuto la tua richiesta di eliminazione dell'account. Salvo "
+"annullamento, il tuo account verrà eliminato definitivamente tra 24 ore."
+
+#: includes/class-rbn-notices.php:54
+msgid "Your account deletion request has been cancelled."
+msgstr "La tua richiesta di eliminazione dell'account è stata annullata."
+
+#: includes/class-rbn-notices.php:56
+msgid "That community isn't available."
+msgstr "Quella community non è disponibile."
+
+#: includes/class-rbn-notices.php:57
+msgid "You can only join communities in the country you currently live in."
+msgstr "Puoi unirti solo alle community del paese in cui vivi attualmente."
+
+#: includes/class-rbn-notices.php:58
+msgid "You've joined this community."
+msgstr "Ti sei unito/a a questa community."
+
+#: includes/class-rbn-notices.php:59
+msgid "You have left this community."
+msgstr "Hai lasciato questa community."
+
+#: includes/class-rbn-notices.php:61
+msgid "Join a community in your current country before posting a request."
+msgstr ""
+"Unisciti a una community nel tuo paese attuale prima di pubblicare una "
+"richiesta."
+
+#: includes/class-rbn-notices.php:62
+msgid ""
+"Please fill in all required fields (Budget and Closing Date are optional)."
+msgstr ""
+"Compila tutti i campi obbligatori (Budget e Data di chiusura sono "
+"facoltativi)."
+
+#: includes/class-rbn-notices.php:64
+msgid "Your request has been posted."
+msgstr "La tua richiesta è stata pubblicata."
+
+#: includes/class-rbn-notices.php:65
+msgid "Your request has been updated."
+msgstr "La tua richiesta è stata aggiornata."
+
+#: includes/class-rbn-notices.php:67
+msgid "That business isn't available to follow."
+msgstr "Quell'attività non è disponibile da seguire."
+
+#: includes/class-rbn-notices.php:68
+msgid "You can't follow your own business."
+msgstr "Non puoi seguire la tua stessa attività."
+
+#: includes/class-rbn-notices.php:69
+msgid "You're now following this business."
+msgstr "Ora stai seguendo questa attività."
+
+#: includes/class-rbn-notices.php:70
+msgid "You have unfollowed this business."
+msgstr "Hai smesso di seguire questa attività."
+
+#: includes/class-rbn-post-type-advert.php:27
+msgctxt "post type general name"
+msgid "Adverts"
+msgstr "Annunci pubblicitari"
+
+#: includes/class-rbn-post-type-advert.php:28
+msgctxt "post type singular name"
+msgid "Advert"
+msgstr "Annuncio pubblicitario"
+
+#: includes/class-rbn-post-type-advert.php:29
+msgid "Add New Advert"
+msgstr "Aggiungi nuovo annuncio"
+
+#: includes/class-rbn-post-type-advert.php:30
+msgid "Edit Advert"
+msgstr "Modifica annuncio"
+
+#: includes/class-rbn-post-type-advert.php:31
+msgid "New Advert"
+msgstr "Nuovo annuncio"
+
+#: includes/class-rbn-post-type-advert.php:32
+msgid "View Advert"
+msgstr "Visualizza annuncio"
+
+#: includes/class-rbn-post-type-advert.php:33
+msgid "Search Adverts"
+msgstr "Cerca annunci"
+
+#: includes/class-rbn-post-type-advert.php:34
+msgid "No adverts found."
+msgstr "Nessun annuncio trovato."
+
+#: includes/class-rbn-post-type-advert.php:35
+msgid "No adverts found in Trash."
+msgstr "Nessun annuncio trovato nel cestino."
+
+#: includes/class-rbn-post-type-advert.php:36
+msgid "All Adverts"
+msgstr "Tutti gli annunci"
+
+#: includes/class-rbn-post-type-advert.php:37
+msgid "Adverts"
+msgstr "Annunci pubblicitari"
+
+#: includes/class-rbn-post-type-business.php:20
+msgctxt "post type general name"
+msgid "Businesses"
+msgstr "Attività"
+
+#: includes/class-rbn-post-type-business.php:21
+msgctxt "post type singular name"
+msgid "Business"
+msgstr "Attività"
+
+#: includes/class-rbn-post-type-business.php:22
+msgid "Add New Business"
+msgstr "Aggiungi nuova attività"
+
+#: includes/class-rbn-post-type-business.php:23
+msgid "Edit Business"
+msgstr "Modifica attività"
+
+#: includes/class-rbn-post-type-business.php:24
+msgid "New Business"
+msgstr "Nuova attività"
+
+#: includes/class-rbn-post-type-business.php:25
+msgid "View Business"
+msgstr "Visualizza attività"
+
+#: includes/class-rbn-post-type-business.php:26
+msgid "Search Businesses"
+msgstr "Cerca attività"
+
+#: includes/class-rbn-post-type-business.php:27
+#: includes/class-rbn-templates.php:1436
+#: src/roomworks-business-networking/render.php:84
+msgid "No businesses found."
+msgstr "Nessuna attività trovata."
+
+#: includes/class-rbn-post-type-business.php:28
+msgid "No businesses found in Trash."
+msgstr "Nessuna attività trovata nel cestino."
+
+#: includes/class-rbn-post-type-business.php:29
+msgid "All Businesses"
+msgstr "Tutte le attività"
+
+#: includes/class-rbn-post-type-business.php:30
+#: includes/class-rbn-templates.php:171
+msgid "Businesses"
+msgstr "Attività"
+
+#: includes/class-rbn-post-type-job.php:40
+msgctxt "post type general name"
+msgid "Requests"
+msgstr "Richieste"
+
+#: includes/class-rbn-post-type-job.php:41
+msgctxt "post type singular name"
+msgid "Request"
+msgstr "Richiesta"
+
+#: includes/class-rbn-post-type-job.php:42
+msgid "Add New Request"
+msgstr "Aggiungi nuova richiesta"
+
+#: includes/class-rbn-post-type-job.php:43
+msgid "Edit Request"
+msgstr "Modifica richiesta"
+
+#: includes/class-rbn-post-type-job.php:44
+msgid "New Request"
+msgstr "Nuova richiesta"
+
+#: includes/class-rbn-post-type-job.php:45
+msgid "View Request"
+msgstr "Visualizza richiesta"
+
+#: includes/class-rbn-post-type-job.php:46
+msgid "Search Requests"
+msgstr "Cerca richieste"
+
+#: includes/class-rbn-post-type-job.php:47
+#: includes/class-rbn-templates.php:1644
+#: src/roomworks-community-notice-board/render.php:63
+msgid "No requests found."
+msgstr "Nessuna richiesta trovata."
+
+#: includes/class-rbn-post-type-job.php:48
+msgid "No requests found in Trash."
+msgstr "Nessuna richiesta trovata nel cestino."
+
+#: includes/class-rbn-post-type-job.php:49
+msgid "All Requests"
+msgstr "Tutte le richieste"
+
+#: includes/class-rbn-post-type-job.php:50
+msgid "Notice Board"
+msgstr "Bacheca annunci"
+
+#: includes/class-rbn-rest-business-categories.php:86
+msgid "Please enter a business type."
+msgstr "Inserisci un tipo di attività."
+
+#: includes/class-rbn-rest-business-categories.php:114
+#: includes/class-rbn-templates.php:967
+msgid "Something went wrong adding that business type."
+msgstr ""
+"Si è verificato un errore durante l'aggiunta di quel tipo di attività."
+
+#: includes/class-rbn-rest-services.php:89
+msgid "Please enter a service name."
+msgstr "Inserisci un nome di servizio."
+
+#: includes/class-rbn-rest-services.php:117
+msgid "Something went wrong adding that service."
+msgstr "Si è verificato un errore durante l'aggiunta di quel servizio."
+
+#: includes/class-rbn-settings.php:28 includes/class-rbn-settings.php:434
+msgid "Directory Settings"
+msgstr "Impostazioni directory"
+
+#: includes/class-rbn-settings.php:29
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: includes/class-rbn-settings.php:49
+msgid "Directory"
+msgstr "Directory"
+
+#: includes/class-rbn-settings.php:56
+msgid "Businesses per page"
+msgstr "Attività per pagina"
+
+#: includes/class-rbn-settings.php:64
+msgid "Sort businesses by"
+msgstr "Ordina attività per"
+
+#: includes/class-rbn-settings.php:72
+msgid "Notifications"
+msgstr "Notifiche"
+
+#: includes/class-rbn-settings.php:79
+msgid "Notification email"
+msgstr "Email di notifica"
+
+#: includes/class-rbn-settings.php:87
+msgid "Account deletion grace period"
+msgstr "Periodo di tolleranza per l'eliminazione dell'account"
+
+#: includes/class-rbn-settings.php:102
+msgid "Origin/destination pairs"
+msgstr "Coppie origine/destinazione"
+
+#: includes/class-rbn-settings.php:110
+msgid "Branding"
+msgstr "Branding"
+
+#: includes/class-rbn-settings.php:117
+msgid "Network origin country"
+msgstr "Paese di origine della rete"
+
+#: includes/class-rbn-settings.php:125
+msgid "Default destination country"
+msgstr "Paese di destinazione predefinito"
+
+#: includes/class-rbn-settings.php:218
+msgid "Name (A–Z)"
+msgstr "Nome (A-Z)"
+
+#: includes/class-rbn-settings.php:219
+msgid "Newest first"
+msgstr "Più recenti per prime"
+
+#: includes/class-rbn-settings.php:220
+msgid "Oldest first"
+msgstr "Meno recenti per prime"
+
+#. translators: %d: maximum allowed value.
+#: includes/class-rbn-settings.php:302
+msgid "How many businesses to show per page in the directory. Maximum %d."
+msgstr "Quante attività mostrare per pagina nella directory. Massimo %d."
+
+#: includes/class-rbn-settings.php:321
+msgid "Default order for the directory listing."
+msgstr "Ordine predefinito per l'elenco della directory."
+
+#: includes/class-rbn-settings.php:337
+msgid ""
+"Where new member and account-deletion alerts are sent. Leave blank to use "
+"the site admin email above."
+msgstr ""
+"Dove vengono inviati gli avvisi di nuovi membri e di eliminazione account. "
+"Lascia vuoto per usare l'email dell'amministratore del sito indicata sopra."
+
+#: includes/class-rbn-settings.php:354
+msgid "hours"
+msgstr "ore"
+
+#: includes/class-rbn-settings.php:356
+msgid ""
+"How long a member has to cancel an account deletion request before it "
+"happens automatically. Only applies to requests made after this is changed."
+msgstr ""
+"Quanto tempo ha un membro per annullare una richiesta di eliminazione "
+"account prima che avvenga automaticamente. Si applica solo alle richieste "
+"effettuate dopo questa modifica."
+
+#: includes/class-rbn-settings.php:371
+msgid ""
+"Require a unique origin/destination pair (e.g. only one \"South Africans in "
+"the UK\" community)."
+msgstr ""
+"Richiedi una coppia origine/destinazione univoca (ad es. una sola community "
+"\"sudafricani nel Regno Unito\")."
+
+#: includes/class-rbn-settings.php:374
+msgid ""
+"Turn this off to allow more than one community for the same pair - for "
+"example regional sub-communities such as \"South Africans in the UK - "
+"London\"."
+msgstr ""
+"Disattiva questa opzione per consentire più di una community per la stessa "
+"coppia - ad esempio sotto-community regionali come \"sudafricani nel Regno "
+"Unito - Londra\"."
+
+#: includes/class-rbn-settings.php:385 includes/class-rbn-settings.php:415
+msgid "— None —"
+msgstr "— Nessuno —"
+
+#: includes/class-rbn-settings.php:397
+msgid ""
+"Which country this network is for - the default for "
+"<code>[rbn_demonym]</code> and <code>[rbn_country]</code> when neither a "
+"<code>country</code> attribute nor "
+"<code>source=\"viewer_origin\"</code>/<code>source=\"viewer_current\"</code>"
+" is used (e.g. \"Built by South Africans, for South Africans\"). Edit "
+"demonyms on the <a href=\"%s\">Countries</a> screen."
+msgstr ""
+"Per quale paese è pensata questa rete - il valore predefinito per "
+"<code>[rbn_demonym]</code> e <code>[rbn_country]</code> quando non viene "
+"usato né un attributo <code>country</code> né "
+"<code>source=\"viewer_origin\"</code>/<code>source=\"viewer_current\"</code>"
+" (ad es. \"Creato dai sudafricani, per i sudafricani\"). Modifica gli "
+"etnonimi nella schermata <a href=\"%s\">Paesi</a>."
+
+#: includes/class-rbn-settings.php:423
+msgid ""
+"The fallback for [rbn_demonym source=\"viewer_current\"] / [rbn_country "
+"source=\"viewer_current\"] - shown to a logged-out visitor, or a member who "
+"hasn't set \"Country You Currently Live In\" on their profile. Once a member"
+" sets that field, they see their own country instead."
+msgstr ""
+"Il valore di fallback per [rbn_demonym source=\"viewer_current\"] / "
+"[rbn_country source=\"viewer_current\"] - mostrato a un visitatore che non "
+"ha eseguito l'accesso, o a un membro che non ha impostato \"Paese in cui "
+"vivi attualmente\" nel proprio profilo. Non appena un membro imposta quel "
+"campo, vede il proprio paese al suo posto."
+
+#: includes/class-rbn-sponsored-content.php:94
+msgid "Sponsored"
+msgstr "Sponsorizzato"
+
+#. translators: 1: sponsored label (e.g. "Sponsored"), 2: post title.
+#: includes/class-rbn-sponsored-content.php:190
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: includes/class-rbn-taxonomy-business-category.php:75
+msgctxt "taxonomy general name"
+msgid "Business Types"
+msgstr "Tipi di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:76
+msgctxt "taxonomy singular name"
+msgid "Business Type"
+msgstr "Tipo di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:77
+msgid "Search Business Types"
+msgstr "Cerca tipi di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:78
+#: includes/class-rbn-templates.php:1394
+msgid "All Business Types"
+msgstr "Tutti i tipi di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:79
+msgid "Edit Business Type"
+msgstr "Modifica tipo di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:80
+msgid "Update Business Type"
+msgstr "Aggiorna tipo di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:81
+msgid "Add New Business Type"
+msgstr "Aggiungi nuovo tipo di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:82
+msgid "New Business Type Name"
+msgstr "Nome del nuovo tipo di attività"
+
+#: includes/class-rbn-taxonomy-business-category.php:83
+msgid "Business Types"
+msgstr "Tipi di attività"
+
+#: includes/class-rbn-taxonomy-service.php:27
+msgctxt "taxonomy general name"
+msgid "Services"
+msgstr "Servizi"
+
+#: includes/class-rbn-taxonomy-service.php:28
+msgctxt "taxonomy singular name"
+msgid "Service"
+msgstr "Servizio"
+
+#: includes/class-rbn-taxonomy-service.php:29
+msgid "Search Services"
+msgstr "Cerca servizi"
+
+#: includes/class-rbn-taxonomy-service.php:30
+#: includes/class-rbn-templates.php:1406
+msgid "All Services"
+msgstr "Tutti i servizi"
+
+#: includes/class-rbn-taxonomy-service.php:31
+msgid "Edit Service"
+msgstr "Modifica servizio"
+
+#: includes/class-rbn-taxonomy-service.php:32
+msgid "Update Service"
+msgstr "Aggiorna servizio"
+
+#: includes/class-rbn-taxonomy-service.php:33
+msgid "Add New Service"
+msgstr "Aggiungi nuovo servizio"
+
+#: includes/class-rbn-taxonomy-service.php:34
+msgid "New Service Name"
+msgstr "Nome del nuovo servizio"
+
+#: includes/class-rbn-taxonomy-service.php:35
+#: includes/class-rbn-templates.php:867 includes/class-rbn-templates.php:1836
+msgid "Services"
+msgstr "Servizi"
+
+#: includes/class-rbn-templates.php:62 includes/class-rbn-templates.php:80
+msgid "Log In"
+msgstr "Accedi"
+
+#: includes/class-rbn-templates.php:72
+msgid "Username or Email"
+msgstr "Nome utente o email"
+
+#: includes/class-rbn-templates.php:76 includes/class-rbn-templates.php:118
+msgid "Password"
+msgstr "Password"
+
+#: includes/class-rbn-templates.php:83
+msgid "Forgot your password?"
+msgstr "Hai dimenticato la password?"
+
+#: includes/class-rbn-templates.php:89
+msgid "Create an Account"
+msgstr "Crea un account"
+
+#: includes/class-rbn-templates.php:100 includes/class-rbn-templates.php:420
+msgid "First Name"
+msgstr "Nome"
+
+#: includes/class-rbn-templates.php:104 includes/class-rbn-templates.php:424
+msgid "Last Name"
+msgstr "Cognome"
+
+#: includes/class-rbn-templates.php:108 includes/class-rbn-templates.php:428
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#: includes/class-rbn-templates.php:112
+msgid "Email Address"
+msgstr "Indirizzo email"
+
+#: includes/class-rbn-templates.php:115 includes/class-rbn-templates.php:440
+msgid "Country of Origin"
+msgstr "Paese di origine"
+
+#: includes/class-rbn-templates.php:116 includes/class-rbn-templates.php:441
+msgid "Country You Currently Live In"
+msgstr "Paese in cui vivi attualmente"
+
+#: includes/class-rbn-templates.php:122
+msgid "Confirm Password"
+msgstr "Conferma password"
+
+#: includes/class-rbn-templates.php:128
+msgid "I agree to the Terms and Privacy Policy."
+msgstr "Accetto i Termini e l'Informativa sulla privacy."
+
+#: includes/class-rbn-templates.php:132
+msgid "Create Account"
+msgstr "Crea account"
+
+#: includes/class-rbn-templates.php:163
+msgid "Profile"
+msgstr "Profilo"
+
+#: includes/class-rbn-templates.php:175 includes/class-rbn-templates.php:733
+msgid "Favourites"
+msgstr "Preferiti"
+
+#: includes/class-rbn-templates.php:179
+msgid "Requests"
+msgstr "Richieste"
+
+#: includes/class-rbn-templates.php:190
+msgid "Account"
+msgstr "Account"
+
+#: includes/class-rbn-templates.php:265
+msgid "Dashboard sections"
+msgstr "Sezioni della dashboard"
+
+#. translators: 1: origin country name, 2: current country name.
+#: includes/class-rbn-templates.php:301
+msgid "%1$s → %2$s"
+msgstr "%1$s → %2$s"
+
+#: includes/class-rbn-templates.php:326
+msgid "Log out"
+msgstr "Esci"
+
+#: includes/class-rbn-templates.php:361
+msgid "Delete Account"
+msgstr "Elimina account"
+
+#. translators: %s: scheduled deletion date/time.
+#: includes/class-rbn-templates.php:370
+msgid ""
+"Your account is scheduled for deletion on %s. You can cancel this request at"
+" any time before then."
+msgstr ""
+"Il tuo account è programmato per l'eliminazione il %s. Puoi annullare questa"
+" richiesta in qualsiasi momento prima di allora."
+
+#: includes/class-rbn-templates.php:379
+msgid "Cancel Deletion Request"
+msgstr "Annulla richiesta di eliminazione"
+
+#: includes/class-rbn-templates.php:382
+msgid ""
+"Are you sure? Your account and business listing will be permanently deleted "
+"in 24 hours, unless you cancel before then."
+msgstr ""
+"Sei sicuro/a? Il tuo account e la tua scheda attività verranno eliminati "
+"definitivamente tra 24 ore, salvo annullamento prima di allora."
+
+#: includes/class-rbn-templates.php:388
+msgid "Yes, Delete My Account"
+msgstr "Sì, elimina il mio account"
+
+#: includes/class-rbn-templates.php:393
+msgid ""
+"Deleting your account is permanent and also removes your business listing. "
+"This cannot be undone once it takes effect."
+msgstr ""
+"L'eliminazione del tuo account è definitiva e rimuove anche la tua scheda "
+"attività. Non può essere annullata una volta effettuata."
+
+#: includes/class-rbn-templates.php:394
+msgid "Request Account Deletion"
+msgstr "Richiedi eliminazione account"
+
+#: includes/class-rbn-templates.php:410
+msgid "Edit Profile"
+msgstr "Modifica profilo"
+
+#: includes/class-rbn-templates.php:432
+msgid "About You"
+msgstr "Su di te"
+
+#: includes/class-rbn-templates.php:436
+msgid "Phone Number"
+msgstr "Numero di telefono"
+
+#: includes/class-rbn-templates.php:438
+msgid ""
+"Optional. Offered as a contact option on your notice board requests - you "
+"can hide it on any individual one."
+msgstr ""
+"Facoltativo. Offerto come opzione di contatto nelle tue richieste in bacheca"
+" - puoi nasconderlo su ciascuna singolarmente."
+
+#: includes/class-rbn-templates.php:443
+msgid "Save Profile"
+msgstr "Salva profilo"
+
+#: includes/class-rbn-templates.php:485
+msgid "My Communities"
+msgstr "Le mie community"
+
+#: includes/class-rbn-templates.php:487
+msgid "You haven't joined any communities yet."
+msgstr "Non ti sei ancora unito/a a nessuna community."
+
+#: includes/class-rbn-templates.php:493
+msgid "Leave"
+msgstr "Abbandona"
+
+#: includes/class-rbn-templates.php:499
+msgid "Available Communities"
+msgstr "Community disponibili"
+
+#: includes/class-rbn-templates.php:501
+msgid ""
+"Set the country you currently live in above to see communities you can join."
+msgstr ""
+"Imposta qui sopra il paese in cui vivi attualmente per vedere le community a"
+" cui puoi unirti."
+
+#: includes/class-rbn-templates.php:503
+msgid "No communities are available in your current country yet."
+msgstr "Nessuna community disponibile nel tuo paese attuale al momento."
+
+#: includes/class-rbn-templates.php:509
+msgid "Join"
+msgstr "Unisciti"
+
+#: includes/class-rbn-templates.php:554
+#: src/roomworks-business-networking/render.php:88
+msgid "Unfollow this business"
+msgstr "Smetti di seguire questa attività"
+
+#: includes/class-rbn-templates.php:555
+#: src/roomworks-business-networking/render.php:87
+msgid "Follow this business"
+msgstr "Segui questa attività"
+
+#: includes/class-rbn-templates.php:572
+msgid "Following"
+msgstr "Seguito/a"
+
+#: includes/class-rbn-templates.php:572
+msgid "Follow"
+msgstr "Segui"
+
+#: includes/class-rbn-templates.php:636
+msgid ""
+"This business isn't assigned to a community yet - join one above, then edit "
+"this business again to assign it."
+msgstr ""
+"Questa attività non è ancora assegnata a una community - unisciti a una qui "
+"sopra, poi modifica di nuovo questa attività per assegnarla."
+
+#: includes/class-rbn-templates.php:644
+msgid "Community"
+msgstr "Community"
+
+#: includes/class-rbn-templates.php:652
+msgid "Which community this business belongs to."
+msgstr "A quale community appartiene questa attività."
+
+#: includes/class-rbn-templates.php:676
+msgid "My Businesses"
+msgstr "Le mie attività"
+
+#: includes/class-rbn-templates.php:678
+msgid "You haven't added a business yet - use the form below to add one."
+msgstr ""
+"Non hai ancora aggiunto un'attività - usa il modulo qui sotto per "
+"aggiungerne una."
+
+#: includes/class-rbn-templates.php:686
+msgid "Pending review"
+msgstr "Revisione in sospeso"
+
+#: includes/class-rbn-templates.php:692
+msgid ""
+"Are you sure? This business will be removed from the directory. This cannot "
+"be undone."
+msgstr ""
+"Sei sicuro/a? Questa attività verrà rimossa dalla directory. Non può essere "
+"annullato."
+
+#: includes/class-rbn-templates.php:699
+msgid "Yes, Delete Business"
+msgstr "Sì, elimina attività"
+
+#: includes/class-rbn-templates.php:705
+msgid "Delete"
+msgstr "Elimina"
+
+#: includes/class-rbn-templates.php:735
+msgid ""
+"You haven't followed any businesses yet - look for the heart button on a "
+"business's profile or in the directory."
+msgstr ""
+"Non hai ancora seguito nessuna attività - cerca il pulsante a forma di cuore"
+" nel profilo di un'attività o nella directory."
+
+#: includes/class-rbn-templates.php:768 includes/class-rbn-templates.php:815
+msgid "Add a Business"
+msgstr "Aggiungi un'attività"
+
+#: includes/class-rbn-templates.php:769
+msgid ""
+"Join a community above before adding a business - every business belongs to "
+"one."
+msgstr ""
+"Unisciti a una community qui sopra prima di aggiungere un'attività - ogni "
+"attività appartiene a una community."
+
+#. translators: %s: business name.
+#. translators: %s: request title.
+#: includes/class-rbn-templates.php:814 includes/class-rbn-templates.php:1209
+msgid "Edit %s"
+msgstr "Modifica %s"
+
+#: includes/class-rbn-templates.php:821
+msgid "All fields are required except Website."
+msgstr "Tutti i campi sono obbligatori tranne Sito web."
+
+#: includes/class-rbn-templates.php:832
+msgid "Business Name"
+msgstr "Nome dell'attività"
+
+#: includes/class-rbn-templates.php:837
+msgid "Business Logo"
+msgstr "Logo dell'attività"
+
+#: includes/class-rbn-templates.php:840
+msgid "Current logo"
+msgstr "Logo attuale"
+
+#: includes/class-rbn-templates.php:844
+msgid "Optional. JPG, PNG, GIF or WEBP, up to 5MB."
+msgstr "Facoltativo. JPG, PNG, GIF o WEBP, fino a 5 MB."
+
+#: includes/class-rbn-templates.php:851
+msgid "Remove current logo"
+msgstr "Rimuovi logo attuale"
+
+#: includes/class-rbn-templates.php:873
+msgid "Start typing a service…"
+msgstr "Inizia a digitare un servizio…"
+
+#: includes/class-rbn-templates.php:874
+msgid "No services are available yet."
+msgstr "Nessun servizio ancora disponibile."
+
+#: includes/class-rbn-templates.php:881 includes/class-rbn-templates.php:1243
+msgid "Town / City"
+msgstr "Città"
+
+#: includes/class-rbn-templates.php:893
+msgid "Service Area"
+msgstr "Area di servizio"
+
+#: includes/class-rbn-templates.php:897
+msgid "Website"
+msgstr "Sito web"
+
+#: includes/class-rbn-templates.php:901
+msgid "Phone"
+msgstr "Telefono"
+
+#: includes/class-rbn-templates.php:905
+msgid "Contact Email"
+msgstr "Email di contatto"
+
+#: includes/class-rbn-templates.php:914 includes/class-rbn-templates.php:1277
+msgid "Save Changes"
+msgstr "Salva modifiche"
+
+#: includes/class-rbn-templates.php:915
+msgid "Submit Business"
+msgstr "Invia attività"
+
+#: includes/class-rbn-templates.php:959 includes/class-rbn-templates.php:1392
+msgid "Business Type"
+msgstr "Tipo di attività"
+
+#: includes/class-rbn-templates.php:966 includes/class-rbn-templates.php:1045
+msgid "Adding…"
+msgstr "Aggiunta in corso…"
+
+#: includes/class-rbn-templates.php:987
+msgid "Other — add a new business type"
+msgstr "Altro — aggiungi un nuovo tipo di attività"
+
+#: includes/class-rbn-templates.php:991
+msgid "New business type"
+msgstr "Nuovo tipo di attività"
+
+#: includes/class-rbn-templates.php:996
+msgid "e.g. Painting & Decorating"
+msgstr "ad es. Imbiancatura e decorazione"
+
+#: includes/class-rbn-templates.php:998 includes/class-rbn-templates.php:1095
+msgid "Add"
+msgstr "Aggiungi"
+
+#. translators: %s: term name.
+#: includes/class-rbn-templates.php:1047 includes/class-rbn-templates.php:1080
+msgid "Remove %s"
+msgstr "Rimuovi %s"
+
+#: includes/class-rbn-templates.php:1048
+msgid "Something went wrong adding that."
+msgstr "Si è verificato un errore durante l'aggiunta."
+
+#: includes/class-rbn-templates.php:1049
+msgid "Please add at least one."
+msgstr "Aggiungine almeno uno."
+
+#: includes/class-rbn-templates.php:1135
+msgid "My Requests"
+msgstr "Le mie richieste"
+
+#: includes/class-rbn-templates.php:1137
+msgid "You haven't posted a request yet - use the form below to add one."
+msgstr ""
+"Non hai ancora pubblicato una richiesta - usa il modulo qui sotto per "
+"aggiungerne una."
+
+#: includes/class-rbn-templates.php:1166 includes/class-rbn-templates.php:1210
+msgid "Post a Request"
+msgstr "Pubblica una richiesta"
+
+#: includes/class-rbn-templates.php:1167
+msgid ""
+"Join a community in your current country above before posting a request."
+msgstr ""
+"Unisciti a una community nel tuo paese attuale qui sopra prima di pubblicare"
+" una richiesta."
+
+#: includes/class-rbn-templates.php:1216
+msgid "All fields are required except Budget and Closing Date."
+msgstr "Tutti i campi sono obbligatori tranne Budget e Data di chiusura."
+
+#: includes/class-rbn-templates.php:1227
+msgid "Title"
+msgstr "Titolo"
+
+#: includes/class-rbn-templates.php:1228
+msgid "e.g. Need a new boiler installed"
+msgstr "ad es. Serve installare una nuova caldaia"
+
+#: includes/class-rbn-templates.php:1232 includes/class-rbn-templates.php:1600
+msgid "Category"
+msgstr "Categoria"
+
+#: includes/class-rbn-templates.php:1251 includes/class-rbn-templates.php:1960
+msgid "Budget"
+msgstr "Budget"
+
+#: includes/class-rbn-templates.php:1252
+msgid "e.g. 200 - 400"
+msgstr "ad es. 200 - 400"
+
+#: includes/class-rbn-templates.php:1253
+msgid ""
+"Numbers only - the currency symbol for the country you currently live in is "
+"added automatically."
+msgstr ""
+"Solo numeri - il simbolo di valuta del paese in cui vivi attualmente viene "
+"aggiunto automaticamente."
+
+#: includes/class-rbn-templates.php:1256
+msgid "Closing Date"
+msgstr "Data di chiusura"
+
+#: includes/class-rbn-templates.php:1265
+msgid "Hide my phone number on this request"
+msgstr "Nascondi il mio numero di telefono in questa richiesta"
+
+#: includes/class-rbn-templates.php:1267
+msgid ""
+"Your account email is always shown as contact; your profile phone number is "
+"shown too unless you tick this."
+msgstr ""
+"L'email del tuo account viene sempre mostrata come contatto; viene mostrato "
+"anche il numero di telefono del tuo profilo, a meno che tu non selezioni "
+"questa opzione."
+
+#: includes/class-rbn-templates.php:1270
+msgid ""
+"Only your account email will be shown as contact - add a phone number on "
+"your profile above to also offer that."
+msgstr ""
+"Verrà mostrata come contatto solo l'email del tuo account - aggiungi un "
+"numero di telefono nel tuo profilo qui sopra per offrire anche quello."
+
+#: includes/class-rbn-templates.php:1278
+msgid "Post Request"
+msgstr "Pubblica richiesta"
+
+#: includes/class-rbn-templates.php:1330
+msgid ""
+"This request isn't assigned to a community you're currently eligible for - "
+"join one in your current country above, then edit this listing again to "
+"reassign it."
+msgstr ""
+"Questa richiesta non è assegnata a una community per cui sei attualmente "
+"idoneo/a - unisciti a una nel tuo paese attuale qui sopra, poi modifica di "
+"nuovo questo annuncio per riassegnarlo."
+
+#: includes/class-rbn-templates.php:1347
+msgid ""
+"Which of your communities this request is posted to. Leave everything "
+"unchecked to post it to your main (oldest-joined) community automatically."
+msgstr ""
+"A quali delle tue community viene pubblicata questa richiesta. Lascia tutto "
+"deselezionato per pubblicarla automaticamente nella tua community principale"
+" (quella a cui ti sei unito per primo)."
+
+#: includes/class-rbn-templates.php:1357 includes/class-rbn-templates.php:1612
+msgid "Urgency"
+msgstr "Urgenza"
+
+#. translators: %s: this viewer's country-specific term for postcode, e.g.
+#. "postcode" or "ZIP code".
+#: includes/class-rbn-templates.php:1380
+msgid "Town, county or %s"
+msgstr "Città, contea o %s"
+
+#: includes/class-rbn-templates.php:1387 includes/class-rbn-templates.php:1595
+msgid "Search"
+msgstr "Cerca"
+
+#: includes/class-rbn-templates.php:1404
+msgid "Service"
+msgstr "Servizio"
+
+#: includes/class-rbn-templates.php:1416 includes/class-rbn-templates.php:1624
+#: includes/class-rbn-templates.php:1847
+msgid "Location"
+msgstr "Ubicazione"
+
+#: includes/class-rbn-templates.php:1421 includes/class-rbn-templates.php:1629
+msgid "Filter"
+msgstr "Filtra"
+
+#: includes/class-rbn-templates.php:1423 includes/class-rbn-templates.php:1631
+#: src/roomworks-business-networking/render.php:86
+#: src/roomworks-community-notice-board/render.php:66
+msgid "Clear filters"
+msgstr "Cancella filtri"
+
+#: includes/class-rbn-templates.php:1496
+#: src/roomworks-business-networking/render.php:85
+msgid "View Profile"
+msgstr "Visualizza profilo"
+
+#: includes/class-rbn-templates.php:1511
+msgid "Directory pagination"
+msgstr "Impaginazione directory"
+
+#: includes/class-rbn-templates.php:1602
+msgid "All Categories"
+msgstr "Tutte le categorie"
+
+#: includes/class-rbn-templates.php:1614
+msgid "Any Urgency"
+msgstr "Qualsiasi urgenza"
+
+#: includes/class-rbn-templates.php:1625
+msgid "Town or county"
+msgstr "Città o contea"
+
+#. translators: %s: closing date.
+#: includes/class-rbn-templates.php:1694 includes/class-rbn-templates.php:1968
+#: src/roomworks-community-notice-board/render.php:65
+msgid "Closes %s"
+msgstr "Chiude il %s"
+
+#: includes/class-rbn-templates.php:1702
+#: src/roomworks-community-notice-board/render.php:64
+msgid "View Details"
+msgstr "Visualizza dettagli"
+
+#: includes/class-rbn-templates.php:1722
+msgid "Notice board pagination"
+msgstr "Impaginazione bacheca annunci"
+
+#: includes/class-rbn-templates.php:1813
+msgid "This business is pending review and isn't visible to the public yet."
+msgstr ""
+"Questa attività è in attesa di revisione e non è ancora visibile al "
+"pubblico."
+
+#. translators: %s: service area description.
+#: includes/class-rbn-templates.php:1857
+msgid "Service area: %s"
+msgstr "Area di servizio: %s"
+
+#: includes/class-rbn-templates.php:1868 includes/class-rbn-templates.php:1979
+msgid "Contact"
+msgstr "Contatto"
+
+#: includes/class-rbn-templates.php:1890
+msgid "Listed by"
+msgstr "Inserito da"
+
+#: includes/class-rbn-templates.php:1935
+msgid "This request isn't visible to other members yet."
+msgstr "Questa richiesta non è ancora visibile ad altri membri."
+
+#: includes/class-rbn-templates.php:1955
+msgid "Details"
+msgstr "Dettagli"
+
+#: includes/class-rbn-templates.php:1998
+msgid "Posted by"
+msgstr "Pubblicato da"
+
+#: src/roomworks-advertising-block/render.php:38
+msgid ""
+"No advert selected for this page/post. Choose one from the \"Advert\" panel "
+"in the editor sidebar."
+msgstr ""
+"Nessun annuncio selezionato per questa pagina/articolo. Scegline uno dal "
+"pannello \"Annuncio\" nella barra laterale dell'editor."
+
+#: src/roomworks-advertising-block/render.php:53
+msgid "The advert selected for this page/post is missing or unpublished."
+msgstr ""
+"L'annuncio selezionato per questa pagina/articolo è mancante o non "
+"pubblicato."
+
+#: src/roomworks-advertising-block/render.php:62
+msgid "Advertisement"
+msgstr "Pubblicità"
+
+#: src/roomworks-business-networking/render.php:82
+msgid "Loading businesses…"
+msgstr "Caricamento attività…"
+
+#: src/roomworks-business-networking/render.php:83
+msgid "Something went wrong loading businesses. Please try again."
+msgstr ""
+"Si è verificato un errore durante il caricamento delle attività. Riprova."
+
+#: src/roomworks-community-notice-board/render.php:61
+msgid "Loading requests…"
+msgstr "Caricamento richieste…"
+
+#: src/roomworks-community-notice-board/render.php:62
+msgid "Something went wrong loading requests. Please try again."
+msgstr ""
+"Si è verificato un errore durante il caricamento delle richieste. Riprova."
+
+#: src/roomworks-single-post-author-business-profile/render.php:67
+msgid "About the Author's Businesses"
+msgstr "Informazioni sulle attività dell'autore"
+
+#: src/roomworks-single-post-author-business-profile/render.php:68
+msgid "About the Author's Business"
+msgstr "Informazioni sull'attività dell'autore"
+
+#: src/advert-picker/index.js:57
+msgid "None"
+msgstr "Nessuno"
+
+#: src/advert-picker/index.js:59
+msgid "(no title)"
+msgstr "(nessun titolo)"
+
+#: src/advert-picker/index.js:67
+msgid "Advert"
+msgstr "Annuncio"
+
+#: src/advert-picker/index.js:70
+msgid "Advert shown here"
+msgstr "Annuncio mostrato qui"
+
+#: src/advert-picker/index.js:71
+msgid ""
+"Used by the advertising block when it appears in a template on this "
+"page/post."
+msgstr ""
+"Utilizzato dal blocco pubblicitario quando appare in un modello su questa "
+"pagina/articolo."
+
+#: src/post-author-business-profile-toggle/index.js:43
+msgid "Author's Business Profile"
+msgstr "Profilo attività dell'autore"
+
+#: src/post-author-business-profile-toggle/index.js:46
+msgid "Show author's business profile"
+msgstr "Mostra il profilo attività dell'autore"
+
+#: src/post-author-business-profile-toggle/index.js:49
+msgid "Shown below this post if the author has a published business."
+msgstr "Mostrato sotto questo articolo se l'autore ha un'attività pubblicata."
+
+#: src/post-author-business-profile-toggle/index.js:53
+msgid "Off by default - the business profile will not show on this post."
+msgstr ""
+"Disattivato per impostazione predefinita - il profilo attività non verrà "
+"mostrato su questo articolo."
+
+#: src/roomworks-advertising-block/edit.js:59
+msgid ""
+"Advertising: shows the advert assigned to the page/post being viewed (set "
+"via the \"Advert\" panel in the editor sidebar). Add this inside a Site "
+"Editor template to see a live preview here."
+msgstr ""
+"Pubblicità: mostra l'annuncio assegnato alla pagina/articolo visualizzato "
+"(impostato tramite il pannello \"Annuncio\" nella barra laterale "
+"dell'editor). Aggiungi questo blocco all'interno di un modello dell'editor "
+"del sito per vedere qui un'anteprima dal vivo."
+
+#: src/roomworks-business-networking/edit.js:40
+msgid ""
+"Business Directory: lists published businesses with search, category, "
+"service and location filters. Results are loaded from the site, not shown "
+"here in the editor."
+msgstr ""
+"Directory attività: elenca le attività pubblicate con filtri di ricerca, "
+"categoria, servizio e ubicazione. I risultati vengono caricati dal sito e "
+"non vengono mostrati qui nell'editor."
+
+#: src/roomworks-community-notice-board/edit.js:18
+msgid ""
+"Community Notice Board: lists members’ requests for work to be done, with "
+"search, category, urgency and location filters. Results are loaded from the "
+"site, not shown here in the editor."
+msgstr ""
+"Bacheca annunci della community: elenca le richieste di lavoro dei membri, "
+"con filtri di ricerca, categoria, urgenza e ubicazione. I risultati vengono "
+"caricati dal sito e non vengono mostrati qui nell'editor."
+
+#: src/roomworks-single-post-author-business-profile/edit.js:59
+msgid ""
+"Post Author's Business Profile: shows the business profile of whoever wrote "
+"the post being viewed, if they have one. Add this inside a Single Post "
+"template (Appearance ▸ Editor ▸ Templates) to see a live preview here."
+msgstr ""
+"Profilo attività dell'autore dell'articolo: mostra il profilo attività di "
+"chi ha scritto l'articolo visualizzato, se disponibile. Aggiungi questo "
+"blocco all'interno di un modello Articolo singolo (Aspetto ▸ Editor ▸ "
+"Modelli) per vedere qui un'anteprima dal vivo."
+
+#: src/single-business-profile/edit.js:59
+msgid ""
+"Single Business Profile: shows the business being viewed. Add this inside a "
+"Single Business template (Appearance ▸ Editor ▸ Templates) to see a live "
+"preview here."
+msgstr ""
+"Profilo attività singola: mostra l'attività visualizzata. Aggiungi questo "
+"blocco all'interno di un modello Attività singola (Aspetto ▸ Editor ▸ "
+"Modelli) per vedere qui un'anteprima dal vivo."
+
+#: src/sponsored-content-toggle/index.js:39
+msgid "Sponsored Content"
+msgstr "Contenuto sponsorizzato"
+
+#: src/sponsored-content-toggle/index.js:42
+msgid "This is a paid (sponsored) post"
+msgstr "Questo è un articolo a pagamento (sponsorizzato)"
+
+#: src/sponsored-content-toggle/index.js:45
+msgid ""
+"A \"Sponsored\" label shows above the title, and links to other sites are "
+"marked rel=\"sponsored\"."
+msgstr ""
+"Un'etichetta \"Sponsorizzato\" viene mostrata sopra il titolo, e i link ad "
+"altri siti sono contrassegnati con rel=\"sponsored\"."
+
+#: src/sponsored-content-toggle/index.js:49
+msgid ""
+"Turn on whenever a business has paid for this post - advertising rules "
+"require paid content to be labelled."
+msgstr ""
+"Attiva ogni volta che un'attività ha pagato per questo articolo - le norme "
+"pubblicitarie richiedono che i contenuti a pagamento siano etichettati."
+
+#: src/user-profile/edit.js:40
+msgid ""
+"Member Profile: shows the visitor’s own profile when logged in, or "
+"login/registration forms when logged out."
+msgstr ""
+"Profilo membro: mostra il profilo del visitatore stesso quando ha eseguito "
+"l'accesso, oppure i moduli di accesso/registrazione quando non lo ha "
+"eseguito."
+
+#: src/roomworks-advertising-block/block.json
+msgctxt "block title"
+msgid "Advertising"
+msgstr "Pubblicità"
+
+#: src/roomworks-advertising-block/block.json
+msgctxt "block description"
+msgid ""
+"Shows the advert assigned to the current page/post (see the Advert field in "
+"the editor sidebar). Place inside a Site Editor template."
+msgstr ""
+"Mostra l'annuncio assegnato alla pagina/articolo corrente (vedi il campo "
+"Annuncio nella barra laterale dell'editor). Posizionalo all'interno di un "
+"modello dell'editor del sito."
+
+#: src/roomworks-business-networking/block.json
+msgctxt "block title"
+msgid "Business Directory"
+msgstr "Directory attività"
+
+#: src/roomworks-business-networking/block.json
+msgctxt "block description"
+msgid "Searchable, filterable directory of approved businesses."
+msgstr "Directory ricercabile e filtrabile delle attività approvate."
+
+#: src/roomworks-community-notice-board/block.json
+msgctxt "block title"
+msgid "Community Notice Board"
+msgstr "Bacheca annunci della community"
+
+#: src/roomworks-community-notice-board/block.json
+msgctxt "block description"
+msgid "Searchable, filterable board of members' requests for work to be done."
+msgstr ""
+"Bacheca ricercabile e filtrabile delle richieste di lavoro dei membri."
+
+#: src/roomworks-single-post-author-business-profile/block.json
+msgctxt "block title"
+msgid "Post Author's Business Profile"
+msgstr "Profilo attività dell'autore dell'articolo"
+
+#: src/roomworks-single-post-author-business-profile/block.json
+msgctxt "block description"
+msgid ""
+"Shows the business profile of the post's author, if they have a published "
+"business. Place inside a Single Post template alongside Post Title/Post "
+"Content."
+msgstr ""
+"Mostra il profilo attività dell'autore dell'articolo, se dispone di "
+"un'attività pubblicata. Posizionalo all'interno di un modello Articolo "
+"singolo accanto a Titolo articolo/Contenuto articolo."
+
+#: src/single-business-profile/block.json
+msgctxt "block title"
+msgid "Single Business Profile"
+msgstr "Profilo attività singola"
+
+#: src/single-business-profile/block.json
+msgctxt "block description"
+msgid ""
+"Shows business type, services, location, contact details, and owner. Place "
+"inside a Single Business template in the Site Editor alongside Post "
+"Title/Post Content for the name and description."
+msgstr ""
+"Mostra tipo di attività, servizi, ubicazione, dettagli di contatto e "
+"proprietario. Posizionalo all'interno di un modello Attività singola "
+"nell'editor del sito accanto a Titolo articolo/Contenuto articolo per il "
+"nome e la descrizione."
+
+#: src/user-profile/block.json
+msgctxt "block title"
+msgid "Member Profile"
+msgstr "Profilo membro"
+
+#: src/user-profile/block.json
+msgctxt "block description"
+msgid "Displays a member's profile and their business."
+msgstr "Mostra il profilo di un membro e la sua attività."

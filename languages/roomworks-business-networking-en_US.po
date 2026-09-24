@@ -98,8 +98,8 @@ msgstr ""
 msgid "Reject"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1231
-#: includes/class-rbn-templates.php:1593
+#: includes/class-rbn-templates.php:1232
+#: includes/class-rbn-templates.php:1600
 msgid "Category"
 msgstr ""
 
@@ -292,7 +292,7 @@ msgid "Search Businesses"
 msgstr ""
 
 #: includes/class-rbn-post-type-business.php:27
-#: includes/class-rbn-templates.php:1429
+#: includes/class-rbn-templates.php:1436
 #: src/roomworks-business-networking/render.php:84
 msgid "No businesses found."
 msgstr ""
@@ -315,7 +315,7 @@ msgid "Please enter a business type."
 msgstr ""
 
 #: includes/class-rbn-rest-business-categories.php:114
-#: includes/class-rbn-templates.php:966
+#: includes/class-rbn-templates.php:967
 msgid "Something went wrong adding that business type."
 msgstr ""
 
@@ -408,7 +408,7 @@ msgid "Search Business Types"
 msgstr ""
 
 #: includes/class-rbn-taxonomy-business-category.php:78
-#: includes/class-rbn-templates.php:1387
+#: includes/class-rbn-templates.php:1394
 msgid "All Business Types"
 msgstr ""
 
@@ -447,7 +447,7 @@ msgid "Search Services"
 msgstr ""
 
 #: includes/class-rbn-taxonomy-service.php:30
-#: includes/class-rbn-templates.php:1399
+#: includes/class-rbn-templates.php:1406
 msgid "All Services"
 msgstr ""
 
@@ -468,8 +468,8 @@ msgid "New Service Name"
 msgstr ""
 
 #: includes/class-rbn-taxonomy-service.php:35
-#: includes/class-rbn-templates.php:866
-#: includes/class-rbn-templates.php:1829
+#: includes/class-rbn-templates.php:867
+#: includes/class-rbn-templates.php:1836
 msgid "Services"
 msgstr ""
 
@@ -581,186 +581,181 @@ msgstr ""
 msgid "Save Profile"
 msgstr ""
 
-#: includes/class-rbn-templates.php:820
+#: includes/class-rbn-templates.php:821
 msgid "All fields are required except Website."
 msgstr ""
 
-#: includes/class-rbn-templates.php:831
+#: includes/class-rbn-templates.php:832
 msgid "Business Name"
 msgstr ""
 
-#: includes/class-rbn-templates.php:836
+#: includes/class-rbn-templates.php:837
 msgid "Business Logo"
 msgstr ""
 
-#: includes/class-rbn-templates.php:839
+#: includes/class-rbn-templates.php:840
 msgid "Current logo"
 msgstr ""
 
-#: includes/class-rbn-templates.php:843
+#: includes/class-rbn-templates.php:844
 msgid "Optional. JPG, PNG, GIF or WEBP, up to 5MB."
 msgstr ""
 
-#: includes/class-rbn-templates.php:850
+#: includes/class-rbn-templates.php:851
 msgid "Remove current logo"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:265
-#: includes/class-rbn-templates.php:860
-#: includes/class-rbn-templates.php:1236
+#: includes/class-rbn-templates.php:861
+#: includes/class-rbn-templates.php:1237
 msgid "Description"
 msgstr ""
 
-#: includes/class-rbn-templates.php:872
+#: includes/class-rbn-templates.php:873
 msgid "Start typing a service…"
 msgstr ""
 
-#: includes/class-rbn-templates.php:873
+#: includes/class-rbn-templates.php:874
 msgid "No services are available yet."
 msgstr ""
 
-#: includes/class-rbn-templates.php:880
-#: includes/class-rbn-templates.php:1242
+#: includes/class-rbn-templates.php:881
+#: includes/class-rbn-templates.php:1243
 msgid "Town / City"
 msgstr "City"
 
-#: includes/class-rbn-templates.php:884
-#: includes/class-rbn-templates.php:1246
+#: includes/class-rbn-countries.php:684
 msgid "County / Region"
-msgstr "State"
+msgstr ""
 
-#: includes/class-rbn-templates.php:888
+#: includes/class-rbn-countries.php:665
 msgid "Postcode"
-msgstr "ZIP Code"
+msgstr ""
 
-#: includes/class-rbn-templates.php:892
+#: includes/class-rbn-templates.php:893
 msgid "Service Area"
 msgstr ""
 
-#: includes/class-rbn-templates.php:896
+#: includes/class-rbn-templates.php:897
 msgid "Website"
 msgstr ""
 
-#: includes/class-rbn-templates.php:900
+#: includes/class-rbn-templates.php:901
 msgid "Phone"
 msgstr ""
 
-#: includes/class-rbn-templates.php:904
+#: includes/class-rbn-templates.php:905
 msgid "Contact Email"
 msgstr ""
 
-#: includes/class-rbn-templates.php:913
-#: includes/class-rbn-templates.php:1276
+#: includes/class-rbn-templates.php:914
+#: includes/class-rbn-templates.php:1277
 msgid "Save Changes"
 msgstr ""
 
-#: includes/class-rbn-templates.php:914
+#: includes/class-rbn-templates.php:915
 msgid "Submit Business"
 msgstr ""
 
-#: includes/class-rbn-templates.php:965
-#: includes/class-rbn-templates.php:1044
+#: includes/class-rbn-templates.php:966
+#: includes/class-rbn-templates.php:1045
 msgid "Adding…"
 msgstr ""
 
-#: includes/class-rbn-templates.php:958
-#: includes/class-rbn-templates.php:1385
+#: includes/class-rbn-templates.php:959
+#: includes/class-rbn-templates.php:1392
 msgid "Business Type"
 msgstr ""
 
 #: includes/class-rbn-communities-admin.php:290
 #: includes/class-rbn-templates.php:595
-#: includes/class-rbn-templates.php:980
-#: includes/class-rbn-templates.php:1358
+#: includes/class-rbn-templates.php:981
+#: includes/class-rbn-templates.php:1359
 msgid "— Select —"
 msgstr ""
 
-#: includes/class-rbn-templates.php:986
+#: includes/class-rbn-templates.php:987
 msgid "Other — add a new business type"
 msgstr ""
 
-#: includes/class-rbn-templates.php:990
+#: includes/class-rbn-templates.php:991
 msgid "New business type"
 msgstr ""
 
-#: includes/class-rbn-templates.php:995
+#: includes/class-rbn-templates.php:996
 msgid "e.g. Painting & Decorating"
 msgstr ""
 
-#: includes/class-rbn-templates.php:997
-#: includes/class-rbn-templates.php:1094
+#: includes/class-rbn-templates.php:998
+#: includes/class-rbn-templates.php:1095
 msgid "Add"
 msgstr ""
 
 #. translators: %s: term name.
-#: includes/class-rbn-templates.php:1046
-#: includes/class-rbn-templates.php:1079
+#: includes/class-rbn-templates.php:1047
+#: includes/class-rbn-templates.php:1080
 msgid "Remove %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1047
+#: includes/class-rbn-templates.php:1048
 msgid "Something went wrong adding that."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1048
+#: includes/class-rbn-templates.php:1049
 msgid "Please add at least one."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1380
-#: includes/class-rbn-templates.php:1588
+#: includes/class-rbn-templates.php:1387
+#: includes/class-rbn-templates.php:1595
 msgid "Search"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1397
+#: includes/class-rbn-templates.php:1404
 msgid "Service"
-msgstr ""
-
-#: includes/class-rbn-templates.php:1409
-#: includes/class-rbn-templates.php:1617
-#: includes/class-rbn-templates.php:1840
-msgid "Location"
-msgstr ""
-
-#: includes/class-rbn-templates.php:1410
-msgid "Town, county or postcode"
-msgstr "City, state or ZIP code"
-
-#: includes/class-rbn-templates.php:1414
-#: includes/class-rbn-templates.php:1622
-msgid "Filter"
 msgstr ""
 
 #: includes/class-rbn-templates.php:1416
 #: includes/class-rbn-templates.php:1624
+#: includes/class-rbn-templates.php:1847
+msgid "Location"
+msgstr ""
+
+#: includes/class-rbn-templates.php:1421
+#: includes/class-rbn-templates.php:1629
+msgid "Filter"
+msgstr ""
+
+#: includes/class-rbn-templates.php:1423
+#: includes/class-rbn-templates.php:1631
 #: src/roomworks-business-networking/render.php:86
 #: src/roomworks-community-notice-board/render.php:66
 msgid "Clear filters"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1489
+#: includes/class-rbn-templates.php:1496
 #: src/roomworks-business-networking/render.php:85
 msgid "View Profile"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1504
+#: includes/class-rbn-templates.php:1511
 msgid "Directory pagination"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1806
+#: includes/class-rbn-templates.php:1813
 msgid "This business is pending review and isn't visible to the public yet."
 msgstr ""
 
 #. translators: %s: service area description.
-#: includes/class-rbn-templates.php:1850
+#: includes/class-rbn-templates.php:1857
 msgid "Service area: %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1861
-#: includes/class-rbn-templates.php:1972
+#: includes/class-rbn-templates.php:1868
+#: includes/class-rbn-templates.php:1979
 msgid "Contact"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1883
+#: includes/class-rbn-templates.php:1890
 msgid "Listed by"
 msgstr ""
 
@@ -826,7 +821,7 @@ msgstr ""
 #: includes/class-rbn-settings.php:95
 #: includes/class-rbn-templates.php:167
 #: includes/class-rbn-templates.php:481
-#: includes/class-rbn-templates.php:1337
+#: includes/class-rbn-templates.php:1338
 msgid "Communities"
 msgstr ""
 
@@ -917,7 +912,7 @@ msgstr ""
 
 #: includes/class-rbn-communities-admin.php:342
 #: includes/class-rbn-templates.php:704
-#: includes/class-rbn-templates.php:1142
+#: includes/class-rbn-templates.php:1143
 msgid "Edit"
 msgstr ""
 
@@ -1365,7 +1360,7 @@ msgid "Search Requests"
 msgstr ""
 
 #: includes/class-rbn-post-type-job.php:47
-#: includes/class-rbn-templates.php:1637
+#: includes/class-rbn-templates.php:1644
 #: src/roomworks-community-notice-board/render.php:63
 msgid "No requests found."
 msgstr ""
@@ -1554,134 +1549,134 @@ msgstr ""
 msgid "You haven't followed any businesses yet - look for the heart button on a business's profile or in the directory."
 msgstr ""
 
-#: includes/class-rbn-templates.php:767
-#: includes/class-rbn-templates.php:814
+#: includes/class-rbn-templates.php:768
+#: includes/class-rbn-templates.php:815
 msgid "Add a Business"
 msgstr ""
 
-#: includes/class-rbn-templates.php:768
+#: includes/class-rbn-templates.php:769
 msgid "Join a community above before adding a business - every business belongs to one."
 msgstr ""
 
 #. translators: %s: business name.
 #. translators: %s: request title.
-#: includes/class-rbn-templates.php:813
-#: includes/class-rbn-templates.php:1208
+#: includes/class-rbn-templates.php:814
+#: includes/class-rbn-templates.php:1209
 msgid "Edit %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1134
+#: includes/class-rbn-templates.php:1135
 msgid "My Requests"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1136
+#: includes/class-rbn-templates.php:1137
 msgid "You haven't posted a request yet - use the form below to add one."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1165
-#: includes/class-rbn-templates.php:1209
+#: includes/class-rbn-templates.php:1166
+#: includes/class-rbn-templates.php:1210
 msgid "Post a Request"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1166
+#: includes/class-rbn-templates.php:1167
 msgid "Join a community in your current country above before posting a request."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1215
+#: includes/class-rbn-templates.php:1216
 msgid "All fields are required except Budget and Closing Date."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1226
+#: includes/class-rbn-templates.php:1227
 msgid "Title"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1227
+#: includes/class-rbn-templates.php:1228
 msgid "e.g. Need a new boiler installed"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1250
-#: includes/class-rbn-templates.php:1953
+#: includes/class-rbn-templates.php:1251
+#: includes/class-rbn-templates.php:1960
 msgid "Budget"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1251
+#: includes/class-rbn-templates.php:1252
 msgid "e.g. 200 - 400"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1252
+#: includes/class-rbn-templates.php:1253
 msgid "Numbers only - the currency symbol for the country you currently live in is added automatically."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1255
+#: includes/class-rbn-templates.php:1256
 msgid "Closing Date"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1264
+#: includes/class-rbn-templates.php:1265
 msgid "Hide my phone number on this request"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1266
+#: includes/class-rbn-templates.php:1267
 msgid "Your account email is always shown as contact; your profile phone number is shown too unless you tick this."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1269
+#: includes/class-rbn-templates.php:1270
 msgid "Only your account email will be shown as contact - add a phone number on your profile above to also offer that."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1277
+#: includes/class-rbn-templates.php:1278
 msgid "Post Request"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1329
+#: includes/class-rbn-templates.php:1330
 msgid "This request isn't assigned to a community you're currently eligible for - join one in your current country above, then edit this listing again to reassign it."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1346
+#: includes/class-rbn-templates.php:1347
 msgid "Which of your communities this request is posted to. Leave everything unchecked to post it to your main (oldest-joined) community automatically."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1356
-#: includes/class-rbn-templates.php:1605
+#: includes/class-rbn-templates.php:1357
+#: includes/class-rbn-templates.php:1612
 msgid "Urgency"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1595
+#: includes/class-rbn-templates.php:1602
 msgid "All Categories"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1607
+#: includes/class-rbn-templates.php:1614
 msgid "Any Urgency"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1618
+#: includes/class-rbn-templates.php:1625
 msgid "Town or county"
 msgstr ""
 
 #. translators: %s: closing date.
-#: includes/class-rbn-templates.php:1687
-#: includes/class-rbn-templates.php:1961
+#: includes/class-rbn-templates.php:1694
+#: includes/class-rbn-templates.php:1968
 #: src/roomworks-community-notice-board/render.php:65
 msgid "Closes %s"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1695
+#: includes/class-rbn-templates.php:1702
 #: src/roomworks-community-notice-board/render.php:64
 msgid "View Details"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1715
+#: includes/class-rbn-templates.php:1722
 msgid "Notice board pagination"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1928
+#: includes/class-rbn-templates.php:1935
 msgid "This request isn't visible to other members yet."
 msgstr ""
 
-#: includes/class-rbn-templates.php:1948
+#: includes/class-rbn-templates.php:1955
 msgid "Details"
 msgstr ""
 
-#: includes/class-rbn-templates.php:1991
+#: includes/class-rbn-templates.php:1998
 msgid "Posted by"
 msgstr ""
 
@@ -1805,4 +1800,25 @@ msgstr ""
 #: src/roomworks-single-post-author-business-profile/block.json
 msgctxt "block description"
 msgid "Shows the business profile of the post's author, if they have a published business. Place inside a Single Post template alongside Post Title/Post Content."
+msgstr ""
+
+#: includes/class-rbn-countries.php:661
+msgid "ZIP Code"
+msgstr ""
+
+#: includes/class-rbn-countries.php:663
+msgid "Eircode"
+msgstr ""
+
+#: includes/class-rbn-countries.php:680
+msgid "State"
+msgstr ""
+
+#: includes/class-rbn-countries.php:682
+msgid "State / Territory"
+msgstr ""
+
+#. translators: %s: this viewer's country-specific term for postcode, e.g. "postcode" or "ZIP code".
+#: includes/class-rbn-templates.php:1380
+msgid "Town, county or %s"
 msgstr ""
