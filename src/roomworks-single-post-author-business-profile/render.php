@@ -1,11 +1,23 @@
 <?php
 /**
- * Renders every published business owned by the current post's author (e.g.
+ * Renders the published business owned by the current post's author (e.g.
  * the member a blog post was written about/by), so a reader can jump
  * straight from the post to that member's business. Nothing to show
  * (author has no published business) means nothing renders - same silent
  * "return" pattern as single-business-profile/render.php. All card markup
  * lives in RBN_Templates::business_profile() so it isn't duplicated here.
+ *
+ * An author with more than one published business only ever gets one shown
+ * here, not all of them (a post is rarely about every business its author
+ * runs) - which one is RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY,
+ * set via the post editor's "Which business to show" radio control (see
+ * post-author-business-profile-toggle/index.js). Falls back to the first
+ * business (alphabetically, same ordering
+ * RBN_Business_Repository::get_published_for_user() and that radio control
+ * both use) if no valid choice was ever made, or the chosen business is no
+ * longer among the author's published ones (e.g. since unpublished) -
+ * mirrors the editor's own default so what's shown never depends on
+ * whether an editor happened to open the sidebar panel.
  *
  * The following variables are exposed to the file:
  *     $attributes (array): The block attributes.
@@ -47,6 +59,19 @@ if ( empty( $businesses ) ) {
 	return;
 }
 
+$business = $businesses[0];
+
+if ( count( $businesses ) > 1 ) {
+	$selected_business_id = (int) get_post_meta( $post_id, RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY, true );
+
+	foreach ( $businesses as $candidate ) {
+		if ( $candidate->ID === $selected_business_id ) {
+			$business = $candidate;
+			break;
+		}
+	}
+}
+
 // Read-only GET notice from a just-submitted follow/unfollow form - same
 // pattern as single-business-profile/render.php.
 // phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -62,13 +87,7 @@ $is_sponsored = RBN_Sponsored_Content::is_sponsored( $post_id );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'rbn-author-business-profile' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core function; already returns safe, pre-escaped attribute markup. ?>>
 	<h2 class="rbn-author-business-profile__heading">
-		<?php
-		echo count( $businesses ) > 1
-			? esc_html__( "About the Author's Businesses", 'roomworks-business-networking' )
-			: esc_html__( "About the Author's Business", 'roomworks-business-networking' );
-		?>
+		<?php esc_html_e( "About the Author's Business", 'roomworks-business-networking' ); ?>
 	</h2>
-	<?php foreach ( $businesses as $business ) : ?>
-		<?php echo RBN_Templates::business_profile( $business, $current_url, $notice_code, $is_sponsored ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
-	<?php endforeach; ?>
+	<?php echo RBN_Templates::business_profile( $business, $current_url, $notice_code, $is_sponsored ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 </div>

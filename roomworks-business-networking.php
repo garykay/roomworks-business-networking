@@ -111,6 +111,7 @@ add_filter( 'rest_user_query', array( 'RBN_Post_Authors', 'filter_rest_user_quer
 
 add_action( 'init', array( 'RBN_Author_Business_Profile_Toggle', 'register_meta' ) );
 add_action( 'enqueue_block_editor_assets', array( 'RBN_Author_Business_Profile_Toggle', 'enqueue_editor_script' ) );
+add_action( 'rest_api_init', array( 'RBN_Author_Business_Profile_Toggle', 'register_rest_route' ) );
 
 add_action( 'init', array( 'RBN_Post_Type_Advert', 'register' ) );
 
