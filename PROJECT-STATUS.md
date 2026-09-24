@@ -62,6 +62,12 @@ This is the single consolidated project document — it folds in what used to be
 - A **Communities** screen (Businesses → Communities) lets an admin add a community (name, origin/destination country, description, status), edit an existing one's name/description/status (origin/destination stay fixed once created — see below), and activate/deactivate — no code changes needed to add a new origin/destination pairing. Communities can also come into existence automatically (see below) — manual creation/editing here is for deliberate curation, not the only path a community comes from.
 - A **Directory Settings** screen (Businesses → Settings) covers per-page count, sort order, notification email, account-deletion grace period, and whether a community's origin/destination pair must be unique.
 
+**Advertising & sponsored content**
+- **Adverts** (`rbn_advert`, admin-built) are assigned per post/page from an "Advert" sidebar panel and rendered by the advertising block, always labelled "Advertisement". Every off-site link inside an advert is automatically marked `rel="sponsored"`.
+- **Sponsored posts**: a "Sponsored Content" sidebar toggle on posts (`rbn_is_sponsored` meta, off by default, `RBN_Sponsored_Content`) for articles a business has paid for. When on: a "Sponsored" label is printed above the post title wherever a Post Title block renders it (single page *and* query loops/archives, so readers see it before clicking through); every off-site link in the content gets `rel="sponsored"`; the author business card's website link gets `rel="sponsored"`; and the RSS title is prefixed "Sponsored:". Internal, mailto and tel links are left untouched.
+- The label text goes through the `rbn_sponsored_label` filter (receives the post ID), the hook point for per-host-country wording later (e.g. "Anzeige" for Germany). Otherwise it's translated per Site Language like all other strings.
+- Not yet done: click/view tracking for sponsored placements, per-country restricted advertiser categories (financial, gambling, legal/immigration), and a cookie-consent layer before any third-party ad network is added.
+
 ---
 
 ## What has been done

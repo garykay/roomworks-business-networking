@@ -55,6 +55,10 @@ $notice_code = isset( $_GET['rbn_notice'] ) ? sanitize_key( wp_unslash( $_GET['r
 
 $current_path = wp_parse_url( wp_unslash( $_SERVER['REQUEST_URI'] ?? '/' ), PHP_URL_PATH ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- unslashed above; esc_url_raw()'d below via home_url().
 $current_url  = esc_url_raw( home_url( $current_path ? $current_path : '/' ) );
+
+// A paid post's business card is part of the paid placement, so its
+// website link needs rel="sponsored" as well - see RBN_Sponsored_Content.
+$is_sponsored = RBN_Sponsored_Content::is_sponsored( $post_id );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'rbn-author-business-profile' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core function; already returns safe, pre-escaped attribute markup. ?>>
 	<h2 class="rbn-author-business-profile__heading">
@@ -65,6 +69,6 @@ $current_url  = esc_url_raw( home_url( $current_path ? $current_path : '/' ) );
 		?>
 	</h2>
 	<?php foreach ( $businesses as $business ) : ?>
-		<?php echo RBN_Templates::business_profile( $business, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php echo RBN_Templates::business_profile( $business, $current_url, $notice_code, $is_sponsored ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
 	<?php endforeach; ?>
 </div>

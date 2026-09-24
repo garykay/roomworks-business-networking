@@ -76,6 +76,7 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-authors.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-author-business-profile-toggle.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-advert.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-advert-picker.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-sponsored-content.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-templates.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-stats.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-activator.php';
@@ -115,6 +116,12 @@ add_action( 'init', array( 'RBN_Post_Type_Advert', 'register' ) );
 
 add_action( 'init', array( 'RBN_Advert_Picker', 'register_meta' ) );
 add_action( 'enqueue_block_editor_assets', array( 'RBN_Advert_Picker', 'enqueue_editor_script' ) );
+
+add_action( 'init', array( 'RBN_Sponsored_Content', 'register_meta' ) );
+add_action( 'enqueue_block_editor_assets', array( 'RBN_Sponsored_Content', 'enqueue_editor_script' ) );
+add_filter( 'the_content', array( 'RBN_Sponsored_Content', 'filter_content' ), 20 );
+add_filter( 'render_block_core/post-title', array( 'RBN_Sponsored_Content', 'filter_post_title_block' ), 10, 3 );
+add_filter( 'the_title_rss', array( 'RBN_Sponsored_Content', 'filter_feed_title' ) );
 
 add_action( RBN_Account_Deletion::CRON_HOOK, array( 'RBN_Account_Deletion', 'process_deletion' ) );
 
