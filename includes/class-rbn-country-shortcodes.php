@@ -50,6 +50,10 @@ class RBN_Country_Shortcodes {
 	public static function register() {
 		add_shortcode( self::TAG_DEMONYM, array( __CLASS__, 'render_demonym' ) );
 		add_shortcode( self::TAG_COUNTRY, array( __CLASS__, 'render_country' ) );
+
+		// Priority 8: before core's do_blocks() (priority 9), while post_content
+		// still has raw wp: block comments to splice.
+		add_filter( 'the_content', array( __CLASS__, 'inline_standalone_shortcode_blocks' ), 8 );
 	}
 
 	public static function render_demonym( $atts ) {
@@ -157,6 +161,131 @@ class RBN_Country_Shortcodes {
 				return mb_convert_case( $text, MB_CASE_TITLE );
 			default:
 				return $text;
+		}
+	}
+
+	/**
+	 * The core "Shortcode" block renders its content completely unwrapped - no
+	 * surrounding tag at all - but it's still a sibling of the Paragraph/
+	 * Heading blocks either side of it inside a block-level container, so the
+	 * browser puts it on its own line regardless (e.g. an editor typing
+	 * "Browse [rbn_demonym]-owned businesses..." across a couple of blocks, or
+	 * the block editor splitting a shortcode into its own block after a paste,
+	 * ends up with "Browse" / "South Africans" / "-owned businesses..." each
+	 * on their own line instead of one sentence). The plugin's shortcodes are
+	 * documented to work when typed directly inside a Paragraph/Heading
+	 * block's own text - this makes a standalone [rbn_demonym]/[rbn_country]
+	 * Shortcode block behave the same way, by splicing it into the text of
+	 * whichever Paragraph/Heading block is next to it before do_blocks() (a
+	 * later 'the_content' filter) ever turns the block comments into markup.
+	 * A shortcode block with no adjacent Paragraph/Heading is left alone -
+	 * still renders via do_shortcode() as before, just without inline merging.
+	 */
+	public static function inline_standalone_shortcode_blocks( $content ) {
+		if ( ! has_block( 'shortcode', $content ) ) {
+			return $content;
+		}
+
+		$blocks = parse_blocks( $content );
+
+		if ( ! self::merge_inline_shortcode_blocks( $blocks ) ) {
+			return $content;
+		}
+
+		return serialize_blocks( $blocks );
+	}
+
+	/**
+	 * Walks the block tree (recursing into container blocks like Group/
+	 * Columns) looking for a standalone rbn_demonym/rbn_country Shortcode
+	 * block, and merges each one it finds into an adjacent Paragraph/Heading
+	 * sibling - preferring the previous one, matching how the surrounding
+	 * words trailed off (as in "Browse [shortcode]"), and falling back to the
+	 * next one otherwise. When both a previous and next text sibling exist,
+	 * all three collapse into a single block so the whole sentence ends up in
+	 * one <p>/<hX> element rather than two.
+	 *
+	 * @return bool True if anything was merged (i.e. the tree needs re-serializing).
+	 */
+	private static function merge_inline_shortcode_blocks( array &$blocks ) {
+		$changed = false;
+
+		for ( $i = count( $blocks ) - 1; $i >= 0; $i-- ) {
+			if ( ! empty( $blocks[ $i ]['innerBlocks'] ) ) {
+				$inner_changed = self::merge_inline_shortcode_blocks( $blocks[ $i ]['innerBlocks'] );
+
+				if ( $inner_changed ) {
+					// innerContent interleaves literal HTML chunks with a null
+					// placeholder per innerBlocks entry, matched by position -
+					// resync it now that innerBlocks has shrunk, rather than
+					// leaving stale placeholders serialize_block() would read
+					// past the end of the (now shorter) innerBlocks array.
+					$blocks[ $i ]['innerContent'] = array_fill( 0, count( $blocks[ $i ]['innerBlocks'] ), null );
+					$changed                      = true;
+				}
+			}
+
+			if ( 'core/shortcode' !== $blocks[ $i ]['blockName'] ) {
+				continue;
+			}
+
+			$shortcode_text = trim( $blocks[ $i ]['innerHTML'] );
+
+			if ( ! preg_match( '/^\[(rbn_demonym|rbn_country)\b/', $shortcode_text ) ) {
+				continue;
+			}
+
+			$has_prev = $i > 0 && self::is_text_block( $blocks[ $i - 1 ] );
+			$has_next = isset( $blocks[ $i + 1 ] ) && self::is_text_block( $blocks[ $i + 1 ] );
+
+			if ( ! $has_prev && ! $has_next ) {
+				continue;
+			}
+
+			if ( $has_prev ) {
+				$addition = $shortcode_text . ( $has_next ? self::text_block_inner_html( $blocks[ $i + 1 ] ) : '' );
+				self::append_to_text_block( $blocks[ $i - 1 ], $addition );
+				array_splice( $blocks, $i, $has_next ? 2 : 1 );
+			} else {
+				self::prepend_to_text_block( $blocks[ $i + 1 ], $shortcode_text );
+				array_splice( $blocks, $i, 1 );
+			}
+
+			$changed = true;
+		}
+
+		return $changed;
+	}
+
+	private static function is_text_block( $block ) {
+		return isset( $block['blockName'] ) && in_array( $block['blockName'], array( 'core/paragraph', 'core/heading' ), true );
+	}
+
+	private static function text_block_inner_html( $block ) {
+		if ( preg_match( '/<(p|h[1-6])\b[^>]*>(.*)<\/\1>/is', $block['innerHTML'], $matches ) ) {
+			return $matches[2];
+		}
+
+		return '';
+	}
+
+	private static function append_to_text_block( array &$block, $addition ) {
+		if ( '' === $addition ) {
+			return;
+		}
+
+		if ( preg_match( '/<\/(p|h[1-6])>/i', $block['innerHTML'], $matches, PREG_OFFSET_CAPTURE ) ) {
+			$offset                = $matches[0][1];
+			$block['innerHTML']    = substr_replace( $block['innerHTML'], $addition, $offset, 0 );
+			$block['innerContent'] = array( $block['innerHTML'] );
+		}
+	}
+
+	private static function prepend_to_text_block( array &$block, $addition ) {
+		if ( preg_match( '/<(p|h[1-6])\b[^>]*>/i', $block['innerHTML'], $matches, PREG_OFFSET_CAPTURE ) ) {
+			$offset                = $matches[0][1] + strlen( $matches[0][0] );
+			$block['innerHTML']    = substr_replace( $block['innerHTML'], $addition, $offset, 0 );
+			$block['innerContent'] = array( $block['innerHTML'] );
 		}
 	}
 }
