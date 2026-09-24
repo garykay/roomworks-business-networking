@@ -61,6 +61,10 @@ if ( ! $advert || RBN_Post_Type_Advert::POST_TYPE !== $advert->post_type || 'pub
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'rbn-advert rbn-advert--custom' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 	<span class="rbn-advert__label"><?php esc_html_e( 'Advertisement', 'roomworks-business-networking' ); ?></span>
 	<div class="rbn-advert__content">
-		<?php echo apply_filters( 'the_content', $advert->post_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the_content filters already escape/sanitize as core does for any other post content. ?>
+		<?php
+		// Every advert is paid for, so every off-site link in it is a paid
+		// link and needs rel="sponsored" - see RBN_Sponsored_Content.
+		echo RBN_Sponsored_Content::mark_links_sponsored( apply_filters( 'the_content', $advert->post_content ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the_content filters already escape/sanitize as core does for any other post content.
+		?>
 	</div>
 </div>

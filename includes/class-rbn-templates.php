@@ -1769,8 +1769,12 @@ class RBN_Templates {
 	 * Everything the Single Business template doesn't already render via
 	 * core blocks (Post Title, Post Featured Image, Post Content): business
 	 * type, all services, full location, contact details, owning member.
+	 *
+	 * $sponsored marks the website link rel="sponsored" - set when this card
+	 * sits under a paid post (see RBN_Sponsored_Content), never on the
+	 * business's own profile page.
 	 */
-	public static function business_profile( WP_Post $business, $current_url = '', $notice_code = '' ) {
+	public static function business_profile( WP_Post $business, $current_url = '', $notice_code = '', $sponsored = false ) {
 		$categories = get_the_terms( $business, RBN_Taxonomy_Business_Category::TAXONOMY );
 		$services   = get_the_terms( $business, RBN_Taxonomy_Service::TAXONOMY );
 
@@ -1857,7 +1861,7 @@ class RBN_Templates {
 							<h2 class="rbn-business-profile__card-title"><?php esc_html_e( 'Contact', 'roomworks-business-networking' ); ?></h2>
 							<ul class="rbn-business-profile__contact-list">
 								<?php if ( $website ) : ?>
-									<li><a class="rbn-business-profile__row" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener noreferrer"><?php echo self::icon( 'globe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( preg_replace( '#^https?://(www\.)?#', '', untrailingslashit( $website ) ) ); ?></a></li>
+									<li><a class="rbn-business-profile__row" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="<?php echo $sponsored ? 'sponsored noopener noreferrer' : 'noopener noreferrer'; ?>"><?php echo self::icon( 'globe' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( preg_replace( '#^https?://(www\.)?#', '', untrailingslashit( $website ) ) ); ?></a></li>
 								<?php endif; ?>
 								<?php if ( $phone ) : ?>
 									<li><a class="rbn-business-profile__row" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>"><?php echo self::icon( 'phone' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( $phone ); ?></a></li>

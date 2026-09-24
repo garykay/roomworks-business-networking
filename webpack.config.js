@@ -20,5 +20,9 @@ module.exports = {
 			'src/post-author-business-profile-toggle/index.js'
 		),
 		'advert-picker': path.resolve( process.cwd(), 'src/advert-picker/index.js' ),
+		'sponsored-content-toggle': path.resolve(
+			process.cwd(),
+			'src/sponsored-content-toggle/index.js'
+		),
 	} ),
 };
