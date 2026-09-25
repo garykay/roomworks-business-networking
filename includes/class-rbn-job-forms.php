@@ -161,6 +161,19 @@ class RBN_Job_Forms {
 			}
 		}
 
+		// New listing only - members of the target community/communities are
+		// notified once, on first publish; editing an existing request never
+		// re-notifies them. See RBN_Job_Notifications's class docblock for
+		// why this is offloaded to WP-Cron rather than sent here inline.
+		if ( ! $job ) {
+			RBN_Job_Notifications::schedule_new_request_notification( $post_id );
+		}
+
+		// Every save (create or edit) re-evaluates the "closing soon"
+		// reminder to the poster, since editing the closing date must move
+		// it too - see RBN_Job_Notifications::reschedule_expiring_reminder().
+		RBN_Job_Notifications::reschedule_expiring_reminder( $post_id );
+
 		self::redirect_with_notice( $job ? 'job_updated' : 'job_saved' );
 	}
 

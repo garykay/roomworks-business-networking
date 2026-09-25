@@ -70,6 +70,7 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-business-categories.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-job.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-repository.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-notifications.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-job-query.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-jobs.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-authors.php';
@@ -104,7 +105,11 @@ add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Job_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Business_Follow_Forms', 'handle_request' ) );
 
+add_action( RBN_Job_Notifications::NEW_REQUEST_HOOK, array( 'RBN_Job_Notifications', 'send_new_request_notification' ) );
+add_action( RBN_Job_Notifications::EXPIRING_SOON_HOOK, array( 'RBN_Job_Notifications', 'send_expiring_soon_reminder' ) );
+
 add_action( 'before_delete_post', array( 'RBN_Business_Follows', 'cleanup_on_business_deleted' ) );
+add_action( 'before_delete_post', array( 'RBN_Job_Notifications', 'cancel_all' ) );
 
 add_filter( 'wp_dropdown_users_args', array( 'RBN_Post_Authors', 'filter_dropdown_users_args' ) );
 add_filter( 'rest_user_query', array( 'RBN_Post_Authors', 'filter_rest_user_query' ), 10, 2 );

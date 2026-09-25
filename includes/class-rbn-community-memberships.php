@@ -204,6 +204,23 @@ class RBN_Community_Memberships {
 		return array_values( $eligible );
 	}
 
+	/**
+	 * Active member user IDs for a community - the read side of "who should
+	 * be notified about this community's activity" (see
+	 * RBN_Job_Notifications::send_new_request_notification()). Not cached
+	 * like get_for_user() above: only ever read from a background WP-Cron
+	 * callback, not a page-load path.
+	 */
+	public static function get_member_ids_for_community( $community_id ) {
+		global $wpdb;
+
+		$table = RBN_Schema::community_memberships_table();
+
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM {$table} WHERE community_id = %d AND status = %s", absint( $community_id ), self::STATUS_ACTIVE ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- cron-only, not a page-load path.
+
+		return array_map( 'absint', $ids );
+	}
+
 	public static function member_count( $community_id ) {
 		global $wpdb;
 
