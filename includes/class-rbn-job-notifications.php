@@ -3,9 +3,12 @@
  * Email notifications around a notice board request's lifecycle: alerting a
  * request's target community/communities when it's first posted, and
  * reminding the request's own poster shortly before it stops showing on the
- * board (see RBN_Job_Query::not_closed_clause()). Both are offloaded to
- * WP-Cron (same pattern as RBN_Account_Deletion) rather than sent inline
- * from RBN_Job_Forms, so a community with many members - or a slow mail
+ * board (see RBN_Job_Query::not_closed_clause()). The "new request posted"
+ * broadcast can be turned off for a whole community, or for one member
+ * within an otherwise-notified community - see RBN_Communities_Admin's
+ * "Members" screen. Both notifications are offloaded to WP-Cron (same
+ * pattern as RBN_Account_Deletion) rather than sent inline from
+ * RBN_Job_Forms, so a community with many members - or a slow mail
  * transport - can never delay the poster's own "request posted" redirect.
  *
  * @package RoomworksBusinessNetworking
@@ -24,8 +27,21 @@ class RBN_Job_Notifications {
 	 * Schedules the "new request" notification for a brand new request only
 	 * - never for an edit to an existing one. Fired a moment later via
 	 * WP-Cron rather than inline; see the class docblock for why.
+	 *
+	 * Checks RBN_Settings' network-wide kill switch here, not just in
+	 * send_new_request_notification() below: WP-Cron is pseudo-cron and only
+	 * runs on a page visit, so an event scheduled while notifications are off
+	 * can sit queued for a while. If we only checked at send time, toggling
+	 * the setting back on before that queued event ran would wrongly send an
+	 * email for a request that was created while notifications were off.
+	 * Skipping the schedule entirely avoids ever having that stale event to
+	 * resurrect.
 	 */
 	public static function schedule_new_request_notification( $job_id ) {
+		if ( RBN_Settings::notice_board_notifications_disabled() ) {
+			return;
+		}
+
 		wp_schedule_single_event( time(), self::NEW_REQUEST_HOOK, array( absint( $job_id ) ) );
 	}
 
@@ -90,12 +106,23 @@ class RBN_Job_Notifications {
 	}
 
 	/**
-	 * WP-Cron callback: emails every active member of the request's target
-	 * community/communities, except the poster themselves. One email per
-	 * recipient (never a single email addressed to everyone), so no
+	 * WP-Cron callback: emails every notification-eligible active member of
+	 * the request's target community/communities, except the poster
+	 * themselves. Skipped entirely while RBN_Settings'
+	 * notice_board_notifications_disabled() network-wide kill switch is on;
+	 * otherwise a community with notify_new_requests off (see
+	 * RBN_Communities_Admin) is skipped, and within a community still on, an
+	 * individual member can also be excluded via their own membership-level
+	 * notify_new_requests flag (see
+	 * RBN_Community_Memberships::get_member_ids_for_community()). One email
+	 * per recipient (never a single email addressed to everyone), so no
 	 * member's address is ever exposed to another.
 	 */
 	public static function send_new_request_notification( $job_id ) {
+		if ( RBN_Settings::notice_board_notifications_disabled() ) {
+			return;
+		}
+
 		$job = get_post( $job_id );
 
 		if ( ! $job || RBN_Post_Type_Job::POST_TYPE !== $job->post_type || 'publish' !== $job->post_status ) {
@@ -106,6 +133,12 @@ class RBN_Job_Notifications {
 		$member_ids    = array();
 
 		foreach ( $community_ids as $community_id ) {
+			$community = RBN_Communities::get_by_id( $community_id );
+
+			if ( ! $community || ! $community->notify_new_requests ) {
+				continue;
+			}
+
 			$member_ids = array_merge( $member_ids, RBN_Community_Memberships::get_member_ids_for_community( $community_id ) );
 		}
 

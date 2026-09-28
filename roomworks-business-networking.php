@@ -103,6 +103,7 @@ add_action( 'init', array( 'RBN_Business_Forms', 'handle_delete_request' ) );
 add_action( 'init', array( 'RBN_Account_Deletion_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Community_Forms', 'handle_request' ) );
 add_action( 'init', array( 'RBN_Job_Forms', 'handle_request' ) );
+add_action( 'init', array( 'RBN_Job_Forms', 'handle_delete_request' ) );
 add_action( 'init', array( 'RBN_Business_Follow_Forms', 'handle_request' ) );
 
 add_action( RBN_Job_Notifications::NEW_REQUEST_HOOK, array( 'RBN_Job_Notifications', 'send_new_request_notification' ) );

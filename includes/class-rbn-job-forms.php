@@ -22,7 +22,52 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class RBN_Job_Forms {
 
-	const ACTION = 'rbn_save_job';
+	const ACTION        = 'rbn_save_job';
+	const DELETE_ACTION = 'rbn_delete_job';
+
+	/**
+	 * A member deleting one of their own requests - same "never trust a
+	 * client-supplied ID" rule as handle_request(): the submitted ID must
+	 * resolve via get_by_id_for_user() before anything happens. Modeled on
+	 * RBN_Business_Forms::handle_delete_request().
+	 *
+	 * Trashed rather than force-deleted, so an admin can still restore a
+	 * request removed by mistake from wp-admin. To the member it's gone
+	 * either way - it drops off the notice board (RBN_Job_Query only ever
+	 * queries published requests) and out of "My Requests" above. Any
+	 * pending "closing soon" reminder is harmless even if it later fires,
+	 * since send_expiring_soon_reminder() re-checks post_status is still
+	 * 'publish' before emailing - same reasoning as RBN_Business_Forms's
+	 * equivalent trash-not-delete choice.
+	 */
+	public static function handle_delete_request() {
+		if ( empty( $_POST['rbn_form_action'] ) || self::DELETE_ACTION !== $_POST['rbn_form_action'] || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- strict comparisons against literals; the actual nonce is verified just below before anything happens.
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$nonce = isset( $_POST['rbn_job_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['rbn_job_nonce'] ) ) : '';
+
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, self::DELETE_ACTION ) ) {
+			self::redirect_with_notice( 'job_invalid_request' );
+		}
+
+		$job_id = isset( $_POST['rbn_job_id'] ) ? absint( $_POST['rbn_job_id'] ) : 0;
+		$job    = RBN_Job_Repository::get_by_id_for_user( $job_id, get_current_user_id() );
+
+		if ( ! $job || ! current_user_can( 'delete_post', $job->ID ) ) {
+			self::redirect_with_notice( 'job_not_permitted' );
+		}
+
+		if ( ! wp_trash_post( $job->ID ) ) {
+			self::redirect_with_notice( 'job_not_permitted' );
+		}
+
+		self::redirect_with_notice( 'job_deleted' );
+	}
 
 	public static function handle_request() {
 		if ( empty( $_POST['rbn_form_action'] ) || self::ACTION !== $_POST['rbn_form_action'] || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- strict comparisons against literals; the actual nonce is verified just below before anything happens.

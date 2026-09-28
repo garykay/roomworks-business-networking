@@ -90,6 +90,14 @@ class RBN_Settings {
 			'rbn_settings_notifications'
 		);
 
+		add_settings_field(
+			'disable_notice_board_notifications',
+			__( 'Notice board emails', 'roomworks-business-networking' ),
+			array( __CLASS__, 'render_disable_notice_board_notifications_field' ),
+			self::PAGE_SLUG,
+			'rbn_settings_notifications'
+		);
+
 		add_settings_section(
 			'rbn_settings_communities',
 			__( 'Communities', 'roomworks-business-networking' ),
@@ -156,6 +164,8 @@ class RBN_Settings {
 
 		$grace_hours = min( self::MAX_DELETION_GRACE_HOURS, $grace_hours );
 
+		$disable_notice_board_notifications = ! empty( $input['disable_notice_board_notifications'] );
+
 		$require_unique_community_pair = ! empty( $input['require_unique_community_pair'] );
 
 		$network_origin_country_id = isset( $input['network_origin_country_id'] ) ? absint( $input['network_origin_country_id'] ) : 0;
@@ -171,13 +181,14 @@ class RBN_Settings {
 		}
 
 		return array(
-			'per_page'                        => $per_page,
-			'sort'                            => $sort,
-			'notification_email'              => $notification_email,
-			'deletion_grace_hours'            => $grace_hours,
-			'require_unique_community_pair'   => $require_unique_community_pair,
-			'network_origin_country_id'       => $network_origin_country_id,
-			'default_destination_country_id'  => $default_destination_country_id,
+			'per_page'                            => $per_page,
+			'sort'                                => $sort,
+			'notification_email'                  => $notification_email,
+			'deletion_grace_hours'                => $grace_hours,
+			'disable_notice_board_notifications'  => $disable_notice_board_notifications,
+			'require_unique_community_pair'       => $require_unique_community_pair,
+			'network_origin_country_id'           => $network_origin_country_id,
+			'default_destination_country_id'      => $default_destination_country_id,
 		);
 	}
 
@@ -187,6 +198,11 @@ class RBN_Settings {
 			'sort'                          => self::DEFAULT_SORT,
 			'notification_email'            => '',
 			'deletion_grace_hours'          => self::DEFAULT_DELETION_GRACE_HOURS,
+			// Off by default: the "new request posted" broadcast runs as
+			// configured per-community/per-member (see
+			// RBN_Communities_Admin's Members screen) unless an admin
+			// explicitly flips this network-wide kill switch on.
+			'disable_notice_board_notifications' => false,
 			// On by default: one community per origin/destination pair,
 			// matching the spec's default assumption (Section 6) unless an
 			// admin explicitly opts into multiple (e.g. regional
@@ -259,6 +275,17 @@ class RBN_Settings {
 
 	public static function deletion_grace_hours() {
 		return self::options()['deletion_grace_hours'];
+	}
+
+	/**
+	 * Network-wide kill switch for the notice board's "new request posted"
+	 * broadcast - see RBN_Job_Notifications::send_new_request_notification(),
+	 * the only place this is consulted. When true, no one is emailed
+	 * regardless of any community- or member-level notify_new_requests
+	 * setting (RBN_Communities_Admin's Members screen).
+	 */
+	public static function notice_board_notifications_disabled() {
+		return (bool) self::options()['disable_notice_board_notifications'];
 	}
 
 	public static function require_unique_community_pair() {
@@ -354,6 +381,24 @@ class RBN_Settings {
 		<?php esc_html_e( 'hours', 'roomworks-business-networking' ); ?>
 		<p class="description">
 			<?php esc_html_e( 'How long a member has to cancel an account deletion request before it happens automatically. Only applies to requests made after this is changed.', 'roomworks-business-networking' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_disable_notice_board_notifications_field() {
+		$options = self::options();
+		?>
+		<label>
+			<input
+				type="checkbox"
+				name="<?php echo esc_attr( self::OPTION_NAME ); ?>[disable_notice_board_notifications]"
+				value="1"
+				<?php checked( $options['disable_notice_board_notifications'] ); ?>
+			/>
+			<?php esc_html_e( 'Turn off "new request posted" emails for everyone.', 'roomworks-business-networking' ); ?>
+		</label>
+		<p class="description">
+			<?php esc_html_e( 'Overrides every community and member-level notification setting - no one is emailed about new notice board requests while this is checked.', 'roomworks-business-networking' ); ?>
 		</p>
 		<?php
 	}
