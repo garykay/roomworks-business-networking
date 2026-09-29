@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",function(){const e=document.querySelector(".rbn-notice");e&&setTimeout(function(){e.classList.add("rbn-notice--dismissed"),setTimeout(function(){e.remove()},400)},3e3)});
