@@ -744,7 +744,7 @@ class RBN_Templates {
 						// needed the way results() needs one for a mixed
 						// set of businesses.
 						$item = RBN_Business_Query::normalize( $business, array( $business->ID => true ), $current_user->ID );
-						echo self::business_card( $item, $current_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within.
+						echo self::business_card( $item, $current_url, false ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within.
 						?>
 					<?php endforeach; ?>
 				</div>
@@ -1601,9 +1601,10 @@ class RBN_Templates {
 	 * lands back on this same filtered/paginated directory view rather
 	 * than some other page. Left empty for a context that never needs the
 	 * follow control (there isn't one currently, but keeps this method
-	 * usable without it).
+	 * usable without it). $show_excerpt is false for the Favourites tab,
+	 * which wants a more compact card than the full directory grid.
 	 */
-	private static function business_card( $item, $current_url = '' ) {
+	private static function business_card( $item, $current_url = '', $show_excerpt = true ) {
 		ob_start();
 		?>
 		<article class="rbn-business-card rbn-card">
@@ -1626,7 +1627,7 @@ class RBN_Templates {
 					<a href="<?php echo esc_url( $item['permalink'] ); ?>"><?php echo esc_html( $item['name'] ); ?></a>
 				</h3>
 
-				<?php if ( $item['excerpt'] ) : ?>
+				<?php if ( $show_excerpt && $item['excerpt'] ) : ?>
 					<p class="rbn-business-card__excerpt"><?php echo esc_html( $item['excerpt'] ); ?></p>
 				<?php endif; ?>
 
