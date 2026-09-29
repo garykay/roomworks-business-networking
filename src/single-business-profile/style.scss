@@ -209,5 +209,18 @@
 		background: #fdf2f2;
 		color: #8a1f1f;
 		font-size: 0.9rem;
+		opacity: 1;
+		transition: opacity 0.4s ease;
+	}
+
+	.rbn-notice--success {
+		border-color: #c3e6c3;
+		border-left-color: #2f8a3f;
+		background: #f0faf1;
+		color: #1f6b2f;
+	}
+
+	.rbn-notice--dismissed {
+		opacity: 0;
 	}
 }

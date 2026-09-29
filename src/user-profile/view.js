@@ -22,6 +22,7 @@ document.addEventListener(
 		document.querySelectorAll( '[data-rbn-category-field]' ).forEach( initCategoryField );
 		document.querySelectorAll( '[data-rbn-tabs]' ).forEach( initTabs );
 		stripNoticeFromUrl();
+		initNoticeAutoDismiss();
 	}
 );
 
@@ -126,6 +127,28 @@ function stripNoticeFromUrl() {
 
 	url.searchParams.delete( 'rbn_notice' );
 	window.history.replaceState( {}, '', url.toString() );
+}
+
+/**
+ * Fades the notice banner out and removes it after a few seconds so it
+ * doesn't sit on the page indefinitely.
+ */
+function initNoticeAutoDismiss() {
+	const notice = document.querySelector( '.rbn-notice' );
+
+	if ( ! notice ) {
+		return;
+	}
+
+	setTimeout(
+		function () {
+			notice.classList.add( 'rbn-notice--dismissed' );
+			setTimeout( function () {
+				notice.remove();
+			}, 400 );
+		},
+		3000
+	);
 }
 
 /**
