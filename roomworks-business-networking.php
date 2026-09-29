@@ -49,6 +49,8 @@ require_once RBN_PLUGIN_DIR . 'includes/class-rbn-post-type-business.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-repository.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follows.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-business-follow-forms.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-notifications.php';
+require_once RBN_PLUGIN_DIR . 'includes/class-rbn-rest-notifications.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-notices.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-access-control.php';
 require_once RBN_PLUGIN_DIR . 'includes/class-rbn-emails.php';
@@ -109,7 +111,11 @@ add_action( 'init', array( 'RBN_Business_Follow_Forms', 'handle_request' ) );
 add_action( RBN_Job_Notifications::NEW_REQUEST_HOOK, array( 'RBN_Job_Notifications', 'send_new_request_notification' ) );
 add_action( RBN_Job_Notifications::EXPIRING_SOON_HOOK, array( 'RBN_Job_Notifications', 'send_expiring_soon_reminder' ) );
 
+add_action( 'rbn_business_followed', array( 'RBN_Notifications', 'create_business_followed' ), 10, 2 );
+add_action( 'rbn_business_unfollowed', array( 'RBN_Notifications', 'delete_business_followed' ), 10, 2 );
+
 add_action( 'before_delete_post', array( 'RBN_Business_Follows', 'cleanup_on_business_deleted' ) );
+add_action( 'before_delete_post', array( 'RBN_Notifications', 'cleanup_on_business_deleted' ) );
 add_action( 'before_delete_post', array( 'RBN_Job_Notifications', 'cancel_all' ) );
 
 add_filter( 'wp_dropdown_users_args', array( 'RBN_Post_Authors', 'filter_dropdown_users_args' ) );
@@ -163,6 +169,7 @@ add_action( 'rest_api_init', array( 'RBN_REST_Services', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Business_Categories', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Countries', 'register_routes' ) );
 add_action( 'rest_api_init', array( 'RBN_REST_Jobs', 'register_routes' ) );
+add_action( 'rest_api_init', array( 'RBN_REST_Notifications', 'register_routes' ) );
 
 /**
  * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)

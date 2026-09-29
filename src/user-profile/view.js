@@ -63,6 +63,7 @@ function initTabs( container ) {
 				function ( event ) {
 					event.preventDefault();
 					activate( link.getAttribute( 'data-rbn-tab-link' ) );
+					maybeMarkFollowersRead( link );
 				}
 			);
 		}
@@ -93,6 +94,20 @@ function initTabs( container ) {
 
 	activate( initialTab );
 
+	// Covers landing directly on the Followers tab via a #hash link (or,
+	// once browsers restore scroll position, a reload) without ever
+	// clicking its nav link - the click handler above wouldn't fire for
+	// that case, so the badge would otherwise persist despite the tab
+	// having genuinely been shown.
+	const initialLink = links.find(
+		function ( link ) {
+			return link.getAttribute( 'data-rbn-tab-link' ) === initialTab;
+		}
+	);
+	if ( initialLink ) {
+		maybeMarkFollowersRead( initialLink );
+	}
+
 	// Hiding the other panels changes the page layout, so the browser's own
 	// (already-happened) jump to the #hash target needs redoing once that
 	// settles - without this it scrolls to where the target used to be,
@@ -100,6 +115,37 @@ function initTabs( container ) {
 	if ( hashTarget ) {
 		hashTarget.scrollIntoView();
 	}
+}
+
+/**
+ * Clears the Followers tab's unread badge once it's actually been shown -
+ * a fire-and-forget POST to RBN_REST_Notifications::mark_read(), same
+ * fetch()+X-WP-Nonce pattern initTagField()/initCategoryField() use for
+ * their own REST writes. Only the Followers tab link carries the
+ * data-rbn-mark-read-url/nonce attributes (see member_dashboard()), so
+ * every other tab's click/initial-activation is a silent no-op here.
+ */
+function maybeMarkFollowersRead( link ) {
+	const url   = link.getAttribute( 'data-rbn-mark-read-url' );
+	const nonce = link.getAttribute( 'data-rbn-mark-read-nonce' );
+	const badge = link.querySelector( '[data-rbn-followers-badge]' );
+
+	if ( ! url || ! nonce || ! badge ) {
+		return;
+	}
+
+	badge.remove();
+
+	fetch(
+		url,
+		{
+			method: 'POST',
+			headers: { 'X-WP-Nonce': nonce },
+		}
+	).catch( function () {
+		// Nothing actionable for the visitor if this fails - the badge
+		// simply reappears on their next dashboard load.
+	} );
 }
 
 /**

@@ -160,6 +160,13 @@ class RBN_Account_Deletion {
 		// cleanup_on_business_deleted() hooked to before_delete_post, which
 		// fires for each business wp_delete_user() removes below.
 		RBN_Business_Follows::delete_all_for_user( $user_id );
+
+		// Same split as above: notifications where this user was the
+		// recipient OR the follower are cleaned up here, while
+		// notifications tied to one of this user's own businesses are
+		// caught by RBN_Notifications::cleanup_on_business_deleted(), hooked
+		// to the same before_delete_post event.
+		RBN_Notifications::delete_all_for_user( $user_id );
 	}
 
 	private static function notify_admin( $user_id, $event ) {

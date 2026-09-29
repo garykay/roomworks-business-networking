@@ -550,6 +550,27 @@
 		color: var( --rbn-accent );
 	}
 
+	// The Followers tab's unread count - removed from the DOM entirely by
+	// maybeMarkFollowersRead() in view.js once the tab's actually been
+	// opened, rather than just hidden, so it can't reappear on a later
+	// click within the same page load.
+	.rbn-tabs__badge {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.25rem;
+		height: 1.25rem;
+		margin-left: 0.4rem;
+		padding: 0 0.35rem;
+		border-radius: 999px;
+		background: var( --rbn-accent );
+		color: #fff;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		line-height: 1;
+		vertical-align: middle;
+	}
+
 	.rbn-tabs__panels {
 		display: flex;
 		flex-direction: column;
@@ -564,6 +585,82 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+	}
+
+	// Followers
+
+	.rbn-followers__list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.rbn-followers__item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem 0;
+		border-bottom: 1px solid var( --rbn-border );
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.rbn-followers__item--unread {
+		position: relative;
+		padding-left: 0.75rem;
+
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 50%;
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: var( --rbn-accent );
+			transform: translateY( -50% );
+		}
+	}
+
+	.rbn-followers__avatar img {
+		display: block;
+		border-radius: 50%;
+	}
+
+	.rbn-followers__text {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+
+		// The follower's name, linked to their own business - same
+		// treatment as .rbn-link, but scoped rather than reusing that class
+		// directly since the link markup comes from a translatable string
+		// (see followers_section()) that only allows a bare href attribute.
+		a {
+			color: var( --rbn-accent );
+			text-decoration: none;
+
+			&:hover,
+			&:focus-visible {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	.rbn-followers__date {
+		flex: 0 0 auto;
+		margin-left: auto;
+		padding-left: 1rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+		white-space: nowrap;
 	}
 
 	// Account deletion
