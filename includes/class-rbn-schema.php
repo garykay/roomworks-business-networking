@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Schema {
 
 	const DB_VERSION_OPTION = 'rbn_db_version';
-	const DB_VERSION        = '1.5.0';
+	const DB_VERSION        = '1.7.1';
 
 	/**
 	 * Creates (or updates) the plugin's custom tables.
@@ -140,12 +140,67 @@ class RBN_Schema {
 			KEY business_id (business_id)
 		) {$charset_collate};";
 
+		// A notification for a business owner - currently only raised by
+		// RBN_Notifications::create_business_followed() (hooked to
+		// RBN_Business_Follows::follow()'s rbn_business_followed action), so
+		// recipient_id is always a business's post_author today, but it's
+		// named generically rather than "owner_id" since other notification
+		// types are the obvious next step here, not a hypothetical. read_at
+		// is NULL until RBN_Notifications::mark_all_read_for_user() runs -
+		// used both to render the "new" state and to answer the unread-count
+		// badge query without scanning already-seen rows.
+		//
+		// The follower_business UNIQUE key ties a row 1:1 to the underlying
+		// business_follows relationship (same pairing that table's own
+		// user_business key enforces) rather than logging every follow
+		// event: RBN_Notifications::delete_business_followed(), hooked to
+		// unfollow()'s rbn_business_unfollowed action, deletes this row when
+		// the follow itself goes away, and create_business_followed() only
+		// ever runs after a fresh insert into business_follows - so at most
+		// one row can exist per follower/business pair, and re-following
+		// after an unfollow inserts a clean new one instead of piling up
+		// duplicates.
+		$notifications_table = self::notifications_table();
+		$sql_notifications    = "CREATE TABLE {$notifications_table} (
+			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+			recipient_id BIGINT UNSIGNED NOT NULL,
+			type VARCHAR(30) NOT NULL,
+			follower_id BIGINT UNSIGNED NOT NULL,
+			business_id BIGINT UNSIGNED NOT NULL,
+			created_at DATETIME NOT NULL,
+			read_at DATETIME NULL,
+			PRIMARY KEY  (id),
+			UNIQUE KEY follower_business (follower_id, business_id),
+			KEY recipient_unread (recipient_id, read_at)
+		) {$charset_collate};";
+
+		// 1.7.0 added the follower_business UNIQUE key above to stop
+		// unfollow+refollow piling up duplicate rows (see the notifications
+		// table's own docblock) - a site that already has duplicate rows
+		// from before that fix would otherwise make dbDelta's ALTER TABLE
+		// silently fail to add it, leaving the table permanently unfixed.
+		// Runs every time install() does (i.e. on every version bump, not
+		// just this one) and is a no-op once no duplicates remain, so it
+		// never needs its own removal later.
+		self::dedupe_notifications();
+
+		// 1.7.1: RBN_Notifications::get_notifications_for_user()/
+		// get_unread_count_for_user() now join against business_follows
+		// directly rather than trusting notification rows to already be in
+		// sync with it, so this is belt-and-braces hygiene rather than
+		// something the "Followers" tab's correctness actually depends on -
+		// but a notification row from before delete_business_followed()
+		// existed (raised on a follow that's since been unfollowed) would
+		// otherwise sit here indefinitely, so it's still worth clearing out.
+		self::prune_orphaned_notifications();
+
 		dbDelta( $sql_follows );
 		dbDelta( $sql_needs );
 		dbDelta( $sql_countries );
 		dbDelta( $sql_communities );
 		dbDelta( $sql_memberships );
 		dbDelta( $sql_business_follows );
+		dbDelta( $sql_notifications );
 
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION );
 	}
@@ -172,6 +227,52 @@ class RBN_Schema {
 
 		RBN_Countries::maybe_seed();
 		RBN_Communities::maybe_seed();
+	}
+
+	/**
+	 * Keeps only the most recent notification row per follower/business
+	 * pair - the cleanup that makes the notifications table's
+	 * follower_business UNIQUE key addable on a site that already has
+	 * duplicates from before that key existed. Guarded by a table-exists
+	 * check since it also runs on a brand new install, before install()'s
+	 * own dbDelta() call below has created the table yet.
+	 */
+	private static function dedupe_notifications() {
+		global $wpdb;
+
+		$table = self::notifications_table();
+
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return;
+		}
+
+		$wpdb->query( "DELETE n1 FROM {$table} n1 INNER JOIN {$table} n2 ON n1.follower_id = n2.follower_id AND n1.business_id = n2.business_id AND n1.id < n2.id" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+	}
+
+	/**
+	 * Removes a notification row that no longer has a matching
+	 * business_follows row - i.e. one raised by a follow that's since been
+	 * unfollowed, from before delete_business_followed() existed to catch
+	 * that itself. See RBN_Notifications::get_notifications_for_user()'s
+	 * docblock for why this is hygiene rather than a correctness
+	 * dependency. Guarded the same way dedupe_notifications() is, for the
+	 * same brand-new-install reason.
+	 */
+	private static function prune_orphaned_notifications() {
+		global $wpdb;
+
+		$notifications_table = self::notifications_table();
+		$follows_table       = self::business_follows_table();
+
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $notifications_table ) ) !== $notifications_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return;
+		}
+
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $follows_table ) ) !== $follows_table ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			return;
+		}
+
+		$wpdb->query( "DELETE n FROM {$notifications_table} n LEFT JOIN {$follows_table} bf ON bf.user_id = n.follower_id AND bf.business_id = n.business_id WHERE bf.id IS NULL" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 	}
 
 	public static function follows_table() {
@@ -202,5 +303,10 @@ class RBN_Schema {
 	public static function business_follows_table() {
 		global $wpdb;
 		return $wpdb->prefix . 'rbn_business_follows';
+	}
+
+	public static function notifications_table() {
+		global $wpdb;
+		return $wpdb->prefix . 'rbn_notifications';
 	}
 }

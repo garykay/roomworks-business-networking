@@ -53,6 +53,16 @@ class RBN_Business_Follows {
 
 		self::flush_cache( $user_id );
 
+		// Fired only for a genuinely new follow, not the idempotent no-op
+		// above - RBN_Notifications::create_business_followed() listens for
+		// this to notify the business owner, and re-following (impossible
+		// via the UI anyway, since business_follow_form() only ever offers
+		// whichever of follow/unfollow currently applies) shouldn't raise a
+		// second notification for the same relationship.
+		if ( $inserted ) {
+			do_action( 'rbn_business_followed', $user_id, $business_id );
+		}
+
 		return (bool) $inserted;
 	}
 
@@ -74,6 +84,15 @@ class RBN_Business_Follows {
 		);
 
 		self::flush_cache( $user_id );
+
+		// Mirrors the rbn_business_followed action in follow() above -
+		// RBN_Notifications::delete_business_followed() listens for this to
+		// remove the matching notification row, so the business owner's
+		// "Followers" tab always reflects who currently follows them, not a
+		// historical log of who ever has.
+		if ( $deleted ) {
+			do_action( 'rbn_business_unfollowed', $user_id, $business_id );
+		}
 
 		return (bool) $deleted;
 	}

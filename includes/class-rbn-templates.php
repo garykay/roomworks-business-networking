@@ -175,6 +175,11 @@ class RBN_Templates {
 				'label'   => __( 'Favourites', 'roomworks-business-networking' ),
 				'content' => self::favourites_section( $current_user, $current_url ),
 			),
+			'followers'   => array(
+				'label'   => __( 'Followers', 'roomworks-business-networking' ),
+				'content' => self::followers_section( $current_user ),
+				'badge'   => RBN_Notifications::get_unread_count_for_user( $current_user->ID ),
+			),
 			'requests'    => array(
 				'label'   => __( 'Requests', 'roomworks-business-networking' ),
 				'content' => self::jobs_section( $jobs, $editing_job, $current_user, $current_url, $notice_code ),
@@ -265,7 +270,20 @@ class RBN_Templates {
 			<div class="rbn-tabs" data-rbn-tabs data-rbn-active-tab="<?php echo esc_attr( $active_tab ); ?>">
 				<nav class="rbn-tabs__nav" aria-label="<?php esc_attr_e( 'Dashboard sections', 'roomworks-business-networking' ); ?>">
 					<?php foreach ( $tabs as $key => $tab ) : ?>
-						<a class="rbn-tabs__tab" href="#rbn-tab-panel-<?php echo esc_attr( $key ); ?>" data-rbn-tab-link="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $tab['label'] ); ?></a>
+						<a
+							class="rbn-tabs__tab"
+							href="#rbn-tab-panel-<?php echo esc_attr( $key ); ?>"
+							data-rbn-tab-link="<?php echo esc_attr( $key ); ?>"
+							<?php if ( 'followers' === $key ) : ?>
+								data-rbn-mark-read-url="<?php echo esc_url( rest_url( 'roomworks-business-networking/v1/notifications/mark-read' ) ); ?>"
+								data-rbn-mark-read-nonce="<?php echo esc_attr( wp_create_nonce( 'wp_rest' ) ); ?>"
+							<?php endif; ?>
+						>
+							<?php echo esc_html( $tab['label'] ); ?>
+							<?php if ( ! empty( $tab['badge'] ) ) : ?>
+								<span class="rbn-tabs__badge" data-rbn-followers-badge><?php echo esc_html( $tab['badge'] ); ?></span>
+							<?php endif; ?>
+						</a>
 					<?php endforeach; ?>
 				</nav>
 
@@ -712,6 +730,83 @@ class RBN_Templates {
 			<?php endif; ?>
 		</section>
 		<?php echo self::business_form( $editing_business, $current_user, $current_url, $notice_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+		<?php
+		return ob_get_clean();
+	}
+
+	/**
+	 * The "Followers" tab - the reverse of Favourites: everyone who
+	 * currently follows one of THIS member's own businesses
+	 * (RBN_Notifications, kept in sync with RBN_Business_Follows via the
+	 * rbn_business_followed/rbn_business_unfollowed actions - an unfollow
+	 * removes someone from this list, it isn't a permanent log of who ever
+	 * followed), most recent first, with newly-followed ones flagged so the
+	 * badge in member_dashboard()'s nav has something to match. The badge
+	 * itself isn't cleared here - rendering this section happens on every
+	 * dashboard load regardless of which tab ends up active, so clearing it
+	 * here would mean it never actually shows; it's cleared client-side once
+	 * this tab is genuinely opened (see the data-rbn-mark-read-url/nonce
+	 * attributes on its nav link, and initTabs() in view.js).
+	 */
+	private static function followers_section( $current_user ) {
+		$notifications = RBN_Notifications::get_notifications_for_user( $current_user->ID );
+
+		ob_start();
+		?>
+		<section class="rbn-followers rbn-card">
+			<h3><?php esc_html_e( 'Followers', 'roomworks-business-networking' ); ?></h3>
+			<?php if ( empty( $notifications ) ) : ?>
+				<p class="rbn-field-note"><?php esc_html_e( "No one has followed your business yet - once a member does, they'll show up here.", 'roomworks-business-networking' ); ?></p>
+			<?php else : ?>
+				<ul class="rbn-followers__list">
+					<?php foreach ( $notifications as $notification ) : ?>
+						<?php
+						// A follower is also a business owner more often than
+						// not on this network - if they have a published
+						// listing of their own, their name becomes a link to
+						// it (get_published_for_user() only, never
+						// get_all_for_user(), so this never links to a
+						// draft/pending/private business someone other than
+						// its owner could hit as a 404 or unintended
+						// preview). Same "just take the first one" precedent
+						// as the About-the-Author's-Business block
+						// (src/roomworks-single-post-author-business-profile/
+						// render.php) for a member with more than one.
+						$follower_businesses = RBN_Business_Repository::get_published_for_user( $notification->follower->ID );
+						$follower_business   = $follower_businesses ? $follower_businesses[0] : null;
+						?>
+						<li class="rbn-followers__item<?php echo $notification->is_unread ? ' rbn-followers__item--unread' : ''; ?>">
+							<span class="rbn-followers__avatar"><?php echo get_avatar( $notification->follower->ID, 40 ); ?></span>
+							<span class="rbn-followers__text">
+								<?php if ( $follower_business ) : ?>
+									<?php
+									printf(
+										/* translators: 1: URL of the follower's own business, 2: follower's display name, 3: business name they followed. */
+										wp_kses( __( '<a href="%1$s">%2$s</a> followed %3$s', 'roomworks-business-networking' ), array( 'a' => array( 'href' => array() ) ) ),
+										esc_url( get_permalink( $follower_business ) ),
+										esc_html( $notification->follower->display_name ),
+										esc_html( $notification->business->post_title )
+									);
+									?>
+								<?php else : ?>
+									<?php
+									printf(
+										/* translators: 1: follower's display name, 2: business name. */
+										esc_html__( '%1$s followed %2$s', 'roomworks-business-networking' ),
+										esc_html( $notification->follower->display_name ),
+										esc_html( $notification->business->post_title )
+									);
+									?>
+								<?php endif; ?>
+							</span>
+							<time class="rbn-followers__date" datetime="<?php echo esc_attr( mysql2date( 'c', $notification->created_at ) ); ?>">
+								<?php echo esc_html( mysql2date( get_option( 'date_format' ), $notification->created_at ) ); ?>
+							</time>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
+		</section>
 		<?php
 		return ob_get_clean();
 	}
