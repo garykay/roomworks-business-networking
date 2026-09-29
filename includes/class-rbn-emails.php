@@ -259,4 +259,82 @@ class RBN_Emails {
 
 		return self::send( $user->user_email, $subject, $preheader, $body );
 	}
+
+	/**
+	 * Sent to every active member of a newly posted request's target
+	 * community/communities (except the poster) - see
+	 * RBN_Job_Notifications::send_new_request_notification().
+	 */
+	public static function new_request_email( WP_User $recipient, WP_Post $job ) {
+		$poster      = get_userdata( $job->post_author );
+		$poster_name = $poster ? ( $poster->first_name ? $poster->first_name : $poster->display_name ) : __( 'A member', 'roomworks-business-networking' );
+
+		$subject   = sprintf(
+			/* translators: %s: request title. */
+			__( 'New request on the notice board: %s', 'roomworks-business-networking' ),
+			$job->post_title
+		);
+		$preheader = __( 'A new request was just posted in one of your communities.', 'roomworks-business-networking' );
+
+		$body = self::body(
+			/* translators: %s: first name. */
+			sprintf( __( 'Hi %s,', 'roomworks-business-networking' ), $recipient->first_name ? $recipient->first_name : $recipient->display_name ),
+			array(
+				sprintf(
+					/* translators: 1: poster's name, 2: request title. */
+					__( '%1$s just posted a new request on the notice board: "%2$s".', 'roomworks-business-networking' ),
+					$poster_name,
+					$job->post_title
+				),
+				__( "Take a look if you're able to help.", 'roomworks-business-networking' ),
+			),
+			__( 'View request', 'roomworks-business-networking' ),
+			get_permalink( $job )
+		);
+
+		return self::send( $recipient->user_email, $subject, $preheader, $body );
+	}
+
+	/**
+	 * Sent once to a request's own poster roughly 24 hours before it stops
+	 * showing on the board (see RBN_Job_Query::not_closed_clause()) - only
+	 * ever scheduled for a request that has a closing date set, see
+	 * RBN_Job_Notifications::reschedule_expiring_reminder().
+	 */
+	public static function request_expiring_soon_email( WP_User $poster, WP_Post $job ) {
+		$closing_date = get_post_meta( $job->ID, 'rbn_closing_date', true );
+
+		$subject   = sprintf(
+			/* translators: %s: request title. */
+			__( 'Your request closes soon: %s', 'roomworks-business-networking' ),
+			$job->post_title
+		);
+		$preheader = __( 'Your request is about to stop showing on the notice board.', 'roomworks-business-networking' );
+
+		$paragraphs = array(
+			sprintf(
+				/* translators: %s: request title. */
+				__( 'Your request "%s" is about to stop showing on the notice board.', 'roomworks-business-networking' ),
+				$job->post_title
+			),
+		);
+
+		if ( $closing_date ) {
+			$paragraphs[] = sprintf(
+				/* translators: %s: closing date. */
+				__( "It's set to close on %s. If you'd like to keep it visible for longer, log in and update its closing date.", 'roomworks-business-networking' ),
+				date_i18n( get_option( 'date_format' ), strtotime( $closing_date ) )
+			);
+		}
+
+		$body = self::body(
+			/* translators: %s: first name. */
+			sprintf( __( 'Hi %s,', 'roomworks-business-networking' ), $poster->first_name ? $poster->first_name : $poster->display_name ),
+			$paragraphs,
+			__( 'View my request', 'roomworks-business-networking' ),
+			get_permalink( $job )
+		);
+
+		return self::send( $poster->user_email, $subject, $preheader, $body );
+	}
 }

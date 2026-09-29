@@ -7,10 +7,11 @@
  * "return" pattern as single-business-profile/render.php. All card markup
  * lives in RBN_Templates::business_profile() so it isn't duplicated here.
  *
- * An author with more than one published business only ever gets one shown
- * here, not all of them (a post is rarely about every business its author
- * runs) - which one is RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY,
- * set via the post editor's "Which business to show" radio control (see
+ * On a regular post, an author with more than one published business only
+ * ever gets one shown here, not all of them (a post is rarely about every
+ * business its author runs) - which one is
+ * RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY, set via the post
+ * editor's "Which business to show" radio control (see
  * post-author-business-profile-toggle/index.js). Falls back to the first
  * business (alphabetically, same ordering
  * RBN_Business_Repository::get_published_for_user() and that radio control
@@ -18,6 +19,13 @@
  * longer among the author's published ones (e.g. since unpublished) -
  * mirrors the editor's own default so what's shown never depends on
  * whether an editor happened to open the sidebar panel.
+ *
+ * On a notice board request (rbn_job), there's no such curation - the whole
+ * point of that page is connecting the poster with help, so every one of
+ * the author's published businesses is shown, not just one (see the
+ * `$post->post_type` branch below). The toggle/single-choice meta above is
+ * only ever registered for 'post' (RBN_Author_Business_Profile_Toggle), so
+ * it has nothing to read for a job anyway.
  *
  * The following variables are exposed to the file:
  *     $attributes (array): The block attributes.
@@ -59,17 +67,26 @@ if ( empty( $businesses ) ) {
 	return;
 }
 
-$business = $businesses[0];
+// A request shows every one of the author's published businesses - see the
+// docblock above. Anything else (currently just 'post') keeps the existing
+// single, curated choice.
+if ( RBN_Post_Type_Job::POST_TYPE === $post->post_type ) {
+	$businesses_to_show = $businesses;
+} else {
+	$business = $businesses[0];
 
-if ( count( $businesses ) > 1 ) {
-	$selected_business_id = (int) get_post_meta( $post_id, RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY, true );
+	if ( count( $businesses ) > 1 ) {
+		$selected_business_id = (int) get_post_meta( $post_id, RBN_Author_Business_Profile_Toggle::BUSINESS_META_KEY, true );
 
-	foreach ( $businesses as $candidate ) {
-		if ( $candidate->ID === $selected_business_id ) {
-			$business = $candidate;
-			break;
+		foreach ( $businesses as $candidate ) {
+			if ( $candidate->ID === $selected_business_id ) {
+				$business = $candidate;
+				break;
+			}
 		}
 	}
+
+	$businesses_to_show = array( $business );
 }
 
 // Read-only GET notice from a just-submitted follow/unfollow form - same
@@ -87,7 +104,13 @@ $is_sponsored = RBN_Sponsored_Content::is_sponsored( $post_id );
 ?>
 <div <?php echo get_block_wrapper_attributes( array( 'class' => 'rbn-author-business-profile' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core function; already returns safe, pre-escaped attribute markup. ?>>
 	<h2 class="rbn-author-business-profile__heading">
-		<?php esc_html_e( "About the Author's Business", 'roomworks-business-networking' ); ?>
+		<?php
+		echo count( $businesses_to_show ) > 1
+			? esc_html__( "About the Author's Businesses", 'roomworks-business-networking' )
+			: esc_html__( "About the Author's Business", 'roomworks-business-networking' );
+		?>
 	</h2>
-	<?php echo RBN_Templates::business_profile( $business, $current_url, $notice_code, $is_sponsored ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+	<?php foreach ( $businesses_to_show as $business_to_show ) : ?>
+		<?php echo RBN_Templates::business_profile( $business_to_show, $current_url, $notice_code, $is_sponsored ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped within. ?>
+	<?php endforeach; ?>
 </div>

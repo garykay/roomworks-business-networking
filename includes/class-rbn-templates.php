@@ -215,6 +215,7 @@ class RBN_Templates {
 		// - nothing to "land on".
 		$confirming_deletion          = ! empty( $_GET['rbn_confirm_deletion'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as account_deletion_section()'s own identical check.
 		$confirming_business_deletion = ! empty( $_GET['rbn_confirm_delete_business'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as businesses_section()'s own check.
+		$confirming_job_deletion      = ! empty( $_GET['rbn_confirm_delete_job'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only, same as jobs_section()'s own check.
 
 		// A follow/unfollow notice is also technically "section business"
 		// under RBN_Notices::section()'s generic prefix match (business_
@@ -235,7 +236,7 @@ class RBN_Templates {
 
 		if ( $editing_business_id || $confirming_business_deletion ) {
 			$active_tab = 'businesses';
-		} elseif ( $editing_job_id ) {
+		} elseif ( $editing_job_id || $confirming_job_deletion ) {
 			$active_tab = 'requests';
 		} elseif ( $confirming_deletion ) {
 			$active_tab = 'account';
@@ -1248,14 +1249,21 @@ class RBN_Templates {
 
 	/**
 	 * "My Requests" (each with an Edit link jumping to the form below,
-	 * pre-filled for that one) plus the add/edit form itself - same shape as
-	 * businesses_section() above, but with no pending-review badge:
-	 * requests auto-publish (see RBN_Job_Forms).
+	 * pre-filled for that one, and a Delete link that swaps that row for a
+	 * confirm step - same two-step, no-JS pattern as businesses_section()
+	 * above) plus the add/edit form itself - same shape as
+	 * businesses_section(), but with no pending-review badge: requests
+	 * auto-publish (see RBN_Job_Forms).
 	 */
 	private static function jobs_section( array $jobs, $editing_job, $current_user, $current_url, $notice_code ) {
+		// Read-only: only chooses which row shows the confirm step. The
+		// delete itself is a nonce-protected POST, and ownership is
+		// re-verified server-side by RBN_Job_Forms::handle_delete_request().
+		$confirm_delete_id = isset( $_GET['rbn_confirm_delete_job'] ) ? absint( $_GET['rbn_confirm_delete_job'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		ob_start();
 		?>
-		<section class="rbn-my-jobs rbn-card">
+		<section class="rbn-my-jobs rbn-card" id="rbn-my-jobs">
 			<h3><?php esc_html_e( 'My Requests', 'roomworks-business-networking' ); ?></h3>
 			<?php if ( empty( $jobs ) ) : ?>
 				<p class="rbn-field-note"><?php esc_html_e( "You haven't posted a request yet - use the form below to add one.", 'roomworks-business-networking' ); ?></p>
@@ -1264,7 +1272,22 @@ class RBN_Templates {
 					<?php foreach ( $jobs as $job ) : ?>
 						<li>
 							<span class="rbn-my-jobs__title"><?php echo esc_html( wp_specialchars_decode( get_the_title( $job ), ENT_QUOTES ) ); ?></span>
-							<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_job', $job->ID, $current_url ) . '#rbn-job-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+							<?php if ( $confirm_delete_id === $job->ID ) : ?>
+								<p class="rbn-field-note"><?php esc_html_e( 'Are you sure? This request will be removed from the notice board. This cannot be undone.', 'roomworks-business-networking' ); ?></p>
+								<div class="rbn-my-jobs__actions">
+									<form class="rbn-form" method="post" action="<?php echo esc_url( $current_url ); ?>">
+										<?php wp_nonce_field( RBN_Job_Forms::DELETE_ACTION, 'rbn_job_nonce' ); ?>
+										<input type="hidden" name="rbn_form_action" value="<?php echo esc_attr( RBN_Job_Forms::DELETE_ACTION ); ?>" />
+										<input type="hidden" name="rbn_job_id" value="<?php echo esc_attr( $job->ID ); ?>" />
+										<input type="hidden" name="rbn_redirect_to" value="<?php echo esc_attr( $current_url ); ?>" />
+										<button type="submit" class="rbn-button rbn-button--danger"><?php esc_html_e( 'Yes, Delete Request', 'roomworks-business-networking' ); ?></button>
+									</form>
+									<a class="rbn-link" href="<?php echo esc_url( $current_url . '#rbn-my-jobs' ); ?>"><?php esc_html_e( 'Cancel', 'roomworks-business-networking' ); ?></a>
+								</div>
+							<?php else : ?>
+								<a class="rbn-link" href="<?php echo esc_url( add_query_arg( 'rbn_edit_job', $job->ID, $current_url ) . '#rbn-job-form' ); ?>"><?php esc_html_e( 'Edit', 'roomworks-business-networking' ); ?></a>
+								<a class="rbn-link rbn-link--danger" href="<?php echo esc_url( add_query_arg( 'rbn_confirm_delete_job', $job->ID, $current_url ) . '#rbn-my-jobs' ); ?>"><?php esc_html_e( 'Delete', 'roomworks-business-networking' ); ?></a>
+							<?php endif; ?>
 						</li>
 					<?php endforeach; ?>
 				</ul>

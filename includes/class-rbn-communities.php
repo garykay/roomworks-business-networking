@@ -39,6 +39,7 @@ class RBN_Communities {
 		$status                 = in_array( $args['status'] ?? '', array( self::STATUS_ACTIVE, self::STATUS_INACTIVE ), true )
 			? $args['status']
 			: self::STATUS_ACTIVE;
+		$notify_new_requests    = array_key_exists( 'notify_new_requests', $args ) ? (bool) $args['notify_new_requests'] : true;
 
 		if ( '' === $name ) {
 			return new WP_Error( 'rbn_community_name_required', __( 'Please enter a community name.', 'roomworks-business-networking' ) );
@@ -67,10 +68,11 @@ class RBN_Communities {
 				'destination_country_id' => $destination_country_id,
 				'description'            => $description,
 				'status'                 => $status,
+				'notify_new_requests'    => $notify_new_requests ? 1 : 0,
 				'created_at'             => $now,
 				'updated_at'             => $now,
 			),
-			array( '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s' )
+			array( '%s', '%s', '%d', '%d', '%s', '%s', '%d', '%s', '%s' )
 		);
 
 		if ( ! $inserted ) {
@@ -111,23 +113,25 @@ class RBN_Communities {
 			return new WP_Error( 'rbn_community_name_required', __( 'Please enter a community name.', 'roomworks-business-networking' ) );
 		}
 
-		$description = array_key_exists( 'description', $args ) ? sanitize_textarea_field( $args['description'] ) : $community->description;
-		$status      = in_array( $args['status'] ?? '', array( self::STATUS_ACTIVE, self::STATUS_INACTIVE ), true )
+		$description         = array_key_exists( 'description', $args ) ? sanitize_textarea_field( $args['description'] ) : $community->description;
+		$status              = in_array( $args['status'] ?? '', array( self::STATUS_ACTIVE, self::STATUS_INACTIVE ), true )
 			? $args['status']
 			: $community->status;
+		$notify_new_requests = array_key_exists( 'notify_new_requests', $args ) ? (bool) $args['notify_new_requests'] : (bool) $community->notify_new_requests;
 
 		global $wpdb;
 
 		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			RBN_Schema::communities_table(),
 			array(
-				'name'        => $name,
-				'description' => $description,
-				'status'      => $status,
-				'updated_at'  => current_time( 'mysql' ),
+				'name'                => $name,
+				'description'         => $description,
+				'status'              => $status,
+				'notify_new_requests' => $notify_new_requests ? 1 : 0,
+				'updated_at'          => current_time( 'mysql' ),
 			),
 			array( 'id' => absint( $community_id ) ),
-			array( '%s', '%s', '%s', '%s' ),
+			array( '%s', '%s', '%s', '%d', '%s' ),
 			array( '%d' )
 		);
 

@@ -204,6 +204,68 @@ class RBN_Community_Memberships {
 		return array_values( $eligible );
 	}
 
+	/**
+	 * Active, notification-eligible member user IDs for a community - the
+	 * read side of "who should be notified about this community's activity"
+	 * (see RBN_Job_Notifications::send_new_request_notification()). Excludes
+	 * any member who has individually opted out via
+	 * set_notify_new_requests(), on top of the usual active-status filter.
+	 * Not cached like get_for_user() above: only ever read from a background
+	 * WP-Cron callback, not a page-load path.
+	 */
+	public static function get_member_ids_for_community( $community_id ) {
+		global $wpdb;
+
+		$table = RBN_Schema::community_memberships_table();
+
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM {$table} WHERE community_id = %d AND status = %s AND notify_new_requests = 1", absint( $community_id ), self::STATUS_ACTIVE ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- cron-only, not a page-load path.
+
+		return array_map( 'absint', $ids );
+	}
+
+	/**
+	 * Every active membership row for a community, for the wp-admin
+	 * "Members" list (see RBN_Communities_Admin) where an admin picks which
+	 * individual members to exclude from the "new request posted" broadcast
+	 * via notify_new_requests, without removing their membership.
+	 *
+	 * @return object[] Membership rows ordered by joined_at ascending.
+	 */
+	public static function get_active_members_for_community( $community_id ) {
+		global $wpdb;
+
+		$table = RBN_Schema::community_memberships_table();
+
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} WHERE community_id = %d AND status = %s ORDER BY joined_at ASC", absint( $community_id ), self::STATUS_ACTIVE ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- admin-page-only, not worth a cache entry.
+
+		return $rows ? $rows : array();
+	}
+
+	/**
+	 * Opts a member in/out of the "new request posted" broadcast for one
+	 * specific community, without affecting their membership in any other
+	 * community or their status in this one. See get_member_ids_for_community()
+	 * above, the only read path that consults this flag.
+	 */
+	public static function set_notify_new_requests( $user_id, $community_id, $notify ) {
+		global $wpdb;
+
+		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			RBN_Schema::community_memberships_table(),
+			array( 'notify_new_requests' => $notify ? 1 : 0 ),
+			array(
+				'user_id'      => absint( $user_id ),
+				'community_id' => absint( $community_id ),
+			),
+			array( '%d' ),
+			array( '%d', '%d' )
+		);
+
+		self::flush_cache( $user_id );
+
+		return false !== $updated;
+	}
+
 	public static function member_count( $community_id ) {
 		global $wpdb;
 

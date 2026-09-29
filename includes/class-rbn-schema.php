@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class RBN_Schema {
 
 	const DB_VERSION_OPTION = 'rbn_db_version';
-	const DB_VERSION        = '1.4.0';
+	const DB_VERSION        = '1.5.0';
 
 	/**
 	 * Creates (or updates) the plugin's custom tables.
@@ -73,7 +73,11 @@ class RBN_Schema {
 		// members join (e.g. "South Africans in the United Kingdom") - see
 		// RBN_Communities and the scalability spec's Section 5. Both country
 		// columns reference countries.id, never a name/ISO code, per the
-		// spec's "do not hard-code countries" rule.
+		// spec's "do not hard-code countries" rule. notify_new_requests is a
+		// community-wide kill switch for RBN_Job_Notifications' "new request
+		// posted" broadcast - off entirely stops every member being emailed
+		// for this community, regardless of their own membership-level flag
+		// below.
 		$communities_table = self::communities_table();
 		$sql_communities   = "CREATE TABLE {$communities_table} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -84,6 +88,7 @@ class RBN_Schema {
 			description TEXT NULL,
 			logo_attachment_id BIGINT UNSIGNED NULL,
 			status VARCHAR(20) NOT NULL DEFAULT 'active',
+			notify_new_requests TINYINT(1) NOT NULL DEFAULT 1,
 			created_at DATETIME NOT NULL,
 			updated_at DATETIME NOT NULL,
 			PRIMARY KEY  (id),
@@ -97,6 +102,9 @@ class RBN_Schema {
 		// and the spec's Section 8. A user may hold more than one membership
 		// (e.g. joining both a national and a regional community later), so
 		// this is its own table rather than a single field on the user.
+		// notify_new_requests is this member's own opt-out of the "new
+		// request posted" broadcast for this specific community - see
+		// RBN_Job_Notifications.
 		$memberships_table = self::community_memberships_table();
 		$sql_memberships   = "CREATE TABLE {$memberships_table} (
 			id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -104,6 +112,7 @@ class RBN_Schema {
 			community_id BIGINT UNSIGNED NOT NULL,
 			role VARCHAR(30) NOT NULL DEFAULT 'member',
 			status VARCHAR(20) NOT NULL DEFAULT 'active',
+			notify_new_requests TINYINT(1) NOT NULL DEFAULT 1,
 			joined_at DATETIME NOT NULL,
 			approved_at DATETIME NULL,
 			PRIMARY KEY  (id),
