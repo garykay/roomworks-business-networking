@@ -27,6 +27,31 @@ return array(
 		'style' => 'file:./style-index.css',
 		'render' => 'file:./render.php'
 	),
+	'roomworks-blog-filters' => array(
+		'$schema' => 'https://schemas.wp.org/trunk/block.json',
+		'apiVersion' => 3,
+		'name' => 'roomworks-business-networking/roomworks-blog-filters',
+		'version' => '1.0.0',
+		'title' => 'Roomworks Blog Filters',
+		'category' => 'widgets',
+		'icon' => 'filter',
+		'description' => 'A country/community filter bar for the blog listing\'s Query Loop - place directly above it on the Blog Home template.',
+		'example' => array(
+			
+		),
+		'supports' => array(
+			'html' => false,
+			'align' => array(
+				'wide',
+				'full'
+			)
+		),
+		'textdomain' => 'roomworks-business-networking',
+		'editorScript' => 'file:./index.js',
+		'editorStyle' => 'file:./index.css',
+		'style' => 'file:./style-index.css',
+		'render' => 'file:./render.php'
+	),
 	'roomworks-business-networking' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
 		'apiVersion' => 3,

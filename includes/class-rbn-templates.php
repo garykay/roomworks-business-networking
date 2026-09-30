@@ -1879,6 +1879,64 @@ class RBN_Templates {
 		return ob_get_clean();
 	}
 
+	/**
+	 * The blog listing's optional search/country/community filter bar - see
+	 * RBN_Blog_Filters' class docblock for why this narrows rather than
+	 * restricts. The community field is only rendered when
+	 * $filter_options['communities'] is non-empty, i.e. for a logged-in
+	 * member who has joined at least one community.
+	 *
+	 * @param array  $filter_options From RBN_Blog_Filters::filter_options().
+	 * @param array  $filters        From RBN_Blog_Filters::current_filters().
+	 * @param string $current_url    The blog page's own URL, for the form
+	 *                                action and the "Clear filters" link.
+	 */
+	public static function blog_filters( $filter_options, $filters, $current_url ) {
+		ob_start();
+		?>
+		<form class="rbn-form rbn-directory__filters rbn-card" method="get" action="<?php echo esc_url( $current_url ); ?>" data-rbn-filter-form>
+			<p>
+				<label for="rbn-blog-filter-search"><?php esc_html_e( 'Search', 'roomworks-business-networking' ); ?></label>
+				<input type="search" id="rbn-blog-filter-search" name="<?php echo esc_attr( RBN_Blog_Filters::PARAM_SEARCH ); ?>" value="<?php echo esc_attr( $filters['search'] ); ?>" />
+			</p>
+
+			<p>
+				<label for="rbn-blog-filter-country"><?php esc_html_e( 'Country', 'roomworks-business-networking' ); ?></label>
+				<select id="rbn-blog-filter-country" name="<?php echo esc_attr( RBN_Blog_Filters::PARAM_COUNTRY ); ?>">
+					<option value=""><?php esc_html_e( 'All Countries', 'roomworks-business-networking' ); ?></option>
+					<?php foreach ( $filter_options['countries'] as $country ) : ?>
+						<option value="<?php echo esc_attr( $country['id'] ); ?>" <?php selected( $filters['country'], $country['id'] ); ?>>
+							<?php echo esc_html( $country['name'] ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</p>
+
+			<?php if ( $filter_options['communities'] ) : ?>
+				<p>
+					<label for="rbn-blog-filter-community"><?php esc_html_e( 'Community', 'roomworks-business-networking' ); ?></label>
+					<select id="rbn-blog-filter-community" name="<?php echo esc_attr( RBN_Blog_Filters::PARAM_COMMUNITY ); ?>">
+						<option value=""><?php esc_html_e( 'All My Communities', 'roomworks-business-networking' ); ?></option>
+						<?php foreach ( $filter_options['communities'] as $community ) : ?>
+							<option value="<?php echo esc_attr( $community['id'] ); ?>" <?php selected( $filters['community'], $community['id'] ); ?>>
+								<?php echo esc_html( $community['name'] ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</p>
+			<?php endif; ?>
+
+			<p class="rbn-directory__filter-actions" data-rbn-filter-actions>
+				<button type="submit" class="rbn-button"><?php esc_html_e( 'Filter', 'roomworks-business-networking' ); ?></button>
+				<?php if ( $filters['country'] || $filters['community'] || $filters['search'] ) : ?>
+					<a class="rbn-directory__clear rbn-link" href="<?php echo esc_url( $current_url ); ?>" data-rbn-filter-clear><?php esc_html_e( 'Clear filters', 'roomworks-business-networking' ); ?></a>
+				<?php endif; ?>
+			</p>
+		</form>
+		<?php
+		return ob_get_clean();
+	}
+
 	public static function notice_board_results( $results ) {
 		ob_start();
 
