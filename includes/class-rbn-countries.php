@@ -829,4 +829,29 @@ class RBN_Countries {
 		update_user_meta( $user_id, self::USER_META_CURRENT_COUNTRY, absint( $country_id ) );
 		return true;
 	}
+
+	/**
+	 * IDs of every user whose current country is the one given - the reverse
+	 * of get_current_country_id(). Used to turn a "filter by country" choice
+	 * into an author__in list for a WP_Query, e.g. RBN_Blog_Filters.
+	 *
+	 * @return int[]
+	 */
+	public static function get_user_ids_for_current_country( $country_id ) {
+		$country_id = absint( $country_id );
+
+		if ( ! $country_id ) {
+			return array();
+		}
+
+		$user_query = new WP_User_Query(
+			array(
+				'fields'     => 'ID',
+				'meta_key'   => self::USER_META_CURRENT_COUNTRY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value' => $country_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+
+		return array_map( 'absint', $user_query->get_results() );
+	}
 }

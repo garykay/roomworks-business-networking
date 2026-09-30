@@ -242,6 +242,20 @@ class RBN_Community_Memberships {
 	}
 
 	/**
+	 * IDs of every active member of a community - unlike
+	 * get_member_ids_for_community() above, not filtered down to those
+	 * opted into the "new request posted" broadcast, since a member who
+	 * turned that notification off is still a member. Used by
+	 * RBN_Blog_Filters to turn a "filter by community" choice into an
+	 * author__in list.
+	 *
+	 * @return int[]
+	 */
+	public static function get_all_member_ids_for_community( $community_id ) {
+		return array_map( 'absint', wp_list_pluck( self::get_active_members_for_community( $community_id ), 'user_id' ) );
+	}
+
+	/**
 	 * Opts a member in/out of the "new request posted" broadcast for one
 	 * specific community, without affecting their membership in any other
 	 * community or their status in this one. See get_member_ids_for_community()

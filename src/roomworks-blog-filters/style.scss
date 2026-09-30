@@ -1,0 +1,123 @@
+// Same visual language as the business directory/notice board filter bars
+// (.rbn-directory__filters etc.) - duplicated per-block rather than shared,
+// matching how those blocks already each carry their own copy of these
+// rules (see e.g. roomworks-community-notice-board/style.scss).
+.wp-block-roomworks-business-networking-roomworks-blog-filters {
+	--rbn-accent: #2451e0;
+	--rbn-accent-hover: #1c3fb8;
+	--rbn-accent-tint: #eef1fd;
+	--rbn-text: #1a1d29;
+	--rbn-muted: #667085;
+	--rbn-border: #e6e8ee;
+	--rbn-surface: #fff;
+	--rbn-radius: 12px;
+	--rbn-radius-sm: 8px;
+	--rbn-shadow: 0 1px 2px rgba( 16, 24, 40, 0.04 ), 0 6px 20px -10px rgba( 16, 24, 40, 0.12 );
+
+	color: var( --rbn-text );
+
+	.rbn-card {
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius );
+		background: var( --rbn-surface );
+		box-shadow: var( --rbn-shadow );
+	}
+
+	.rbn-directory__filters {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		gap: 1.25rem;
+		margin: 0;
+		padding: 1.5rem;
+
+		p {
+			flex: 1 1 180px;
+			margin: 0;
+		}
+	}
+
+	.rbn-directory__filters label {
+		display: block;
+		margin-bottom: 0.4rem;
+		color: var( --rbn-muted );
+		font-size: 0.8125rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+	}
+
+	.rbn-directory__filters input,
+	.rbn-directory__filters select {
+		box-sizing: border-box;
+		width: 100%;
+		padding: 0.65rem 0.85rem;
+		border: 1px solid var( --rbn-border );
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-surface );
+		color: var( --rbn-text );
+		font-family: inherit;
+		font-size: 0.9375rem;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+		&:focus {
+			outline: none;
+			border-color: var( --rbn-accent );
+			box-shadow: 0 0 0 3px var( --rbn-accent-tint );
+		}
+	}
+
+	// Resets each browser's own native <select> chrome (Safari's default
+	// looks noticeably different from Chrome's - a taller control with a
+	// double up/down chevron - without this) in favour of one consistent
+	// custom arrow everywhere.
+	.rbn-directory__filters select {
+		appearance: none;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		padding-right: 2.25rem;
+		background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E" );
+		background-repeat: no-repeat;
+		background-position: right 0.75rem center;
+		background-size: 1rem;
+	}
+
+	.rbn-directory__filter-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex: 0 0 auto;
+	}
+
+	.rbn-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.7rem 1.4rem;
+		border: none;
+		border-radius: var( --rbn-radius-sm );
+		background: var( --rbn-accent );
+		color: #fff;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		line-height: 1;
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+
+		&:hover,
+		&:focus-visible {
+			background: var( --rbn-accent-hover );
+		}
+	}
+
+	.rbn-link {
+		color: var( --rbn-accent );
+		font-size: 0.9rem;
+		text-decoration: none;
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+}
