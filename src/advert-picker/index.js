@@ -1,22 +1,29 @@
 /**
  * Post-editor sidebar panel for 'post' and 'page': lets an admin pick which
  * advert (see RBN_Post_Type_Advert) is assigned to that page/post, stored as
- * the `rbn_advert_id` meta. Not a block itself (no block.json) - see
+ * the `rbn_advert_id` meta, or switch adverts off there entirely (the
+ * `rbn_hide_adverts` meta, which also overrides the settings-screen
+ * default advert). Not a block itself (no block.json) - see
  * webpack.config.js for how this gets built, and RBN_Advert_Picker for where
  * the meta it edits is registered/enqueued and how the advertising block
  * reads it back.
  *
- * @package RoomworksBusinessNetworking
+ * @package
  */
 
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/editor';
-import { SelectControl } from '@wordpress/components';
+import { SelectControl, ToggleControl } from '@wordpress/components';
 import { useEntityProp } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 const META_KEY = 'rbn_advert_id';
+const HIDE_META_KEY = 'rbn_hide_adverts';
+
+// Printed by RBN_Advert_Picker::enqueue_editor_script() - empty when no
+// default advert applies to this post type.
+const defaultAdvertTitle = window.rbnAdvertPicker?.defaultAdvertTitle || '';
 
 function AdvertPicker() {
 	const postType = useSelect(
@@ -52,11 +59,26 @@ function AdvertPicker() {
 	}
 
 	const selectedId = meta[ META_KEY ] || 0;
+	const isHidden = true === meta[ HIDE_META_KEY ];
 
 	const options = [
-		{ label: __( 'None', 'roomworks-business-networking' ), value: 0 },
+		{
+			label: defaultAdvertTitle
+				? sprintf(
+						/* translators: %s: title of the default advert. */
+						__(
+							'Use default (%s)',
+							'roomworks-business-networking'
+						),
+						defaultAdvertTitle
+					)
+				: __( 'None', 'roomworks-business-networking' ),
+			value: 0,
+		},
 		...( adverts || [] ).map( ( advert ) => ( {
-			label: advert.title?.rendered || __( '(no title)', 'roomworks-business-networking' ),
+			label:
+				advert.title?.rendered ||
+				__( '(no title)', 'roomworks-business-networking' ),
 			value: advert.id,
 		} ) ),
 	];
@@ -66,18 +88,41 @@ function AdvertPicker() {
 			name="rbn-advert-picker"
 			title={ __( 'Advert', 'roomworks-business-networking' ) }
 		>
-			<SelectControl
-				label={ __( 'Advert shown here', 'roomworks-business-networking' ) }
-				help={ __(
-					'Used by the advertising block when it appears in a template on this page/post.',
+			<ToggleControl
+				label={ __(
+					'Show adverts on this page',
 					'roomworks-business-networking'
 				) }
-				value={ selectedId }
-				options={ options }
+				help={
+					isHidden
+						? __(
+								'No adverts will show here, including the default advert.',
+								'roomworks-business-networking'
+							)
+						: undefined
+				}
+				checked={ ! isHidden }
 				onChange={ ( value ) =>
-					setMeta( { ...meta, [ META_KEY ]: Number( value ) } )
+					setMeta( { ...meta, [ HIDE_META_KEY ]: ! value } )
 				}
 			/>
+			{ ! isHidden && (
+				<SelectControl
+					label={ __(
+						'Advert shown here',
+						'roomworks-business-networking'
+					) }
+					help={ __(
+						'Used by the advertising block when it appears in a template on this page/post.',
+						'roomworks-business-networking'
+					) }
+					value={ selectedId }
+					options={ options }
+					onChange={ ( value ) =>
+						setMeta( { ...meta, [ META_KEY ]: Number( value ) } )
+					}
+				/>
+			) }
 		</PluginDocumentSettingPanel>
 	);
 }

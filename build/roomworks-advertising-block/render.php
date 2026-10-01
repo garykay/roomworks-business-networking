@@ -1,7 +1,9 @@
 <?php
 /**
- * Renders whichever advert is assigned (via the `rbn_advert_id` meta set by
- * RBN_Advert_Picker's sidebar panel) to the post supplied by block context
+ * Renders whichever advert applies (see
+ * RBN_Advert_Picker::resolve_advert_id() - the one picked in the post's
+ * "Advert" sidebar panel, else the settings-screen default, unless adverts
+ * are switched off for that post) to the post supplied by block context
  * (postId) - i.e. whichever page/post the surrounding singular template is
  * currently displaying. See RBN_Post_Type_Advert for the advert post type
  * itself.
@@ -28,14 +30,20 @@ if ( ! $current_post_id ) {
 
 $can_edit_context = current_user_can( 'edit_post', $current_post_id );
 
-$advert_id = absint( get_post_meta( $current_post_id, 'rbn_advert_id', true ) );
+$advert_id = RBN_Advert_Picker::resolve_advert_id( $current_post_id );
 
 if ( ! $advert_id ) {
 	if ( $can_edit_context ) {
 		?>
 		<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- core function; already returns safe, pre-escaped attribute markup. ?>>
 			<p class="rbn-advert__editor-notice">
-				<?php esc_html_e( 'No advert selected for this page/post. Choose one from the "Advert" panel in the editor sidebar.', 'roomworks-business-networking' ); ?>
+				<?php
+				if ( RBN_Advert_Picker::adverts_hidden( $current_post_id ) ) {
+					esc_html_e( 'Adverts are turned off for this page/post. Turn them back on from the "Advert" panel in the editor sidebar.', 'roomworks-business-networking' );
+				} else {
+					esc_html_e( 'No advert selected for this page/post. Choose one from the "Advert" panel in the editor sidebar, or set a default advert under Directory Settings.', 'roomworks-business-networking' );
+				}
+				?>
 			</p>
 		</div>
 		<?php
@@ -50,7 +58,7 @@ if ( ! $advert || RBN_Post_Type_Advert::POST_TYPE !== $advert->post_type || 'pub
 		?>
 		<div <?php echo get_block_wrapper_attributes(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 			<p class="rbn-advert__editor-notice">
-				<?php esc_html_e( 'The advert selected for this page/post is missing or unpublished.', 'roomworks-business-networking' ); ?>
+				<?php esc_html_e( 'The advert selected for this page/post (or the default advert) is missing or unpublished.', 'roomworks-business-networking' ); ?>
 			</p>
 		</div>
 		<?php
