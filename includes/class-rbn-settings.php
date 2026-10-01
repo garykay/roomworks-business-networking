@@ -2,8 +2,8 @@
 /**
  * Admin settings page for directory and notification behaviour. Read via
  * the per-setting accessors below (per_page(), sort_query_args(),
- * notification_email(), deletion_grace_hours()) by whichever part of the
- * plugin previously had the equivalent value hardcoded, so there is exactly
+ * notification_email(), deletion_grace_hours(), default_advert_id()) by
+ * whichever part of the plugin previously had the equivalent value hardcoded, so there is exactly
  * one source of truth for each configured value.
  *
  * @package RoomworksBusinessNetworking
@@ -135,6 +135,21 @@ class RBN_Settings {
 			self::PAGE_SLUG,
 			'rbn_settings_branding'
 		);
+
+		add_settings_section(
+			'rbn_settings_advertising',
+			__( 'Advertising', 'roomworks-business-networking' ),
+			'__return_false',
+			self::PAGE_SLUG
+		);
+
+		add_settings_field(
+			'default_advert_id',
+			__( 'Default advert', 'roomworks-business-networking' ),
+			array( __CLASS__, 'render_default_advert_field' ),
+			self::PAGE_SLUG,
+			'rbn_settings_advertising'
+		);
 	}
 
 	public static function sanitize( $input ) {
@@ -180,6 +195,12 @@ class RBN_Settings {
 			$default_destination_country_id = 0;
 		}
 
+		$default_advert_id = isset( $input['default_advert_id'] ) ? absint( $input['default_advert_id'] ) : 0;
+
+		if ( $default_advert_id && RBN_Post_Type_Advert::POST_TYPE !== get_post_type( $default_advert_id ) ) {
+			$default_advert_id = 0;
+		}
+
 		return array(
 			'per_page'                            => $per_page,
 			'sort'                                => $sort,
@@ -189,6 +210,7 @@ class RBN_Settings {
 			'require_unique_community_pair'       => $require_unique_community_pair,
 			'network_origin_country_id'           => $network_origin_country_id,
 			'default_destination_country_id'      => $default_destination_country_id,
+			'default_advert_id'                   => $default_advert_id,
 		);
 	}
 
@@ -219,6 +241,9 @@ class RBN_Settings {
 			// spans many destinations by design, so there's no sensible
 			// hard-coded default; each deployment picks its own here too.
 			'default_destination_country_id' => 0,
+			// 0 = no default: single posts only show an advert when one is
+			// picked in their own "Advert" sidebar panel.
+			'default_advert_id'              => 0,
 		);
 		$saved    = get_option( self::OPTION_NAME, array() );
 
@@ -308,6 +333,15 @@ class RBN_Settings {
 	 */
 	public static function default_destination_country_id() {
 		return self::options()['default_destination_country_id'];
+	}
+
+	/**
+	 * The advert single posts fall back to when none is picked in their own
+	 * "Advert" sidebar panel - see RBN_Advert_Picker::resolve_advert_id(),
+	 * the only place this is consulted. 0 if none.
+	 */
+	public static function default_advert_id() {
+		return absint( self::options()['default_advert_id'] );
 	}
 
 	public static function render_per_page_field() {
@@ -466,6 +500,32 @@ class RBN_Settings {
 		</select>
 		<p class="description">
 			<?php esc_html_e( 'The fallback for [rbn_demonym source="viewer_current"] / [rbn_country source="viewer_current"] - shown to a logged-out visitor, or a member who hasn\'t set "Country You Currently Live In" on their profile. Once a member sets that field, they see their own country instead.', 'roomworks-business-networking' ); ?>
+		</p>
+		<?php
+	}
+
+	public static function render_default_advert_field() {
+		$options = self::options();
+		$adverts = get_posts(
+			array(
+				'post_type'      => RBN_Post_Type_Advert::POST_TYPE,
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+			)
+		);
+		?>
+		<select name="<?php echo esc_attr( self::OPTION_NAME ); ?>[default_advert_id]">
+			<option value="0"><?php esc_html_e( '— None —', 'roomworks-business-networking' ); ?></option>
+			<?php foreach ( $adverts as $advert ) : ?>
+				<option value="<?php echo esc_attr( $advert->ID ); ?>" <?php selected( $options['default_advert_id'], $advert->ID ); ?>>
+					<?php echo esc_html( $advert->post_title ? $advert->post_title : __( '(no title)', 'roomworks-business-networking' ) ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Shown on every single post that has no advert of its own picked in the editor\'s "Advert" panel. A post can still switch adverts off entirely from that same panel.', 'roomworks-business-networking' ); ?>
 		</p>
 		<?php
 	}
